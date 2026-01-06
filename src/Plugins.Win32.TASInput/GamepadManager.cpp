@@ -108,6 +108,11 @@ core_buttons GamepadManager::get_input(const size_t i)
     buttons.dd = is_button_held(controller_config.dpad_down);
     buttons.dl = is_button_held(controller_config.dpad_left);
     buttons.dr = is_button_held(controller_config.dpad_right);
+    
+    buttons.cu = is_button_held(controller_config.c_up);
+    buttons.cd = is_button_held(controller_config.c_down);
+    buttons.cl = is_button_held(controller_config.c_left);
+    buttons.cr = is_button_held(controller_config.c_right);
 
     buttons.x = get_axis(controller_config.x);
     buttons.y = saturating_negate(get_axis(controller_config.y));
