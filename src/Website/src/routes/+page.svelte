@@ -17,9 +17,14 @@
 		dark={true}
 	>
 		{#snippet button()}
-			<a href="https://github.com/mupen64/repack/archive/refs/heads/main.zip" class="button primary"
-				>Download Repack</a
+			<a
+				href="https://github.com/mupen64/repack/archive/refs/heads/main.zip"
+				download
+				class="button primary"
 			>
+				<span class="material-symbols-sharp"> download </span>
+				<p>Download</p>
+			</a>
 		{/snippet}
 	</Hero>
 

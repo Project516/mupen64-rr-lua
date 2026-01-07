@@ -12,6 +12,14 @@
 	--color-surface-3-light: oklch(0.87 0 0);
 }
 
+.material-symbols-sharp {
+	font-variation-settings:
+		'FILL' 1,
+		'wght' 600,
+		'GRAD' 0,
+		'opsz' 24
+}
+
 html {
 	@apply bg-surface-1-light dark:bg-surface-1 text-black dark:text-gray-100;
 }
@@ -45,7 +53,7 @@ a.link {
 
 .note::before {
 	content: 'ℹ️ Note';
-	@apply font-bold; 
+	@apply font-bold;
 }
 
 .note {
@@ -54,7 +62,7 @@ a.link {
 
 .warn::before {
 	content: '⚠️ Warning';
-	@apply font-bold; 
+	@apply font-bold;
 }
 
 .warn {
@@ -63,7 +71,7 @@ a.link {
 
 .caution::before {
 	content: '🛑 Caution';
-	@apply font-bold; 
+	@apply font-bold;
 }
 
 .caution {
