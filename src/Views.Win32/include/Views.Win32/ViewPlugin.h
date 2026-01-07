@@ -85,7 +85,6 @@ extern "C"
 
     // ReSharper disable CppInconsistentNaming
 
-
 #pragma region Base
 
     EXPORT void CALL CloseDLL(void);

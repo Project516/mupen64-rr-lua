@@ -26,7 +26,8 @@ void save_config()
         return;
     }
 
-    if (RegSetValueEx(h_key, CONFIG_VALUE, 0, REG_BINARY, reinterpret_cast<const BYTE*>(&new_config), sizeof(t_config)) != ERROR_SUCCESS)
+    if (RegSetValueEx(h_key, CONFIG_VALUE, 0, REG_BINARY, reinterpret_cast<const BYTE *>(&new_config),
+                      sizeof(t_config)) != ERROR_SUCCESS)
     {
         g_ef->log_error(L"RegSetValueEx failed");
         RegCloseKey(h_key);
@@ -51,13 +52,8 @@ void load_config()
 
     t_config loaded_config{};
 
-    if (RegQueryValueEx(
-        h_key,
-        CONFIG_VALUE,
-        nullptr,
-        nullptr,
-        reinterpret_cast<BYTE*>(&loaded_config),
-        &size) != ERROR_SUCCESS ||
+    if (RegQueryValueEx(h_key, CONFIG_VALUE, nullptr, nullptr, reinterpret_cast<BYTE *>(&loaded_config), &size) !=
+            ERROR_SUCCESS ||
         size != sizeof(t_config))
     {
         g_ef->log_error(L"RegQueryValueEx failed");

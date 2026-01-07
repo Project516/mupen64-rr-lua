@@ -35,7 +35,6 @@
 #define F3DEX2_MWO_aLIGHT_8 0xa8
 #define F3DEX2_MWO_bLIGHT_8 0xac
 
-
 #define F3DEX2_RDPHALF_2 0xF1
 #define F3DEX2_SETOTHERMODE_H 0xE3
 #define F3DEX2_SETOTHERMODE_L 0xE2
@@ -63,7 +62,6 @@
 #define F3DEX2_TRI2 0x06
 #define F3DEX2_QUAD 0x07
 // #define F3DEX2_LINE3D			0x08
-
 
 void F3DEX2_Mtx(u32 w0, u32 w1);
 void F3DEX2_MoveMem(u32 w0, u32 w1);

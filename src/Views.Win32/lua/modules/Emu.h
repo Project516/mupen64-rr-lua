@@ -204,7 +204,10 @@ static int GetAddress(lua_State *L)
         void *pointer;
     };
 #define A(x, n) {x, &n}
-#define B(x, n) {x, n}
+#define B(x, n)                                                                                                        \
+    {                                                                                                                  \
+        x, n                                                                                                           \
+    }
     const NameAndVariable list[] = {A("rdram", g_main_ctx.core_ctx->rdram),
                                     A("rdram_register", g_main_ctx.core_ctx->rdram_register),
                                     A("MI_register", g_main_ctx.core_ctx->MI_register),

@@ -20,7 +20,8 @@
 #define LOADTYPE_BLOCK 0
 #define LOADTYPE_TILE 1
 
-struct gDPCombine {
+struct gDPCombine
+{
     union {
         struct
         {
@@ -54,7 +55,8 @@ struct gDPCombine {
     };
 };
 
-struct gDPTile {
+struct gDPTile
+{
     u32 format, size, line, tmem, palette;
 
     union {
@@ -75,14 +77,15 @@ struct gDPTile {
         };
     };
 
-    FrameBuffer* frameBuffer;
+    FrameBuffer *frameBuffer;
     u32 maskt, masks;
     u32 shiftt, shifts;
     f32 fuls, fult, flrs, flrt;
     u32 uls, ult, lrs, lrt;
 };
 
-struct gDPInfo {
+struct gDPInfo
+{
     struct
     {
         union {
@@ -250,7 +253,8 @@ void gDPSetBlendColor(u32 r, u32 g, u32 b, u32 a);
 void gDPSetFogColor(u32 r, u32 g, u32 b, u32 a);
 void gDPSetFillColor(u32 c);
 void gDPSetPrimColor(u32 m, u32 l, u32 r, u32 g, u32 b, u32 a);
-void gDPSetTile(u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette, u32 cmt, u32 cms, u32 maskt, u32 masks, u32 shiftt, u32 shifts);
+void gDPSetTile(u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette, u32 cmt, u32 cms, u32 maskt, u32 masks,
+                u32 shiftt, u32 shifts);
 void gDPSetTileSize(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt);
 void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt);
 void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt);

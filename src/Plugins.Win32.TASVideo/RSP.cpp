@@ -21,16 +21,16 @@ void RSP_LoadMatrix(f32 mtx[4][4], u32 address)
     constexpr int offset_lo[] = {2, 0, 6, 4};
     constexpr int offset_hi[] = {0x22, 0x20, 0x26, 0x24};
 
-    uint8_t* base = RDRAM + address;
+    uint8_t *base = RDRAM + address;
 
     for (uint8_t row = 0; row < 4; ++row)
     {
         for (uint8_t col = 0; col < 4; ++col)
         {
-            const int16_t lo = *reinterpret_cast<int16_t*>(base + offset_lo[col]);
-            const uint16_t hi = *reinterpret_cast<uint16_t*>(base + offset_hi[col]);
+            const int16_t lo = *reinterpret_cast<int16_t *>(base + offset_lo[col]);
+            const uint16_t hi = *reinterpret_cast<uint16_t *>(base + offset_hi[col]);
             const float result = static_cast<float>(lo) + static_cast<float>(hi) * recip;
-            
+
             mtx[row][col] = result;
         }
 
@@ -96,32 +96,30 @@ void RSP_ProcessDList()
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
+    RSP.PC[0] = *(u32 *)&DMEM[0x0FF0];
     RSP.PCi = 0;
     RSP.count = 0;
 
     RSP.halt = FALSE;
     RSP.busy = TRUE;
 
-    gSP.matrix.stackSize = min(32, *(u32*)&DMEM[0x0FE4] >> 6);
+    gSP.matrix.stackSize = min(32, *(u32 *)&DMEM[0x0FE4] >> 6);
     gSP.matrix.modelViewi = 0;
     gSP.changed |= CHANGED_MATRIX;
 
     for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            gSP.matrix.modelView[0][i][j] = 0.0f;
+        for (int j = 0; j < 4; j++) gSP.matrix.modelView[0][i][j] = 0.0f;
 
     gSP.matrix.modelView[0][0][0] = 1.0f;
     gSP.matrix.modelView[0][1][1] = 1.0f;
     gSP.matrix.modelView[0][2][2] = 1.0f;
     gSP.matrix.modelView[0][3][3] = 1.0f;
 
-    u32 uc_start = *(u32*)&DMEM[0x0FD0];
-    u32 uc_dstart = *(u32*)&DMEM[0x0FD8];
-    u32 uc_dsize = *(u32*)&DMEM[0x0FDC];
+    u32 uc_start = *(u32 *)&DMEM[0x0FD0];
+    u32 uc_dstart = *(u32 *)&DMEM[0x0FD8];
+    u32 uc_dsize = *(u32 *)&DMEM[0x0FDC];
 
-    if (uc_start != RSP.uc_start || uc_dstart != RSP.uc_dstart)
-        gSPLoadUcodeEx(uc_start, uc_dstart, uc_dsize);
+    if (uc_start != RSP.uc_start || uc_dstart != RSP.uc_dstart) gSPLoadUcodeEx(uc_start, uc_dstart, uc_dsize);
 
     gDPSetAlphaCompare(G_AC_NONE);
     gDPSetDepthSource(G_ZS_PIXEL);
@@ -146,18 +144,18 @@ void RSP_ProcessDList()
             break;
         }
 
-        u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
-        u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+        u32 w0 = *(u32 *)&RDRAM[RSP.PC[RSP.PCi]];
+        u32 w1 = *(u32 *)&RDRAM[RSP.PC[RSP.PCi] + 4];
         RSP.cmd = _SHIFTR(w0, 24, 8);
 
         DebugMsg(L"0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR(w0, 24, 8), w0, w1);
 
         RSP.PC[RSP.PCi] += 8;
-        RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8);
+        RSP.nextCmd = _SHIFTR(*(u32 *)&RDRAM[RSP.PC[RSP.PCi]], 24, 8);
 
         GBI.cmd[RSP.cmd](w0, w1);
     }
-    
+
     RSP.busy = FALSE;
     RSP.DList++;
     gSP.changed |= CHANGED_COLORBUFFER;

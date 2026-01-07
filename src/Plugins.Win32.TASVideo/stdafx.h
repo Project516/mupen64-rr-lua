@@ -27,4 +27,4 @@
 #define DEBUG_TEXTURE 0
 #define DEBUG_COMBINE 0
 
-#define DebugMsg(str, ...) 
+#define DebugMsg(str, ...)

@@ -17,7 +17,8 @@ void F3D_Mtx(u32 w0, u32 w1)
 {
     if (_SHIFTR(w0, 0, 16) != 64)
     {
-        DebugMsg(L"G_MTX: address = 0x%08X    length = %i    params = 0x%02X\n", w1, _SHIFTR(w0, 0, 16), _SHIFTR(w0, 16, 8));
+        DebugMsg(L"G_MTX: address = 0x%08X    length = %i    params = 0x%02X\n", w1, _SHIFTR(w0, 0, 16),
+                 _SHIFTR(w0, 16, 8));
         return;
     }
 
@@ -111,10 +112,7 @@ void F3D_Sprite2D_Base(u32 w0, u32 w1)
 
 void F3D_Tri1(u32 w0, u32 w1)
 {
-    gSP1Triangle(_SHIFTR(w1, 16, 8) / 10,
-                 _SHIFTR(w1, 8, 8) / 10,
-                 _SHIFTR(w1, 0, 8) / 10,
-                 _SHIFTR(w1, 24, 8));
+    gSP1Triangle(_SHIFTR(w1, 16, 8) / 10, _SHIFTR(w1, 8, 8) / 10, _SHIFTR(w1, 0, 8) / 10, _SHIFTR(w1, 24, 8));
 }
 
 void F3D_CullDL(u32 w0, u32 w1)
@@ -194,11 +192,8 @@ void F3D_MoveWord(u32 w0, u32 w1)
 
 void F3D_Texture(u32 w0, u32 w1)
 {
-    gSPTexture(_FIXED2FLOAT(_SHIFTR(w1, 16, 16), 16),
-               _FIXED2FLOAT(_SHIFTR(w1, 0, 16), 16),
-               _SHIFTR(w0, 11, 3),
-               _SHIFTR(w0, 8, 3),
-               _SHIFTR(w0, 0, 8));
+    gSPTexture(_FIXED2FLOAT(_SHIFTR(w1, 16, 16), 16), _FIXED2FLOAT(_SHIFTR(w1, 0, 16), 16), _SHIFTR(w0, 11, 3),
+               _SHIFTR(w0, 8, 3), _SHIFTR(w0, 0, 8));
 }
 
 void F3D_SetOtherMode_H(u32 w0, u32 w1)
@@ -333,10 +328,9 @@ void F3D_RDPHalf_Cont(u32 w0, u32 w1)
 
 void F3D_Tri4(u32 w0, u32 w1)
 {
-    gSP4Triangles(_SHIFTR(w0, 0, 4), _SHIFTR(w1, 0, 4), _SHIFTR(w1, 4, 4),
-                  _SHIFTR(w0, 4, 4), _SHIFTR(w1, 8, 4), _SHIFTR(w1, 12, 4),
-                  _SHIFTR(w0, 8, 4), _SHIFTR(w1, 16, 4), _SHIFTR(w1, 20, 4),
-                  _SHIFTR(w0, 12, 4), _SHIFTR(w1, 24, 4), _SHIFTR(w1, 28, 4));
+    gSP4Triangles(_SHIFTR(w0, 0, 4), _SHIFTR(w1, 0, 4), _SHIFTR(w1, 4, 4), _SHIFTR(w0, 4, 4), _SHIFTR(w1, 8, 4),
+                  _SHIFTR(w1, 12, 4), _SHIFTR(w0, 8, 4), _SHIFTR(w1, 16, 4), _SHIFTR(w1, 20, 4), _SHIFTR(w0, 12, 4),
+                  _SHIFTR(w1, 24, 4), _SHIFTR(w1, 28, 4));
 }
 
 void F3D_Init()

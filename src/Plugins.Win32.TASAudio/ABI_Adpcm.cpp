@@ -8,30 +8,30 @@
 
 u16 adpcmtable[0x88];
 
-void InitInput(s16* inp, int index, u8 icode, u8 mask, u8 shifter, int vscale)
+void InitInput(s16 *inp, int index, u8 icode, u8 mask, u8 shifter, int vscale)
 {
     inp[index] = (s16)((icode & mask) << shifter);
     inp[index] = (s16)((s32)(inp[index] * vscale) >> 16);
 }
 
-void ADPCM_madd(s32* a, s16* book1, s16* book2, s16 l1, s16 l2, s16* inp)
+void ADPCM_madd(s32 *a, s16 *book1, s16 *book2, s16 l1, s16 l2, s16 *inp)
 {
     __m128i xmm_source, xmm_target;
-    __m128i prod_m, prod_n; /* [0] 0xMMMMNNNN, [1] 0xMMMMNNNN, ... [7] */
+    __m128i prod_m, prod_n;   /* [0] 0xMMMMNNNN, [1] 0xMMMMNNNN, ... [7] */
     __m128i prod_hi, prod_lo; /* (s32)[0, 1, 2, 3], (s32)[4, 5, 6, 7] */
     s32 accumulators[4];
     s16 b[8];
     register int i;
 
     xmm_source = _mm_set1_epi16(l1);
-    xmm_target = _mm_loadu_si128((__m128i*)book1);
+    xmm_target = _mm_loadu_si128((__m128i *)book1);
     prod_m = _mm_mulhi_epi16(xmm_target, xmm_source);
     prod_n = _mm_mullo_epi16(xmm_target, xmm_source);
     prod_hi = _mm_unpacklo_epi16(prod_n, prod_m);
     prod_lo = _mm_unpackhi_epi16(prod_n, prod_m);
 
     xmm_source = _mm_set1_epi16(l2);
-    xmm_target = _mm_loadu_si128((__m128i*)book2);
+    xmm_target = _mm_loadu_si128((__m128i *)book2);
     prod_m = _mm_mulhi_epi16(xmm_target, xmm_source);
     prod_n = _mm_mullo_epi16(xmm_target, xmm_source);
     xmm_target = _mm_unpacklo_epi16(prod_n, prod_m);
@@ -48,78 +48,71 @@ void ADPCM_madd(s32* a, s16* book1, s16* book2, s16 l1, s16 l2, s16* inp)
      * for (i = 0; i < 8; i++)
      *     a[i] += inp[i] << 11;
      */
-    xmm_source = _mm_loadu_si128((__m128i*)inp);
+    xmm_source = _mm_loadu_si128((__m128i *)inp);
     prod_m = _mm_unpacklo_epi16(xmm_source, xmm_source); /* (xmm_source, any) */
     prod_n = _mm_unpackhi_epi16(xmm_source, xmm_source); /* Ignore upper 16b. */
-    prod_m = _mm_slli_epi32(prod_m, 16); /* ready to sign-extend s16 to s32 */
+    prod_m = _mm_slli_epi32(prod_m, 16);                 /* ready to sign-extend s16 to s32 */
     prod_n = _mm_slli_epi32(prod_n, 16);
     prod_m = _mm_srai_epi32(prod_m, 16 - 11); /* inp[i] << 11 = 2048 * inp[i] */
     prod_n = _mm_srai_epi32(prod_n, 16 - 11);
 
     prod_hi = _mm_add_epi32(prod_hi, prod_m);
     prod_lo = _mm_add_epi32(prod_lo, prod_n);
-    _mm_storeu_si128((__m128i*)&a[0], prod_hi);
-    _mm_storeu_si128((__m128i*)&a[4], prod_lo);
+    _mm_storeu_si128((__m128i *)&a[0], prod_hi);
+    _mm_storeu_si128((__m128i *)&a[4], prod_lo);
 
-    _mm_storeu_si128((__m128i*)&b[0], _mm_setzero_si128());
-    xmm_source = _mm_loadu_si128((__m128i*)inp);
+    _mm_storeu_si128((__m128i *)&b[0], _mm_setzero_si128());
+    xmm_source = _mm_loadu_si128((__m128i *)inp);
 
-    for (i = 0; i < 1; i++)
-        b[i] = book2[0 - i];
+    for (i = 0; i < 1; i++) b[i] = book2[0 - i];
     accumulators[0] = (s32)b[0] * (s32)inp[0];
     a[1] += accumulators[0];
 
-    for (i = 0; i < 2; i++)
-        b[i] = book2[1 - i];
+    for (i = 0; i < 2; i++) b[i] = book2[1 - i];
 
-    xmm_target = _mm_loadu_si128((__m128i*)&b[0]);
+    xmm_target = _mm_loadu_si128((__m128i *)&b[0]);
     xmm_target = _mm_madd_epi16(xmm_target, xmm_source);
-    _mm_storeu_si128((__m128i*)&accumulators[0], xmm_target);
+    _mm_storeu_si128((__m128i *)&accumulators[0], xmm_target);
 
     a[2] += accumulators[0];
 
-    for (i = 0; i < 3; i++)
-        b[i] = book2[2 - i];
+    for (i = 0; i < 3; i++) b[i] = book2[2 - i];
 
-    xmm_target = _mm_loadu_si128((__m128i*)&b[0]);
+    xmm_target = _mm_loadu_si128((__m128i *)&b[0]);
     xmm_target = _mm_madd_epi16(xmm_target, xmm_source);
-    _mm_storeu_si128((__m128i*)&accumulators[0], xmm_target);
+    _mm_storeu_si128((__m128i *)&accumulators[0], xmm_target);
 
     a[3] += accumulators[0] + accumulators[1];
 
-    for (i = 0; i < 4; i++)
-        b[i] = book2[3 - i];
+    for (i = 0; i < 4; i++) b[i] = book2[3 - i];
 
-    xmm_target = _mm_loadu_si128((__m128i*)&b[0]);
+    xmm_target = _mm_loadu_si128((__m128i *)&b[0]);
     xmm_target = _mm_madd_epi16(xmm_target, xmm_source);
-    _mm_storeu_si128((__m128i*)&accumulators[0], xmm_target);
+    _mm_storeu_si128((__m128i *)&accumulators[0], xmm_target);
 
     a[4] += accumulators[0] + accumulators[1];
 
-    for (i = 0; i < 5; i++)
-        b[i] = book2[4 - i];
+    for (i = 0; i < 5; i++) b[i] = book2[4 - i];
 
-    xmm_target = _mm_loadu_si128((__m128i*)&b[0]);
+    xmm_target = _mm_loadu_si128((__m128i *)&b[0]);
     xmm_target = _mm_madd_epi16(xmm_target, xmm_source);
-    _mm_storeu_si128((__m128i*)&accumulators[0], xmm_target);
+    _mm_storeu_si128((__m128i *)&accumulators[0], xmm_target);
 
     a[5] += accumulators[0] + accumulators[1] + accumulators[2];
 
-    for (i = 0; i < 6; i++)
-        b[i] = book2[5 - i];
+    for (i = 0; i < 6; i++) b[i] = book2[5 - i];
 
-    xmm_target = _mm_loadu_si128((__m128i*)&b[0]);
+    xmm_target = _mm_loadu_si128((__m128i *)&b[0]);
     xmm_target = _mm_madd_epi16(xmm_target, xmm_source);
-    _mm_storeu_si128((__m128i*)&accumulators[0], xmm_target);
+    _mm_storeu_si128((__m128i *)&accumulators[0], xmm_target);
 
     a[6] += accumulators[0] + accumulators[1] + accumulators[2];
 
-    for (i = 0; i < 7; i++)
-        b[i] = book2[6 - i];
+    for (i = 0; i < 7; i++) b[i] = book2[6 - i];
 
-    xmm_target = _mm_loadu_si128((__m128i*)&b[0]);
+    xmm_target = _mm_loadu_si128((__m128i *)&b[0]);
     xmm_target = _mm_madd_epi16(xmm_target, xmm_source);
-    _mm_storeu_si128((__m128i*)&accumulators[0], xmm_target);
+    _mm_storeu_si128((__m128i *)&accumulators[0], xmm_target);
 
     a[7] += accumulators[0] + accumulators[1] + accumulators[2] + accumulators[3];
 }
@@ -131,15 +124,15 @@ void ADPCM()
     u32 Address = t9 & 0xffffff; // + SEGMENTS[(t9>>24)&0xf];
     u16 inPtr = 0;
     // s16 *out=(s16 *)(testbuff+(AudioOutBuffer>>2));
-    s16* out = (s16*)(BufferSpace + AudioOutBuffer);
+    s16 *out = (s16 *)(BufferSpace + AudioOutBuffer);
     // u8 *in = (u8 *)(BufferSpace + AudioInBuffer);
     s16 count = (s16)AudioCount;
     int vscale;
     u16 index;
     s32 a[8];
     s16 b[8];
-    s16* book1;
-    s16* book2;
+    s16 *book1;
+    s16 *book2;
 
     /*
     if (Address > (1024*1024*8))
@@ -174,7 +167,7 @@ void ADPCM()
         u8 code = BufferSpace[BES(AudioInBuffer + inPtr)];
         index = code & 0xf;
         index <<= 4; // index into the adpcm code table
-        book1 = (s16*)&adpcmtable[index];
+        book1 = (s16 *)&adpcmtable[index];
         book2 = book1 + 8;
         code >>= 4; // upper nibble is scale
 #if 0
@@ -185,11 +178,10 @@ void ADPCM()
         // on the 12 based inverse of the scale value.  note
         // that this could be negative, in which case we do
         // not use the calculated vscale value...
-        if (12 - code - 1 < 0)
-            vscale = 0x10000; /* null operation:  << 16 then >> 16 */
-        inPtr++; // coded adpcm data lies next
-        for (int i = 0; i < 8; i += 2) // loop of 8, for 8 coded nibbles from 4 bytes
-                                       // which yields 8 short pcm values
+        if (12 - code - 1 < 0) vscale = 0x10000; /* null operation:  << 16 then >> 16 */
+        inPtr++;                                 // coded adpcm data lies next
+        for (int i = 0; i < 8; i += 2)           // loop of 8, for 8 coded nibbles from 4 bytes
+                                                 // which yields 8 short pcm values
         {
             u8 icode = BufferSpace[BES(AudioInBuffer + inPtr)];
             inPtr++;
@@ -207,8 +199,7 @@ void ADPCM()
         }
 
         ADPCM_madd(a, book1, book2, l1, l2, inp1);
-        for (int i = 0; i < 8; i++)
-            a[i] = a[i] >> 11;
+        for (int i = 0; i < 8; i++) a[i] = a[i] >> 11;
         vsats128(&b[0], &a[0]);
         swap_elements(out, &b[0]);
         out += 8;
@@ -217,8 +208,7 @@ void ADPCM()
         l2 = b[7];
 
         ADPCM_madd(a, book1, book2, l1, l2, inp2);
-        for (int i = 0; i < 8; i++)
-            a[i] = a[i] >> 11;
+        for (int i = 0; i < 8; i++) a[i] = a[i] >> 11;
         vsats128(&b[0], &a[0]);
         swap_elements(out, &b[0]);
         out += 8;
@@ -239,15 +229,15 @@ void ADPCM2()
     u32 Address = t9 & 0xffffff; // + SEGMENTS[(t9>>24)&0xf];
     u16 inPtr = 0;
     // s16 *out=(s16 *)(testbuff+(AudioOutBuffer>>2));
-    s16* out = (s16*)(BufferSpace + AudioOutBuffer);
+    s16 *out = (s16 *)(BufferSpace + AudioOutBuffer);
     //	u8 *in = (u8 *)(BufferSpace + AudioInBuffer);
     s16 count = (s16)AudioCount;
     int vscale;
     u16 index;
     s32 a[8];
     s16 b[8];
-    s16* book1;
-    s16* book2;
+    s16 *book1;
+    s16 *book2;
 
     u8 srange;
     // u8 inpinc;
@@ -291,15 +281,14 @@ void ADPCM2()
         u8 code = BufferSpace[BES(AudioInBuffer + inPtr)];
         index = code & 0xf;
         index <<= 4;
-        book1 = (s16*)&adpcmtable[index];
+        book1 = (s16 *)&adpcmtable[index];
         book2 = book1 + 8;
         code >>= 4;
 #if 0
 		assert((srange - code) - 1 >= 0);
 #endif
         vscale = 0x8000u >> (srange - code - 1);
-        if (srange - code - 1 < 0)
-            vscale = 0x10000; /* null operation:  << 16 then >> 16 */
+        if (srange - code - 1 < 0) vscale = 0x10000; /* null operation:  << 16 then >> 16 */
         inPtr++;
 
         for (int i = 0; i < 8;)
@@ -337,8 +326,7 @@ void ADPCM2()
         }
 
         ADPCM_madd(a, book1, book2, l1, l2, inp1);
-        for (int i = 0; i < 8; i++)
-            a[i] = a[i] >> 11;
+        for (int i = 0; i < 8; i++) a[i] = a[i] >> 11;
         vsats128(&b[0], &a[0]);
         swap_elements(out, &b[0]);
         out += 8;
@@ -347,8 +335,7 @@ void ADPCM2()
         l2 = b[7];
 
         ADPCM_madd(a, book1, book2, l1, l2, inp2);
-        for (int i = 0; i < 8; i++)
-            a[i] = a[i] >> 11;
+        for (int i = 0; i < 8; i++) a[i] = a[i] >> 11;
         vsats128(&b[0], &a[0]);
         swap_elements(out, &b[0]);
         out += 8;
@@ -369,15 +356,15 @@ void ADPCM3()
     u32 Address = k0 & 0xffffff; // + SEGMENTS[(t9>>24)&0xf];
     u16 inPtr = t9 >> 12 & 0xf;
     // s16 *out=(s16 *)(testbuff+(AudioOutBuffer>>2));
-    s16* out = (s16*)(BufferSpace + (t9 & 0xfff) + 0x4f0);
+    s16 *out = (s16 *)(BufferSpace + (t9 & 0xfff) + 0x4f0);
     //	u8 *in = (u8 *)(BufferSpace + ((t9 >> 12) & 0xf) + 0x4f0);
     s16 count = (s16)(t9 >> 16 & 0xfff);
     int vscale;
     u16 index;
     s32 a[8];
     s16 b[8];
-    s16* book1;
-    s16* book2;
+    s16 *book1;
+    s16 *book2;
 
     memset(out, 0, 32);
 
@@ -404,7 +391,7 @@ void ADPCM3()
         u8 code = BufferSpace[BES(0x4f0 + inPtr)];
         index = code & 0xf;
         index <<= 4; // index into the adpcm code table
-        book1 = (s16*)&adpcmtable[index];
+        book1 = (s16 *)&adpcmtable[index];
         book2 = book1 + 8;
         code >>= 4; // upper nibble is scale
 
@@ -413,10 +400,9 @@ void ADPCM3()
         // on the 12 based inverse of the scale value.  note
         // that this could be negative, in which case we do
         // not use the calculated vscale value...
-        if (12 - code - 1 < 0)
-            vscale = 0x10000; /* null operation:  << 16 then >> 16 */
+        if (12 - code - 1 < 0) vscale = 0x10000; /* null operation:  << 16 then >> 16 */
 
-        inPtr++; // coded adpcm data lies next
+        inPtr++;                       // coded adpcm data lies next
         for (int i = 0; i < 8; i += 2) // loop of 8, for 8 coded nibbles from 4 bytes
                                        // which yields 8 short pcm values
         {
@@ -436,8 +422,7 @@ void ADPCM3()
         }
 
         ADPCM_madd(a, book1, book2, l1, l2, inp1);
-        for (int i = 0; i < 8; i++)
-            a[i] = a[i] >> 11;
+        for (int i = 0; i < 8; i++) a[i] = a[i] >> 11;
         vsats128(&b[0], &a[0]);
         swap_elements(out, &b[0]);
         out += 8;
@@ -446,8 +431,7 @@ void ADPCM3()
         l2 = b[7];
 
         ADPCM_madd(a, book1, book2, l1, l2, inp2);
-        for (int i = 0; i < 8; i++)
-            a[i] = a[i] >> 11;
+        for (int i = 0; i < 8; i++) a[i] = a[i] >> 11;
         vsats128(&b[0], &a[0]);
         swap_elements(out, &b[0]); // *(out + i + 0x1F8) = b[i ^ 1];
         out += 8;
@@ -471,11 +455,10 @@ void LOADADPCM()
     //		v0 = (t9 & 0xffffff);
     //	memcpy (dmem+0x4c0, rdram+v0, k0&0xffff); // Could prolly get away with not putting this in dmem
     //	assert ((k0&0xffff) <= 0x80);
-    u16* table = (u16*)(DRAM + v0);
+    u16 *table = (u16 *)(DRAM + v0);
 
     limit = (k0 & 0x0000FFFF) >> 4;
-    for (i = 0; i < limit; i++)
-        swap_elements(&adpcmtable[8 * i], &table[8 * i]);
+    for (i = 0; i < limit; i++) swap_elements(&adpcmtable[8 * i], &table[8 * i]);
 }
 
 void LOADADPCM2()
@@ -483,12 +466,11 @@ void LOADADPCM2()
     u32 v0;
     size_t i, limit;
 
-    v0 = t9 & 0xffffff; // + SEGMENTS[(t9>>24)&0xf];
-    u16* table = (u16*)(DRAM + v0); // Zelda2 Specific...
+    v0 = t9 & 0xffffff;              // + SEGMENTS[(t9>>24)&0xf];
+    u16 *table = (u16 *)(DRAM + v0); // Zelda2 Specific...
 
     limit = (k0 & 0x0000FFFF) >> 4;
-    for (i = 0; i < limit; i++)
-        swap_elements(&adpcmtable[8 * i], &table[8 * i]);
+    for (i = 0; i < limit; i++) swap_elements(&adpcmtable[8 * i], &table[8 * i]);
 }
 
 void LOADADPCM3()
@@ -499,9 +481,8 @@ void LOADADPCM3()
     v0 = t9 & 0xffffff;
     // memcpy (dmem+0x3f0, rdram+v0, k0&0xffff);
     // assert ((k0&0xffff) <= 0x80);
-    u16* table = (u16*)(DRAM + v0);
+    u16 *table = (u16 *)(DRAM + v0);
 
     limit = (k0 & 0x0000FFFF) >> 4;
-    for (i = 0; i < limit; i++)
-        swap_elements(&adpcmtable[8 * i], &table[8 * i]);
+    for (i = 0; i < limit; i++) swap_elements(&adpcmtable[8 * i], &table[8 * i]);
 }

@@ -21,8 +21,7 @@ void CLEARBUFF2()
 {
     u16 addr = (u16)(k0 & 0xffff);
     u16 count = (u16)(t9 & 0xffff);
-    if (count > 0)
-        memset(BufferSpace + addr, 0, count);
+    if (count > 0) memset(BufferSpace + addr, 0, count);
 }
 
 void CLEARBUFF3()
@@ -36,8 +35,7 @@ void DMEMMOVE()
 {
     u32 v0, v1;
     u32 cnt;
-    if ((t9 & 0xffff) == 0)
-        return;
+    if ((t9 & 0xffff) == 0) return;
     v0 = k0 & 0xFFFF;
     v1 = t9 >> 0x10;
 
@@ -56,8 +54,7 @@ void DMEMMOVE2()
 { // Needs accuracy verification...
     u32 v0, v1;
     u32 cnt;
-    if ((t9 & 0xffff) == 0)
-        return;
+    if ((t9 & 0xffff) == 0) return;
     v0 = k0 & 0xFFFF;
     v1 = t9 >> 0x10;
     // assert ((v1 & 0x3) == 0);
@@ -116,8 +113,7 @@ void DUPLICATE2()
 void LOADBUFF()
 { // memcpy causes static... endianess issue :(
     u32 v0;
-    if (AudioCount == 0)
-        return;
+    if (AudioCount == 0) return;
     v0 = t9 & 0xfffffc; // + SEGMENTS[(t9>>24)&0xf];
     memcpy(BufferSpace + (AudioInBuffer & 0xFFFC), DRAM + v0, AudioCount + 3 & 0xFFFC);
 }
@@ -143,8 +139,7 @@ void LOADBUFF3()
 void SAVEBUFF()
 { // memcpy causes static... endianess issue :(
     u32 v0;
-    if (AudioCount == 0)
-        return;
+    if (AudioCount == 0) return;
     v0 = t9 & 0xfffffc; // + SEGMENTS[(t9>>24)&0xf];
     memcpy(DRAM + v0, BufferSpace + (AudioOutBuffer & 0xFFFC), AudioCount + 3 & 0xFFFC);
 }
@@ -200,10 +195,10 @@ void SETBUFF()
         AudioAuxE = (u16)(t9 & 0xFFFF);
     }
     else
-    { // A_MAIN - Main Sound Buffer Settings
+    {                                       // A_MAIN - Main Sound Buffer Settings
         AudioInBuffer = (u16)(k0 & 0xFFFF); // 0x00
         AudioOutBuffer = (u16)(t9 >> 0x10); // 0x02
-        AudioCount = (u16)(t9 & 0xFFFF); // 0x04
+        AudioCount = (u16)(t9 & 0xFFFF);    // 0x04
     }
 }
 
@@ -211,7 +206,7 @@ void SETBUFF2()
 {
     AudioInBuffer = (u16)(k0 & 0xFFFF); // 0x00
     AudioOutBuffer = (u16)(t9 >> 0x10); // 0x02
-    AudioCount = (u16)(t9 & 0xFFFF); // 0x04
+    AudioCount = (u16)(t9 & 0xFFFF);    // 0x04
 }
 
 void SETLOOP()

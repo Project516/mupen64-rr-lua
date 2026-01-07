@@ -21,17 +21,16 @@
 u32 uc_crc, uc_dcrc;
 char uc_str[256];
 
-SpecialMicrocodeInfo specialMicrocodes[] =
-{
-{F3DWRUS, FALSE, 0xd17906e2, "RSP SW Version: 2.0D, 04-01-96"},
-{F3DWRUS, FALSE, 0x94c4c833, "RSP SW Version: 2.0D, 04-01-96"},
+SpecialMicrocodeInfo specialMicrocodes[] = {
+    {F3DWRUS, FALSE, 0xd17906e2, "RSP SW Version: 2.0D, 04-01-96"},
+    {F3DWRUS, FALSE, 0x94c4c833, "RSP SW Version: 2.0D, 04-01-96"},
 
-{S2DEX, FALSE, 0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo."},
+    {S2DEX, FALSE, 0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo."},
 
-{F3DDKR, FALSE, 0x8d91244f, "Diddy Kong Racing"},
-{F3DDKR, FALSE, 0x6e6fc893, "Diddy Kong Racing"},
-{F3DDKR, FALSE, 0xbde9d1fb, "Jet Force Gemini"},
-{F3DPD, FALSE, 0x1c4f7869, "Perfect Dark"}};
+    {F3DDKR, FALSE, 0x8d91244f, "Diddy Kong Racing"},
+    {F3DDKR, FALSE, 0x6e6fc893, "Diddy Kong Racing"},
+    {F3DDKR, FALSE, 0xbde9d1fb, "Jet Force Gemini"},
+    {F3DPD, FALSE, 0x1c4f7869, "Perfect Dark"}};
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
 u32 G_SPNOOP;
@@ -103,7 +102,8 @@ INT_PTR CALLBACK MicrocodeDlgProc(HWND hWndDlg, UINT uMsg, WPARAM wParam, LPARAM
         SendDlgItemMessage(hWndDlg, IDC_MICROCODE, CB_SETCURSEL, 0, 0);
 
         char text[1024];
-        sprintf(text, "Microcode CRC:\t\t0x%08x\r\nMicrocode Data CRC:\t0x%08x\r\nMicrocode Text:\t\t%s", uc_crc, uc_dcrc, uc_str);
+        sprintf(text, "Microcode CRC:\t\t0x%08x\r\nMicrocode Data CRC:\t0x%08x\r\nMicrocode Text:\t\t%s", uc_crc,
+                uc_dcrc, uc_str);
         SendDlgItemMessage(hWndDlg, IDC_TEXTBOX, WM_SETTEXT, NULL, (LPARAM)text);
         return TRUE;
     case WM_CLOSE:
@@ -121,18 +121,16 @@ INT_PTR CALLBACK MicrocodeDlgProc(HWND hWndDlg, UINT uMsg, WPARAM wParam, LPARAM
     return FALSE;
 }
 
-MicrocodeInfo* GBI_AddMicrocode()
+MicrocodeInfo *GBI_AddMicrocode()
 {
-    auto newtop = (MicrocodeInfo*)malloc(sizeof(MicrocodeInfo));
+    auto newtop = (MicrocodeInfo *)malloc(sizeof(MicrocodeInfo));
 
     newtop->lower = GBI.top;
     newtop->higher = NULL;
 
-    if (GBI.top)
-        GBI.top->higher = newtop;
+    if (GBI.top) GBI.top->higher = newtop;
 
-    if (!GBI.bottom)
-        GBI.bottom = newtop;
+    if (!GBI.bottom) GBI.bottom = newtop;
 
     GBI.top = newtop;
 
@@ -148,33 +146,30 @@ void GBI_Init()
     GBI.current = NULL;
     GBI.numMicrocodes = 0;
 
-    for (u32 i = 0; i <= 0xFF; i++)
-        GBI.cmd[i] = GBI_Unknown;
+    for (u32 i = 0; i <= 0xFF; i++) GBI.cmd[i] = GBI_Unknown;
 }
 
 void GBI_Destroy()
 {
     while (GBI.bottom)
     {
-        MicrocodeInfo* newBottom = GBI.bottom->higher;
+        MicrocodeInfo *newBottom = GBI.bottom->higher;
 
-        if (GBI.bottom == GBI.top)
-            GBI.top = NULL;
+        if (GBI.bottom == GBI.top) GBI.top = NULL;
 
         free(GBI.bottom);
 
         GBI.bottom = newBottom;
 
-        if (GBI.bottom)
-            GBI.bottom->lower = NULL;
+        if (GBI.bottom) GBI.bottom->lower = NULL;
 
         GBI.numMicrocodes--;
     }
 }
 
-MicrocodeInfo* GBI_DetectMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
+MicrocodeInfo *GBI_DetectMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 {
-    MicrocodeInfo* current;
+    MicrocodeInfo *current;
 
     for (int i = 0; i < GBI.numMicrocodes; i++)
     {
@@ -182,7 +177,8 @@ MicrocodeInfo* GBI_DetectMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 
         while (current)
         {
-            if ((current->address == uc_start) && (current->dataAddress == uc_dstart) && (current->dataSize == uc_dsize))
+            if ((current->address == uc_start) && (current->dataAddress == uc_dstart) &&
+                (current->dataSize == uc_dsize))
                 return current;
 
             current = current->lower;
@@ -210,7 +206,7 @@ MicrocodeInfo* GBI_DetectMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 
     // See if we can identify it by text
     char uc_data[2048];
-    unswap_copy(&RDRAM[uc_dstart & 0x1FFFFFFF], (uint8_t*)uc_data, 2048);
+    unswap_copy(&RDRAM[uc_dstart & 0x1FFFFFFF], (uint8_t *)uc_data, 2048);
     strcpy(uc_str, "Not Found");
 
     for (u32 i = 0; i < 2048; i++)
@@ -283,7 +279,7 @@ MicrocodeInfo* GBI_DetectMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
     return current;
 }
 
-void GBI_MakeCurrent(MicrocodeInfo* current)
+void GBI_MakeCurrent(MicrocodeInfo *current)
 {
     if (current != GBI.top)
     {
@@ -306,8 +302,7 @@ void GBI_MakeCurrent(MicrocodeInfo* current)
 
     if (!GBI.current || (GBI.current->type != current->type))
     {
-        for (int i = 0; i <= 0xFF; i++)
-            GBI.cmd[i] = GBI_Unknown;
+        for (int i = 0; i <= 0xFF; i++) GBI.cmd[i] = GBI_Unknown;
 
         RDP_Init();
 

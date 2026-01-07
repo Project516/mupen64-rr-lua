@@ -16,23 +16,10 @@
 #define F3DWRUS 10
 #define NONE 11
 
-static const char* MicrocodeTypes[] =
-{
-"Fast3D",
-"F3DEX",
-"F3DEX2",
-"Line3D",
-"L3DEX",
-"L3DEX2",
-"S2DEX",
-"S2DEX2",
-"Perfect Dark",
-"DKR/JFG",
-"Waverace US",
-"None"};
+static const char *MicrocodeTypes[] = {"Fast3D", "F3DEX",  "F3DEX2",       "Line3D",  "L3DEX",       "L3DEX2",
+                                       "S2DEX",  "S2DEX2", "Perfect Dark", "DKR/JFG", "Waverace US", "None"};
 
 static const int numMicrocodeTypes = 11;
-
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1 0.5f
@@ -52,14 +39,11 @@ static const int numMicrocodeTypes = 11;
 #define FIXED2FLOATRECIP15 3.0517578e-05f
 #define FIXED2FLOATRECIP16 1.5258789e-05f
 
-#define _FIXED2FLOAT(v, b) \
-    ((f32)v * FIXED2FLOATRECIP##b)
+#define _FIXED2FLOAT(v, b) ((f32)v * FIXED2FLOATRECIP##b)
 
 // Useful macros for decoding GBI command's parameters
-#define _SHIFTL(v, s, w) \
-    (((u32)v & ((0x01 << w) - 1)) << s)
-#define _SHIFTR(v, s, w) \
-    (((u32)v >> s) & ((0x01 << w) - 1))
+#define _SHIFTL(v, s, w) (((u32)v & ((0x01 << w) - 1)) << s)
+#define _SHIFTR(v, s, w) (((u32)v >> s) & ((0x01 << w) - 1))
 
 // BG flags
 #define G_BGLT_LOADBLOCK 0x0033
@@ -70,7 +54,7 @@ static const int numMicrocodeTypes = 11;
 
 // Sprite object render modes
 #define G_OBJRM_NOTXCLAMP 0x01
-#define G_OBJRM_XLU 0x02 /* Ignored */
+#define G_OBJRM_XLU 0x02       /* Ignored */
 #define G_OBJRM_ANTIALIAS 0x04 /* Ignored */
 #define G_OBJRM_BILERP 0x08
 #define G_OBJRM_SHRINKSIZE_1 0x10
@@ -81,7 +65,6 @@ static const int numMicrocodeTypes = 11;
 #define G_OBJLT_TXTRBLOCK 0x00001033
 #define G_OBJLT_TXTRTILE 0x00fc1034
 #define G_OBJLT_TLUT 0x00000030
-
 
 // These are all the constant flags
 #define G_ZBUFFER 0x00000001
@@ -179,19 +162,14 @@ static const int numMicrocodeTypes = 11;
 #define G_MWO_POINT_XYSCREEN 0x18
 #define G_MWO_POINT_ZSCREEN 0x1C
 
-static const char* MWOPointText[] =
-{
-"G_MWO_POINT_RGBA",
-"G_MWO_POINT_ST",
-"G_MWO_POINT_XYSCREEN",
-"G_MWO_POINT_ZSCREEN"};
+static const char *MWOPointText[] = {"G_MWO_POINT_RGBA", "G_MWO_POINT_ST", "G_MWO_POINT_XYSCREEN",
+                                     "G_MWO_POINT_ZSCREEN"};
 
-static const char* MWOMatrixText[] =
-{
-"G_MWO_MATRIX_XX_XY_I", "G_MWO_MATRIX_XZ_XW_I", "G_MWO_MATRIX_YX_YY_I", "G_MWO_MATRIX_YZ_YW_I",
-"G_MWO_MATRIX_ZX_ZY_I", "G_MWO_MATRIX_ZZ_ZW_I", "G_MWO_MATRIX_WX_WY_I", "G_MWO_MATRIX_WZ_WW_I",
-"G_MWO_MATRIX_XX_XY_F", "G_MWO_MATRIX_XZ_XW_F", "G_MWO_MATRIX_YX_YY_F", "G_MWO_MATRIX_YZ_YW_F",
-"G_MWO_MATRIX_ZX_ZY_F", "G_MWO_MATRIX_ZZ_ZW_F", "G_MWO_MATRIX_WX_WY_F", "G_MWO_MATRIX_WZ_WW_F"};
+static const char *MWOMatrixText[] = {
+    "G_MWO_MATRIX_XX_XY_I", "G_MWO_MATRIX_XZ_XW_I", "G_MWO_MATRIX_YX_YY_I", "G_MWO_MATRIX_YZ_YW_I",
+    "G_MWO_MATRIX_ZX_ZY_I", "G_MWO_MATRIX_ZZ_ZW_I", "G_MWO_MATRIX_WX_WY_I", "G_MWO_MATRIX_WZ_WW_I",
+    "G_MWO_MATRIX_XX_XY_F", "G_MWO_MATRIX_XZ_XW_F", "G_MWO_MATRIX_YX_YY_F", "G_MWO_MATRIX_YZ_YW_F",
+    "G_MWO_MATRIX_ZX_ZY_F", "G_MWO_MATRIX_ZZ_ZW_F", "G_MWO_MATRIX_WX_WY_F", "G_MWO_MATRIX_WZ_WW_F"};
 
 // These flags change between ucodes
 extern u32 G_MTX_STACKSIZE;
@@ -238,71 +216,56 @@ extern u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 #define G_TX_MIRROR 0x1
 #define G_TX_CLAMP 0x2
 
-static const char* ImageFormatText[] =
-{
-"G_IM_FMT_RGBA",
-"G_IM_FMT_YUV",
-"G_IM_FMT_CI",
-"G_IM_FMT_IA",
-"G_IM_FMT_I",
-"G_IM_FMT_INVALID",
-"G_IM_FMT_INVALID",
-"G_IM_FMT_INVALID"};
+static const char *ImageFormatText[] = {"G_IM_FMT_RGBA", "G_IM_FMT_YUV",     "G_IM_FMT_CI",      "G_IM_FMT_IA",
+                                        "G_IM_FMT_I",    "G_IM_FMT_INVALID", "G_IM_FMT_INVALID", "G_IM_FMT_INVALID"};
 
-static const char* ImageSizeText[] =
-{
-"G_IM_SIZ_4b",
-"G_IM_SIZ_8b",
-"G_IM_SIZ_16b",
-"G_IM_SIZ_32b"};
+static const char *ImageSizeText[] = {"G_IM_SIZ_4b", "G_IM_SIZ_8b", "G_IM_SIZ_16b", "G_IM_SIZ_32b"};
 
-static const char* SegmentText[] =
-{
-"G_MWO_SEGMENT_0", "G_MWO_SEGMENT_1", "G_MWO_SEGMENT_2", "G_MWO_SEGMENT_3",
-"G_MWO_SEGMENT_4", "G_MWO_SEGMENT_5", "G_MWO_SEGMENT_6", "G_MWO_SEGMENT_7",
-"G_MWO_SEGMENT_8", "G_MWO_SEGMENT_9", "G_MWO_SEGMENT_A", "G_MWO_SEGMENT_B",
-"G_MWO_SEGMENT_C", "G_MWO_SEGMENT_D", "G_MWO_SEGMENT_E", "G_MWO_SEGMENT_F"};
+static const char *SegmentText[] = {"G_MWO_SEGMENT_0", "G_MWO_SEGMENT_1", "G_MWO_SEGMENT_2", "G_MWO_SEGMENT_3",
+                                    "G_MWO_SEGMENT_4", "G_MWO_SEGMENT_5", "G_MWO_SEGMENT_6", "G_MWO_SEGMENT_7",
+                                    "G_MWO_SEGMENT_8", "G_MWO_SEGMENT_9", "G_MWO_SEGMENT_A", "G_MWO_SEGMENT_B",
+                                    "G_MWO_SEGMENT_C", "G_MWO_SEGMENT_D", "G_MWO_SEGMENT_E", "G_MWO_SEGMENT_F"};
 
 #define G_NOOP 0x00
 
 #define G_IMMFIRST -65
 
 // These GBI commands are common to all ucodes
-#define G_SETCIMG 0xFF /*  -1 */
-#define G_SETZIMG 0xFE /*  -2 */
-#define G_SETTIMG 0xFD /*  -3 */
-#define G_SETCOMBINE 0xFC /*  -4 */
-#define G_SETENVCOLOR 0xFB /*  -5 */
-#define G_SETPRIMCOLOR 0xFA /*  -6 */
-#define G_SETBLENDCOLOR 0xF9 /*  -7 */
-#define G_SETFOGCOLOR 0xF8 /*  -8 */
-#define G_SETFILLCOLOR 0xF7 /*  -9 */
-#define G_FILLRECT 0xF6 /* -10 */
-#define G_SETTILE 0xF5 /* -11 */
-#define G_LOADTILE 0xF4 /* -12 */
-#define G_LOADBLOCK 0xF3 /* -13 */
-#define G_SETTILESIZE 0xF2 /* -14 */
-#define G_LOADTLUT 0xF0 /* -16 */
+#define G_SETCIMG 0xFF         /*  -1 */
+#define G_SETZIMG 0xFE         /*  -2 */
+#define G_SETTIMG 0xFD         /*  -3 */
+#define G_SETCOMBINE 0xFC      /*  -4 */
+#define G_SETENVCOLOR 0xFB     /*  -5 */
+#define G_SETPRIMCOLOR 0xFA    /*  -6 */
+#define G_SETBLENDCOLOR 0xF9   /*  -7 */
+#define G_SETFOGCOLOR 0xF8     /*  -8 */
+#define G_SETFILLCOLOR 0xF7    /*  -9 */
+#define G_FILLRECT 0xF6        /* -10 */
+#define G_SETTILE 0xF5         /* -11 */
+#define G_LOADTILE 0xF4        /* -12 */
+#define G_LOADBLOCK 0xF3       /* -13 */
+#define G_SETTILESIZE 0xF2     /* -14 */
+#define G_LOADTLUT 0xF0        /* -16 */
 #define G_RDPSETOTHERMODE 0xEF /* -17 */
-#define G_SETPRIMDEPTH 0xEE /* -18 */
-#define G_SETSCISSOR 0xED /* -19 */
-#define G_SETCONVERT 0xEC /* -20 */
-#define G_SETKEYR 0xEB /* -21 */
-#define G_SETKEYGB 0xEA /* -22 */
-#define G_RDPFULLSYNC 0xE9 /* -23 */
-#define G_RDPTILESYNC 0xE8 /* -24 */
-#define G_RDPPIPESYNC 0xE7 /* -25 */
-#define G_RDPLOADSYNC 0xE6 /* -26 */
-#define G_TEXRECTFLIP 0xE5 /* -27 */
-#define G_TEXRECT 0xE4 /* -28 */
+#define G_SETPRIMDEPTH 0xEE    /* -18 */
+#define G_SETSCISSOR 0xED      /* -19 */
+#define G_SETCONVERT 0xEC      /* -20 */
+#define G_SETKEYR 0xEB         /* -21 */
+#define G_SETKEYGB 0xEA        /* -22 */
+#define G_RDPFULLSYNC 0xE9     /* -23 */
+#define G_RDPTILESYNC 0xE8     /* -24 */
+#define G_RDPPIPESYNC 0xE7     /* -25 */
+#define G_RDPLOADSYNC 0xE6     /* -26 */
+#define G_TEXRECTFLIP 0xE5     /* -27 */
+#define G_TEXRECT 0xE4         /* -28 */
 
-#define G_TRI_FILL 0xC8 /* fill triangle:            11001000 */
-#define G_TRI_SHADE 0xCC /* shade triangle:           11001100 */
-#define G_TRI_TXTR 0xCA /* texture triangle:         11001010 */
-#define G_TRI_SHADE_TXTR 0xCE /* shade, texture triangle:  11001110 */
-#define G_TRI_FILL_ZBUFF 0xC9 /* fill, zbuff triangle:     11001001 */
-#define G_TRI_SHADE_ZBUFF 0xCD /* shade, zbuff triangle:    11001101 */
-#define G_TRI_TXTR_ZBUFF 0xCB /* texture, zbuff triangle:  11001011 */
+#define G_TRI_FILL 0xC8             /* fill triangle:            11001000 */
+#define G_TRI_SHADE 0xCC            /* shade triangle:           11001100 */
+#define G_TRI_TXTR 0xCA             /* texture triangle:         11001010 */
+#define G_TRI_SHADE_TXTR 0xCE       /* shade, texture triangle:  11001110 */
+#define G_TRI_FILL_ZBUFF 0xC9       /* fill, zbuff triangle:     11001001 */
+#define G_TRI_SHADE_ZBUFF 0xCD      /* shade, zbuff triangle:    11001101 */
+#define G_TRI_TXTR_ZBUFF 0xCB       /* texture, zbuff triangle:  11001011 */
 #define G_TRI_SHADE_TXTR_ZBUFF 0xCF /* shade, txtr, zbuff trngl: 11001111 */
 
 /*
@@ -419,77 +382,47 @@ static const char* SegmentText[] =
 #define G_SC_EVEN_INTERLACE 2
 #define G_SC_ODD_INTERLACE 3
 
-static const char* AAEnableText = "AA_EN";
-static const char* DepthCompareText = "Z_CMP";
-static const char* DepthUpdateText = "Z_UPD";
-static const char* ClearOnCvgText = "CLR_ON_CVG";
-static const char* CvgXAlphaText = "CVG_X_ALPHA";
-static const char* AlphaCvgSelText = "ALPHA_CVG_SEL";
-static const char* ForceBlenderText = "FORCE_BL";
+static const char *AAEnableText = "AA_EN";
+static const char *DepthCompareText = "Z_CMP";
+static const char *DepthUpdateText = "Z_UPD";
+static const char *ClearOnCvgText = "CLR_ON_CVG";
+static const char *CvgXAlphaText = "CVG_X_ALPHA";
+static const char *AlphaCvgSelText = "ALPHA_CVG_SEL";
+static const char *ForceBlenderText = "FORCE_BL";
 
-static const char* AlphaCompareText[] =
-{
-"G_AC_NONE", "G_AC_THRESHOLD", "G_AC_INVALID", "G_AC_DITHER"};
+static const char *AlphaCompareText[] = {"G_AC_NONE", "G_AC_THRESHOLD", "G_AC_INVALID", "G_AC_DITHER"};
 
-static const char* DepthSourceText[] =
-{
-"G_ZS_PIXEL", "G_ZS_PRIM"};
+static const char *DepthSourceText[] = {"G_ZS_PIXEL", "G_ZS_PRIM"};
 
-static const char* AlphaDitherText[] =
-{
-"G_AD_PATTERN", "G_AD_NOTPATTERN", "G_AD_NOISE", "G_AD_DISABLE"};
+static const char *AlphaDitherText[] = {"G_AD_PATTERN", "G_AD_NOTPATTERN", "G_AD_NOISE", "G_AD_DISABLE"};
 
-static const char* ColorDitherText[] =
-{
-"G_CD_MAGICSQ", "G_CD_BAYER", "G_CD_NOISE", "G_CD_DISABLE"};
+static const char *ColorDitherText[] = {"G_CD_MAGICSQ", "G_CD_BAYER", "G_CD_NOISE", "G_CD_DISABLE"};
 
-static const char* CombineKeyText[] =
-{
-"G_CK_NONE", "G_CK_KEY"};
+static const char *CombineKeyText[] = {"G_CK_NONE", "G_CK_KEY"};
 
-static const char* TextureConvertText[] =
-{
-"G_TC_CONV", "G_TC_INVALID", "G_TC_INVALID", "G_TC_INVALID", "G_TC_INVALID", "G_TC_FILTCONV", "G_TC_FILT", "G_TC_INVALID"};
+static const char *TextureConvertText[] = {"G_TC_CONV",    "G_TC_INVALID",  "G_TC_INVALID", "G_TC_INVALID",
+                                           "G_TC_INVALID", "G_TC_FILTCONV", "G_TC_FILT",    "G_TC_INVALID"};
 
-static const char* TextureFilterText[] =
-{
-"G_TF_POINT", "G_TF_INVALID", "G_TF_BILERP", "G_TF_AVERAGE"};
+static const char *TextureFilterText[] = {"G_TF_POINT", "G_TF_INVALID", "G_TF_BILERP", "G_TF_AVERAGE"};
 
-static const char* TextureLUTText[] =
-{
-"G_TT_NONE", "G_TT_INVALID", "G_TT_RGBA16", "G_TT_IA16"};
+static const char *TextureLUTText[] = {"G_TT_NONE", "G_TT_INVALID", "G_TT_RGBA16", "G_TT_IA16"};
 
-static const char* TextureLODText[] =
-{
-"G_TL_TILE", "G_TL_LOD"};
+static const char *TextureLODText[] = {"G_TL_TILE", "G_TL_LOD"};
 
-static const char* TextureDetailText[] =
-{
-"G_TD_CLAMP", "G_TD_SHARPEN", "G_TD_DETAIL"};
+static const char *TextureDetailText[] = {"G_TD_CLAMP", "G_TD_SHARPEN", "G_TD_DETAIL"};
 
-static const char* TexturePerspText[] =
-{
-"G_TP_NONE", "G_TP_PERSP"};
+static const char *TexturePerspText[] = {"G_TP_NONE", "G_TP_PERSP"};
 
-static const char* CycleTypeText[] =
-{
-"G_CYC_1CYCLE", "G_CYC_2CYCLE", "G_CYC_COPY", "G_CYC_FILL"};
+static const char *CycleTypeText[] = {"G_CYC_1CYCLE", "G_CYC_2CYCLE", "G_CYC_COPY", "G_CYC_FILL"};
 
-static const char* PipelineModeText[] =
-{
-"G_PM_NPRIMITIVE", "G_PM_1PRIMITIVE"};
+static const char *PipelineModeText[] = {"G_PM_NPRIMITIVE", "G_PM_1PRIMITIVE"};
 
-static const char* CvgDestText[] =
-{
-"CVG_DST_CLAMP", "CVG_DST_WRAP", "CVG_DST_FULL", "CVG_DST_SAVE"};
+static const char *CvgDestText[] = {"CVG_DST_CLAMP", "CVG_DST_WRAP", "CVG_DST_FULL", "CVG_DST_SAVE"};
 
-static const char* DepthModeText[] =
-{
-"ZMODE_OPA", "ZMODE_INTER", "ZMODE_XLU", "ZMODE_DEC"};
+static const char *DepthModeText[] = {"ZMODE_OPA", "ZMODE_INTER", "ZMODE_XLU", "ZMODE_DEC"};
 
-static const char* ScissorModeText[] =
-{
-"G_SC_NON_INTERLACE", "G_SC_INVALID", "G_SC_EVEN_INTERLACE", "G_SC_ODD_INTERLACE"};
+static const char *ScissorModeText[] = {"G_SC_NON_INTERLACE", "G_SC_INVALID", "G_SC_EVEN_INTERLACE",
+                                        "G_SC_ODD_INTERLACE"};
 
 /* Color combiner constants: */
 #define G_CCMUX_COMBINED 0
@@ -526,89 +459,63 @@ static const char* ScissorModeText[] =
 #define G_ACMUX_1 6
 #define G_ACMUX_0 7
 
-static const char* saRGBText[] =
-{
-"COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE",
-"SHADE", "ENVIRONMENT", "NOISE", "1",
-"0", "0", "0", "0",
-"0", "0", "0", "0"};
+static const char *saRGBText[] = {"COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE", "SHADE", "ENVIRONMENT", "NOISE", "1",
+                                  "0",        "0",      "0",      "0",         "0",     "0",           "0",     "0"};
 
-static const char* sbRGBText[] =
-{
-"COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE",
-"SHADE", "ENVIRONMENT", "CENTER", "K4",
-"0", "0", "0", "0",
-"0", "0", "0", "0"};
+static const char *sbRGBText[] = {"COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE", "SHADE", "ENVIRONMENT", "CENTER", "K4",
+                                  "0",        "0",      "0",      "0",         "0",     "0",           "0",      "0"};
 
-static const char* mRGBText[] =
-{
-"COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE",
-"SHADE", "ENVIRONMENT", "SCALE", "COMBINED_ALPHA",
-"TEXEL0_ALPHA", "TEXEL1_ALPHA", "PRIMITIVE_ALPHA", "SHADE_ALPHA",
-"ENV_ALPHA", "LOD_FRACTION", "PRIM_LOD_FRAC", "K5",
-"0", "0", "0", "0",
-"0", "0", "0", "0",
-"0", "0", "0", "0",
-"0", "0", "0", "0"};
+static const char *mRGBText[] = {"COMBINED",
+                                 "TEXEL0",
+                                 "TEXEL1",
+                                 "PRIMITIVE",
+                                 "SHADE",
+                                 "ENVIRONMENT",
+                                 "SCALE",
+                                 "COMBINED_ALPHA",
+                                 "TEXEL0_ALPHA",
+                                 "TEXEL1_ALPHA",
+                                 "PRIMITIVE_ALPHA",
+                                 "SHADE_ALPHA",
+                                 "ENV_ALPHA",
+                                 "LOD_FRACTION",
+                                 "PRIM_LOD_FRAC",
+                                 "K5",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0",
+                                 "0"};
 
-static const char* aRGBText[] =
-{
-"COMBINED",
-"TEXEL0",
-"TEXEL1",
-"PRIMITIVE",
-"SHADE",
-"ENVIRONMENT",
-"1",
-"0",
+static const char *aRGBText[] = {
+    "COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE", "SHADE", "ENVIRONMENT", "1", "0",
 };
 
-static const char* saAText[] =
-{
-"COMBINED",
-"TEXEL0",
-"TEXEL1",
-"PRIMITIVE",
-"SHADE",
-"ENVIRONMENT",
-"1",
-"0",
+static const char *saAText[] = {
+    "COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE", "SHADE", "ENVIRONMENT", "1", "0",
 };
 
-static const char* sbAText[] =
-{
-"COMBINED",
-"TEXEL0",
-"TEXEL1",
-"PRIMITIVE",
-"SHADE",
-"ENVIRONMENT",
-"1",
-"0",
+static const char *sbAText[] = {
+    "COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE", "SHADE", "ENVIRONMENT", "1", "0",
 };
 
-static const char* mAText[] =
-{
-"LOD_FRACTION",
-"TEXEL0",
-"TEXEL1",
-"PRIMITIVE",
-"SHADE",
-"ENVIRONMENT",
-"PRIM_LOD_FRAC",
-"0",
+static const char *mAText[] = {
+    "LOD_FRACTION", "TEXEL0", "TEXEL1", "PRIMITIVE", "SHADE", "ENVIRONMENT", "PRIM_LOD_FRAC", "0",
 };
 
-static const char* aAText[] =
-{
-"COMBINED",
-"TEXEL0",
-"TEXEL1",
-"PRIMITIVE",
-"SHADE",
-"ENVIRONMENT",
-"1",
-"0",
+static const char *aAText[] = {
+    "COMBINED", "TEXEL0", "TEXEL1", "PRIMITIVE", "SHADE", "ENVIRONMENT", "1", "0",
 };
 
 extern u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -691,7 +598,8 @@ using DKRTriangle = struct
     s16 t2, s2;
 };
 
-struct Light {
+struct Light
+{
     u8 pad0, b, g, r;
     u8 pad1, b2, g2, r2;
     s8 pad2, z, y, x;
@@ -701,25 +609,28 @@ struct Light {
 using GBIFunc = void (*)(u32 w0, u32 w1);
 // extern GBIFunc GBICmd[256];
 
-struct SpecialMicrocodeInfo {
+struct SpecialMicrocodeInfo
+{
     u32 type;
     u32 NoN;
     u32 crc;
-    const char* text;
+    const char *text;
 };
 
-struct MicrocodeInfo {
+struct MicrocodeInfo
+{
     u32 address, dataAddress;
     u16 dataSize;
     u32 type;
     u32 NoN;
     u32 crc;
-    u32* text;
+    u32 *text;
 
     MicrocodeInfo *higher, *lower;
 };
 
-struct GBIInfo {
+struct GBIInfo
+{
     GBIFunc cmd[256];
 
     u32 PCStackSize, numMicrocodes;
@@ -728,47 +639,47 @@ struct GBIInfo {
 
 extern GBIInfo GBI;
 
-void GBI_MakeCurrent(MicrocodeInfo* current);
-MicrocodeInfo* GBI_DetectMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize);
+void GBI_MakeCurrent(MicrocodeInfo *current);
+MicrocodeInfo *GBI_DetectMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize);
 void GBI_Init();
 void GBI_Destroy();
 
 // Allows easier setting of GBI commands
-#define GBI_SetGBI(command, value, function) \
-    command = value;                         \
+#define GBI_SetGBI(command, value, function)                                                                           \
+    command = value;                                                                                                   \
     GBI.cmd[command] = function
 
-#define GBI_InitFlags(ucode)                   \
-    G_MTX_STACKSIZE = ucode##_MTX_STACKSIZE;   \
-    G_MTX_MODELVIEW = ucode##_MTX_MODELVIEW;   \
-    G_MTX_PROJECTION = ucode##_MTX_PROJECTION; \
-    G_MTX_MUL = ucode##_MTX_MUL;               \
-    G_MTX_LOAD = ucode##_MTX_LOAD;             \
-    G_MTX_NOPUSH = ucode##_MTX_NOPUSH;         \
-    G_MTX_PUSH = ucode##_MTX_PUSH;             \
-                                               \
-    G_TEXTURE_ENABLE = ucode##_TEXTURE_ENABLE; \
-    G_SHADING_SMOOTH = ucode##_SHADING_SMOOTH; \
-    G_CULL_FRONT = ucode##_CULL_FRONT;         \
-    G_CULL_BACK = ucode##_CULL_BACK;           \
-    G_CULL_BOTH = ucode##_CULL_BOTH;           \
-    G_CLIPPING = ucode##_CLIPPING;             \
-                                               \
-    G_MV_VIEWPORT = ucode##_MV_VIEWPORT;       \
-                                               \
-    G_MWO_aLIGHT_1 = ucode##_MWO_aLIGHT_1;     \
-    G_MWO_bLIGHT_1 = ucode##_MWO_bLIGHT_1;     \
-    G_MWO_aLIGHT_2 = ucode##_MWO_aLIGHT_2;     \
-    G_MWO_bLIGHT_2 = ucode##_MWO_bLIGHT_2;     \
-    G_MWO_aLIGHT_3 = ucode##_MWO_aLIGHT_3;     \
-    G_MWO_bLIGHT_3 = ucode##_MWO_bLIGHT_3;     \
-    G_MWO_aLIGHT_4 = ucode##_MWO_aLIGHT_4;     \
-    G_MWO_bLIGHT_4 = ucode##_MWO_bLIGHT_4;     \
-    G_MWO_aLIGHT_5 = ucode##_MWO_aLIGHT_5;     \
-    G_MWO_bLIGHT_5 = ucode##_MWO_bLIGHT_5;     \
-    G_MWO_aLIGHT_6 = ucode##_MWO_aLIGHT_6;     \
-    G_MWO_bLIGHT_6 = ucode##_MWO_bLIGHT_6;     \
-    G_MWO_aLIGHT_7 = ucode##_MWO_aLIGHT_7;     \
-    G_MWO_bLIGHT_7 = ucode##_MWO_bLIGHT_7;     \
-    G_MWO_aLIGHT_8 = ucode##_MWO_aLIGHT_8;     \
+#define GBI_InitFlags(ucode)                                                                                           \
+    G_MTX_STACKSIZE = ucode##_MTX_STACKSIZE;                                                                           \
+    G_MTX_MODELVIEW = ucode##_MTX_MODELVIEW;                                                                           \
+    G_MTX_PROJECTION = ucode##_MTX_PROJECTION;                                                                         \
+    G_MTX_MUL = ucode##_MTX_MUL;                                                                                       \
+    G_MTX_LOAD = ucode##_MTX_LOAD;                                                                                     \
+    G_MTX_NOPUSH = ucode##_MTX_NOPUSH;                                                                                 \
+    G_MTX_PUSH = ucode##_MTX_PUSH;                                                                                     \
+                                                                                                                       \
+    G_TEXTURE_ENABLE = ucode##_TEXTURE_ENABLE;                                                                         \
+    G_SHADING_SMOOTH = ucode##_SHADING_SMOOTH;                                                                         \
+    G_CULL_FRONT = ucode##_CULL_FRONT;                                                                                 \
+    G_CULL_BACK = ucode##_CULL_BACK;                                                                                   \
+    G_CULL_BOTH = ucode##_CULL_BOTH;                                                                                   \
+    G_CLIPPING = ucode##_CLIPPING;                                                                                     \
+                                                                                                                       \
+    G_MV_VIEWPORT = ucode##_MV_VIEWPORT;                                                                               \
+                                                                                                                       \
+    G_MWO_aLIGHT_1 = ucode##_MWO_aLIGHT_1;                                                                             \
+    G_MWO_bLIGHT_1 = ucode##_MWO_bLIGHT_1;                                                                             \
+    G_MWO_aLIGHT_2 = ucode##_MWO_aLIGHT_2;                                                                             \
+    G_MWO_bLIGHT_2 = ucode##_MWO_bLIGHT_2;                                                                             \
+    G_MWO_aLIGHT_3 = ucode##_MWO_aLIGHT_3;                                                                             \
+    G_MWO_bLIGHT_3 = ucode##_MWO_bLIGHT_3;                                                                             \
+    G_MWO_aLIGHT_4 = ucode##_MWO_aLIGHT_4;                                                                             \
+    G_MWO_bLIGHT_4 = ucode##_MWO_bLIGHT_4;                                                                             \
+    G_MWO_aLIGHT_5 = ucode##_MWO_aLIGHT_5;                                                                             \
+    G_MWO_bLIGHT_5 = ucode##_MWO_bLIGHT_5;                                                                             \
+    G_MWO_aLIGHT_6 = ucode##_MWO_aLIGHT_6;                                                                             \
+    G_MWO_bLIGHT_6 = ucode##_MWO_bLIGHT_6;                                                                             \
+    G_MWO_aLIGHT_7 = ucode##_MWO_aLIGHT_7;                                                                             \
+    G_MWO_bLIGHT_7 = ucode##_MWO_bLIGHT_7;                                                                             \
+    G_MWO_aLIGHT_8 = ucode##_MWO_aLIGHT_8;                                                                             \
     G_MWO_bLIGHT_8 = ucode##_MWO_bLIGHT_8;

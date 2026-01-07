@@ -705,8 +705,9 @@ static void update_groupbox_status_text()
             }
             else if (piano_roll.current_state.selected_indicies.size() == 1)
             {
-                SetWindowText(piano_roll.hwnd,
-                              std::format(L"Piano Roll - Frame {}", piano_roll.current_state.selected_indicies[0]).c_str());
+                SetWindowText(
+                    piano_roll.hwnd,
+                    std::format(L"Piano Roll - Frame {}", piano_roll.current_state.selected_indicies[0]).c_str());
             }
             else
             {

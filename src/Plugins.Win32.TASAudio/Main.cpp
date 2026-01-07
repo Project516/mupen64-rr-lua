@@ -31,9 +31,6 @@ core_audio_info AudioInfo;
 u32 Dacrate = 0;
 core_plugin_extended_funcs *g_ef = &ef_shim;
 
-
-
-
 bool WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
     hInstance = hinstDLL;
@@ -48,9 +45,9 @@ EXPORT void CALL ReceiveExtendedFuncs(core_plugin_extended_funcs *funcs)
 EXPORT void CALL DllAbout(void *hParent)
 {
     const auto msg = PLUGIN_NAME L"\n"
-                                      L"Part of the Mupen64 project family."
-                                      L"\n\n"
-                                      L"https://github.com/mupen64/mupen64-rr-lua";
+                                 L"Part of the Mupen64 project family."
+                                 L"\n\n"
+                                 L"https://github.com/mupen64/mupen64-rr-lua";
 
     MessageBox((HWND)hParent, msg, L"About", MB_ICONINFORMATION | MB_OK);
 }
@@ -173,7 +170,7 @@ EXPORT void CALL AiDacrateChanged(int SystemType)
         Frequency = 48000;
     else
         g_ef->log_error(std::format(L"Unknown AI Frequency {}", Frequency).c_str());
-    
+
     snd->AI_SetFrequency(Frequency);
 }
 

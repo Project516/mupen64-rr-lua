@@ -513,9 +513,7 @@ void update_titlebar()
             text += std::format(L" - {}", EncodingManager::get_current_path().filename().wstring());
         }
 
-        g_main_ctx.dispatcher->invoke([=] {
-            SetWindowText(g_main_ctx.hwnd, text.c_str());
-        });
+        g_main_ctx.dispatcher->invoke([=] { SetWindowText(g_main_ctx.hwnd, text.c_str()); });
     });
 }
 

@@ -59,46 +59,46 @@
     regCombiners->color[n].v.mapping = CombinerInputs[p].mapping;                                                      \
     regCombiners->color[n].v.used = s
 
-#define SetColorCombinerVariable(n, v, i, m, u, s) \
-    regCombiners->color[n].v.input = i;            \
-    regCombiners->color[n].v.mapping = m;          \
-    regCombiners->color[n].v.usage = u;            \
+#define SetColorCombinerVariable(n, v, i, m, u, s)                                                                     \
+    regCombiners->color[n].v.input = i;                                                                                \
+    regCombiners->color[n].v.mapping = m;                                                                              \
+    regCombiners->color[n].v.usage = u;                                                                                \
     regCombiners->color[n].v.used = s
 
-#define SetAlphaCombinerInput(n, v, p, use)                                                               \
-    if (CombinerInputs[p].input == GL_CONSTANT_COLOR0_NV)                                                 \
-    {                                                                                                     \
-        if ((regCombiners->constant[0].alpha == COMBINED) || (regCombiners->constant[0].alpha == p))      \
-        {                                                                                                 \
-            regCombiners->constant[0].alpha = p;                                                          \
-            regCombiners->alpha[n].v.input = GL_CONSTANT_COLOR0_NV;                                       \
-            regCombiners->alpha[n].v.usage = GL_ALPHA;                                                    \
-        }                                                                                                 \
-        else if ((regCombiners->constant[1].alpha == COMBINED) || (regCombiners->constant[1].alpha == p)) \
-        {                                                                                                 \
-            regCombiners->constant[1].alpha = p;                                                          \
-            regCombiners->alpha[n].v.input = GL_CONSTANT_COLOR1_NV;                                       \
-            regCombiners->alpha[n].v.usage = GL_ALPHA;                                                    \
-        }                                                                                                 \
-        else if ((regCombiners->vertex.alpha == COMBINED) || (regCombiners->vertex.alpha == p))           \
-        {                                                                                                 \
-            regCombiners->vertex.alpha = p;                                                               \
-            regCombiners->alpha[n].v.input = GL_PRIMARY_COLOR_NV;                                         \
-            regCombiners->alpha[n].v.usage = GL_ALPHA;                                                    \
-        }                                                                                                 \
-    }                                                                                                     \
-    else                                                                                                  \
-    {                                                                                                     \
-        regCombiners->alpha[n].v.input = CombinerInputs[p].input;                                         \
-        regCombiners->alpha[n].v.usage = CombinerInputs[p].usage;                                         \
-    }                                                                                                     \
-    regCombiners->alpha[n].v.mapping = CombinerInputs[p].mapping;                                         \
+#define SetAlphaCombinerInput(n, v, p, use)                                                                            \
+    if (CombinerInputs[p].input == GL_CONSTANT_COLOR0_NV)                                                              \
+    {                                                                                                                  \
+        if ((regCombiners->constant[0].alpha == COMBINED) || (regCombiners->constant[0].alpha == p))                   \
+        {                                                                                                              \
+            regCombiners->constant[0].alpha = p;                                                                       \
+            regCombiners->alpha[n].v.input = GL_CONSTANT_COLOR0_NV;                                                    \
+            regCombiners->alpha[n].v.usage = GL_ALPHA;                                                                 \
+        }                                                                                                              \
+        else if ((regCombiners->constant[1].alpha == COMBINED) || (regCombiners->constant[1].alpha == p))              \
+        {                                                                                                              \
+            regCombiners->constant[1].alpha = p;                                                                       \
+            regCombiners->alpha[n].v.input = GL_CONSTANT_COLOR1_NV;                                                    \
+            regCombiners->alpha[n].v.usage = GL_ALPHA;                                                                 \
+        }                                                                                                              \
+        else if ((regCombiners->vertex.alpha == COMBINED) || (regCombiners->vertex.alpha == p))                        \
+        {                                                                                                              \
+            regCombiners->vertex.alpha = p;                                                                            \
+            regCombiners->alpha[n].v.input = GL_PRIMARY_COLOR_NV;                                                      \
+            regCombiners->alpha[n].v.usage = GL_ALPHA;                                                                 \
+        }                                                                                                              \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        regCombiners->alpha[n].v.input = CombinerInputs[p].input;                                                      \
+        regCombiners->alpha[n].v.usage = CombinerInputs[p].usage;                                                      \
+    }                                                                                                                  \
+    regCombiners->alpha[n].v.mapping = CombinerInputs[p].mapping;                                                      \
     regCombiners->alpha[n].v.used = use
 
-#define SetAlphaCombinerVariable(n, v, i, m, u, use) \
-    regCombiners->alpha[n].v.input = i;              \
-    regCombiners->alpha[n].v.mapping = m;            \
-    regCombiners->alpha[n].v.usage = u;              \
+#define SetAlphaCombinerVariable(n, v, i, m, u, use)                                                                   \
+    regCombiners->alpha[n].v.input = i;                                                                                \
+    regCombiners->alpha[n].v.mapping = m;                                                                              \
+    regCombiners->alpha[n].v.usage = u;                                                                                \
     regCombiners->alpha[n].v.used = use
 
 #define SetFinalCombinerInput(v, p, use)                                                                               \
@@ -155,10 +155,10 @@
     regCombiners->final.v.mapping = CombinerInputs[p].mapping;                                                         \
     regCombiners->final.v.used = use
 
-#define SetFinalCombinerVariable(v, i, m, u, use) \
-    regCombiners->final.v.input = i;              \
-    regCombiners->final.v.mapping = m;            \
-    regCombiners->final.v.usage = u;              \
+#define SetFinalCombinerVariable(v, i, m, u, use)                                                                      \
+    regCombiners->final.v.input = i;                                                                                   \
+    regCombiners->final.v.mapping = m;                                                                                 \
+    regCombiners->final.v.usage = u;                                                                                   \
     regCombiners->final.v.used = use
 
 void Init_NV_register_combiners()
@@ -178,7 +178,7 @@ void Uninit_NV_register_combiners()
     glDisable(GL_REGISTER_COMBINERS_NV);
 }
 
-void Update_NV_register_combiners_Colors(RegisterCombiners* regCombiners)
+void Update_NV_register_combiners_Colors(RegisterCombiners *regCombiners)
 {
     GLcolor color;
 
@@ -186,18 +186,18 @@ void Update_NV_register_combiners_Colors(RegisterCombiners* regCombiners)
     {
         SetConstant(color, regCombiners->constant[i].color, regCombiners->constant[i].alpha);
 
-        glCombinerParameterfvNV(GL_CONSTANT_COLOR0_NV + i, (GLfloat*)&color);
+        glCombinerParameterfvNV(GL_CONSTANT_COLOR0_NV + i, (GLfloat *)&color);
     }
 
     SetConstant(color, regCombiners->vertex.secondaryColor, ZERO);
-    glSecondaryColor3fvEXT((GLfloat*)&color);
+    glSecondaryColor3fvEXT((GLfloat *)&color);
 }
 
-RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alpha)
+RegisterCombiners *Compile_NV_register_combiners(Combiner *color, Combiner *alpha)
 {
     int curCombiner, numCombiners;
 
-    auto regCombiners = (RegisterCombiners*)malloc(sizeof(RegisterCombiners));
+    auto regCombiners = (RegisterCombiners *)malloc(sizeof(RegisterCombiners));
 
     for (int i = 0; i < OGL.maxGeneralCombiners; i++)
     {
@@ -227,9 +227,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
     SetFinalCombinerInput(G, COMBINED, FALSE);
 
     if ((gSP.geometryMode & G_FOG) &&
-        ((gDP.otherMode.cycleType == G_CYC_1CYCLE) ||
-         (gDP.otherMode.cycleType == G_CYC_2CYCLE)) &&
-        OGL.fog)
+        ((gDP.otherMode.cycleType == G_CYC_1CYCLE) || (gDP.otherMode.cycleType == G_CYC_2CYCLE)) && OGL.fog)
     {
         SetFinalCombinerVariable(A, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_ALPHA, FALSE);
         SetFinalCombinerVariable(C, GL_FOG, GL_UNSIGNED_IDENTITY_NV, GL_RGB, FALSE);
@@ -262,8 +260,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 {
                     curCombiner++;
 
-                    if (curCombiner == OGL.maxGeneralCombiners)
-                        break;
+                    if (curCombiner == OGL.maxGeneralCombiners) break;
                 }
 
                 SetAlphaCombinerInput(curCombiner, A, alpha->stage[i].op[j].param1, TRUE);
@@ -276,8 +273,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 {
                     curCombiner++;
 
-                    if (curCombiner == OGL.maxGeneralCombiners)
-                        break;
+                    if (curCombiner == OGL.maxGeneralCombiners) break;
 
                     SetAlphaCombinerVariable(curCombiner, A, GL_SPARE0_NV, GL_SIGNED_IDENTITY_NV, GL_ALPHA, TRUE);
                     SetAlphaCombinerInput(curCombiner, B, ONE, FALSE);
@@ -299,8 +295,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 {
                     curCombiner++;
 
-                    if (curCombiner == OGL.maxGeneralCombiners)
-                        break;
+                    if (curCombiner == OGL.maxGeneralCombiners) break;
 
                     SetAlphaCombinerVariable(curCombiner, A, GL_SPARE0_NV, GL_SIGNED_IDENTITY_NV, GL_ALPHA, TRUE);
                     regCombiners->alpha[curCombiner].output.sum = GL_SPARE0_NV;
@@ -318,8 +313,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 {
                     curCombiner++;
 
-                    if (curCombiner == OGL.maxGeneralCombiners)
-                        break;
+                    if (curCombiner == OGL.maxGeneralCombiners) break;
 
                     SetAlphaCombinerVariable(curCombiner, A, GL_SPARE0_NV, GL_SIGNED_IDENTITY_NV, GL_ALPHA, TRUE);
                     SetAlphaCombinerInput(curCombiner, B, ONE, FALSE);
@@ -331,34 +325,33 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 break;
 
             case INTER:
-                if (regCombiners->alpha[curCombiner].A.used ||
-                    regCombiners->alpha[curCombiner].B.used ||
-                    regCombiners->alpha[curCombiner].C.used ||
-                    regCombiners->alpha[curCombiner].D.used)
+                if (regCombiners->alpha[curCombiner].A.used || regCombiners->alpha[curCombiner].B.used ||
+                    regCombiners->alpha[curCombiner].C.used || regCombiners->alpha[curCombiner].D.used)
                 {
                     curCombiner++;
 
-                    if (curCombiner == OGL.maxGeneralCombiners)
-                        break;
+                    if (curCombiner == OGL.maxGeneralCombiners) break;
                 }
-                regCombiners->usesT0 |= (alpha->stage[i].op[j].param2 == TEXEL0_ALPHA) || (alpha->stage[i].op[j].param3 == TEXEL0_ALPHA);
-                regCombiners->usesT1 |= (alpha->stage[i].op[j].param2 == TEXEL1_ALPHA) || (alpha->stage[i].op[j].param3 == TEXEL1_ALPHA);
-                regCombiners->usesNoise |= (alpha->stage[i].op[j].param2 == NOISE) || (alpha->stage[i].op[j].param3 == NOISE);
+                regCombiners->usesT0 |=
+                    (alpha->stage[i].op[j].param2 == TEXEL0_ALPHA) || (alpha->stage[i].op[j].param3 == TEXEL0_ALPHA);
+                regCombiners->usesT1 |=
+                    (alpha->stage[i].op[j].param2 == TEXEL1_ALPHA) || (alpha->stage[i].op[j].param3 == TEXEL1_ALPHA);
+                regCombiners->usesNoise |=
+                    (alpha->stage[i].op[j].param2 == NOISE) || (alpha->stage[i].op[j].param3 == NOISE);
 
                 SetAlphaCombinerInput(curCombiner, A, alpha->stage[i].op[j].param1, TRUE);
                 SetAlphaCombinerInput(curCombiner, B, alpha->stage[i].op[j].param3, TRUE);
                 SetAlphaCombinerInput(curCombiner, C, alpha->stage[i].op[j].param2, TRUE);
-                SetAlphaCombinerVariable(curCombiner, D, regCombiners->alpha[curCombiner].B.input, GL_UNSIGNED_INVERT_NV, GL_ALPHA, TRUE);
+                SetAlphaCombinerVariable(curCombiner, D, regCombiners->alpha[curCombiner].B.input,
+                                         GL_UNSIGNED_INVERT_NV, GL_ALPHA, TRUE);
 
                 regCombiners->alpha[curCombiner].output.sum = GL_SPARE0_NV;
                 break;
             }
 
-            if (curCombiner == OGL.maxGeneralCombiners)
-                break; // Get out if the combiners are full
+            if (curCombiner == OGL.maxGeneralCombiners) break; // Get out if the combiners are full
         }
-        if (curCombiner == OGL.maxGeneralCombiners)
-            break; // Get out if the combiners are full
+        if (curCombiner == OGL.maxGeneralCombiners) break; // Get out if the combiners are full
     }
 
     numCombiners = min(curCombiner + 1, OGL.maxGeneralCombiners);
@@ -368,8 +361,10 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
     {
         for (int j = 0; (j < color->stage[i].numOps) && (curCombiner < OGL.maxGeneralCombiners); j++)
         {
-            regCombiners->usesT0 |= (color->stage[i].op[j].param1 == TEXEL0) || (color->stage[i].op[j].param1 == TEXEL0_ALPHA);
-            regCombiners->usesT1 |= (color->stage[i].op[j].param1 == TEXEL1) || (color->stage[i].op[j].param1 == TEXEL1_ALPHA);
+            regCombiners->usesT0 |=
+                (color->stage[i].op[j].param1 == TEXEL0) || (color->stage[i].op[j].param1 == TEXEL0_ALPHA);
+            regCombiners->usesT1 |=
+                (color->stage[i].op[j].param1 == TEXEL1) || (color->stage[i].op[j].param1 == TEXEL1_ALPHA);
             regCombiners->usesNoise |= (color->stage[i].op[j].param1 == NOISE);
 
             switch (color->stage[i].op[j].op)
@@ -379,8 +374,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 {
                     curCombiner++;
 
-                    if (curCombiner == OGL.maxGeneralCombiners)
-                        break;
+                    if (curCombiner == OGL.maxGeneralCombiners) break;
                 }
 
                 SetColorCombinerInput(curCombiner, A, color->stage[i].op[j].param1, TRUE);
@@ -393,8 +387,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 {
                     curCombiner++;
 
-                    if (curCombiner == OGL.maxGeneralCombiners)
-                        break;
+                    if (curCombiner == OGL.maxGeneralCombiners) break;
 
                     SetColorCombinerVariable(curCombiner, A, GL_SPARE0_NV, GL_SIGNED_IDENTITY_NV, GL_RGB, TRUE);
                     SetColorCombinerInput(curCombiner, B, ONE, FALSE);
@@ -413,8 +406,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
 
                     if (curCombiner == OGL.maxGeneralCombiners)
                     {
-                        if ((!regCombiners->final.B.used) &&
-                            (!regCombiners->final.E.used) &&
+                        if ((!regCombiners->final.B.used) && (!regCombiners->final.E.used) &&
                             (!regCombiners->final.F.used))
                         {
                             SetFinalCombinerVariable(B, GL_E_TIMES_F_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB, TRUE);
@@ -460,22 +452,23 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 break;
 
             case INTER:
-                regCombiners->usesT0 |= (color->stage[i].op[j].param2 == TEXEL0) || (color->stage[i].op[j].param3 == TEXEL0) || (color->stage[i].op[j].param2 == TEXEL0_ALPHA) || (color->stage[i].op[j].param3 == TEXEL0_ALPHA);
-                regCombiners->usesT1 |= (color->stage[i].op[j].param2 == TEXEL1) || (color->stage[i].op[j].param3 == TEXEL1) || (color->stage[i].op[j].param2 == TEXEL1_ALPHA) || (color->stage[i].op[j].param3 == TEXEL1_ALPHA);
-                regCombiners->usesNoise |= (color->stage[i].op[j].param2 == NOISE) || (color->stage[i].op[j].param3 == NOISE);
+                regCombiners->usesT0 |=
+                    (color->stage[i].op[j].param2 == TEXEL0) || (color->stage[i].op[j].param3 == TEXEL0) ||
+                    (color->stage[i].op[j].param2 == TEXEL0_ALPHA) || (color->stage[i].op[j].param3 == TEXEL0_ALPHA);
+                regCombiners->usesT1 |=
+                    (color->stage[i].op[j].param2 == TEXEL1) || (color->stage[i].op[j].param3 == TEXEL1) ||
+                    (color->stage[i].op[j].param2 == TEXEL1_ALPHA) || (color->stage[i].op[j].param3 == TEXEL1_ALPHA);
+                regCombiners->usesNoise |=
+                    (color->stage[i].op[j].param2 == NOISE) || (color->stage[i].op[j].param3 == NOISE);
 
-                if (regCombiners->color[curCombiner].A.used ||
-                    regCombiners->color[curCombiner].B.used ||
-                    regCombiners->color[curCombiner].C.used ||
-                    regCombiners->color[curCombiner].D.used)
+                if (regCombiners->color[curCombiner].A.used || regCombiners->color[curCombiner].B.used ||
+                    regCombiners->color[curCombiner].C.used || regCombiners->color[curCombiner].D.used)
                 {
                     curCombiner++;
 
                     if (curCombiner == OGL.maxGeneralCombiners)
                     {
-                        if (!regCombiners->final.A.used &&
-                            !regCombiners->final.B.used &&
-                            !regCombiners->final.C.used)
+                        if (!regCombiners->final.A.used && !regCombiners->final.B.used && !regCombiners->final.C.used)
                         {
                             SetFinalCombinerInput(A, color->stage[i].op[j].param3, TRUE);
                             SetFinalCombinerInput(B, color->stage[i].op[j].param1, TRUE);
@@ -488,7 +481,8 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
                 SetColorCombinerInput(curCombiner, A, color->stage[i].op[j].param1, TRUE);
                 SetColorCombinerInput(curCombiner, B, color->stage[i].op[j].param3, TRUE);
                 SetColorCombinerInput(curCombiner, C, color->stage[i].op[j].param2, TRUE);
-                SetColorCombinerVariable(curCombiner, D, regCombiners->color[curCombiner].B.input, GL_UNSIGNED_INVERT_NV, regCombiners->color[curCombiner].B.usage, TRUE);
+                SetColorCombinerVariable(curCombiner, D, regCombiners->color[curCombiner].B.input,
+                                         GL_UNSIGNED_INVERT_NV, regCombiners->color[curCombiner].B.usage, TRUE);
 
                 regCombiners->color[curCombiner].output.sum = GL_SPARE0_NV;
                 break;
@@ -501,7 +495,7 @@ RegisterCombiners* Compile_NV_register_combiners(Combiner* color, Combiner* alph
     return regCombiners;
 }
 
-void Set_NV_register_combiners(RegisterCombiners* regCombiners)
+void Set_NV_register_combiners(RegisterCombiners *regCombiners)
 {
     combiner.usesT0 = regCombiners->usesT0;
     combiner.usesT1 = regCombiners->usesT1;
@@ -527,24 +521,42 @@ void Set_NV_register_combiners(RegisterCombiners* regCombiners)
 
     for (int i = 0; i < regCombiners->numCombiners; i++)
     {
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_A_NV, regCombiners->color[i].A.input, regCombiners->color[i].A.mapping, regCombiners->color[i].A.usage);
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_B_NV, regCombiners->color[i].B.input, regCombiners->color[i].B.mapping, regCombiners->color[i].B.usage);
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_C_NV, regCombiners->color[i].C.input, regCombiners->color[i].C.mapping, regCombiners->color[i].C.usage);
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_D_NV, regCombiners->color[i].D.input, regCombiners->color[i].D.mapping, regCombiners->color[i].D.usage);
-        glCombinerOutputNV(GL_COMBINER0_NV + i, GL_RGB, regCombiners->color[i].output.ab, regCombiners->color[i].output.cd, regCombiners->color[i].output.sum, GL_NONE, GL_NONE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_A_NV, regCombiners->color[i].A.input,
+                          regCombiners->color[i].A.mapping, regCombiners->color[i].A.usage);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_B_NV, regCombiners->color[i].B.input,
+                          regCombiners->color[i].B.mapping, regCombiners->color[i].B.usage);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_C_NV, regCombiners->color[i].C.input,
+                          regCombiners->color[i].C.mapping, regCombiners->color[i].C.usage);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_RGB, GL_VARIABLE_D_NV, regCombiners->color[i].D.input,
+                          regCombiners->color[i].D.mapping, regCombiners->color[i].D.usage);
+        glCombinerOutputNV(GL_COMBINER0_NV + i, GL_RGB, regCombiners->color[i].output.ab,
+                           regCombiners->color[i].output.cd, regCombiners->color[i].output.sum, GL_NONE, GL_NONE,
+                           GL_FALSE, GL_FALSE, GL_FALSE);
 
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_A_NV, regCombiners->alpha[i].A.input, regCombiners->alpha[i].A.mapping, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_B_NV, regCombiners->alpha[i].B.input, regCombiners->alpha[i].B.mapping, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_C_NV, regCombiners->alpha[i].C.input, regCombiners->alpha[i].C.mapping, GL_ALPHA);
-        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_D_NV, regCombiners->alpha[i].D.input, regCombiners->alpha[i].D.mapping, GL_ALPHA);
-        glCombinerOutputNV(GL_COMBINER0_NV + i, GL_ALPHA, regCombiners->alpha[i].output.ab, regCombiners->alpha[i].output.cd, regCombiners->alpha[i].output.sum, GL_NONE, GL_NONE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_A_NV, regCombiners->alpha[i].A.input,
+                          regCombiners->alpha[i].A.mapping, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_B_NV, regCombiners->alpha[i].B.input,
+                          regCombiners->alpha[i].B.mapping, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_C_NV, regCombiners->alpha[i].C.input,
+                          regCombiners->alpha[i].C.mapping, GL_ALPHA);
+        glCombinerInputNV(GL_COMBINER0_NV + i, GL_ALPHA, GL_VARIABLE_D_NV, regCombiners->alpha[i].D.input,
+                          regCombiners->alpha[i].D.mapping, GL_ALPHA);
+        glCombinerOutputNV(GL_COMBINER0_NV + i, GL_ALPHA, regCombiners->alpha[i].output.ab,
+                           regCombiners->alpha[i].output.cd, regCombiners->alpha[i].output.sum, GL_NONE, GL_NONE,
+                           GL_FALSE, GL_FALSE, GL_FALSE);
     }
 
-    glFinalCombinerInputNV(GL_VARIABLE_A_NV, regCombiners->final.A.input, regCombiners->final.A.mapping, regCombiners->final.A.usage);
-    glFinalCombinerInputNV(GL_VARIABLE_B_NV, regCombiners->final.B.input, regCombiners->final.B.mapping, regCombiners->final.B.usage);
-    glFinalCombinerInputNV(GL_VARIABLE_C_NV, regCombiners->final.C.input, regCombiners->final.C.mapping, regCombiners->final.C.usage);
-    glFinalCombinerInputNV(GL_VARIABLE_D_NV, regCombiners->final.D.input, regCombiners->final.D.mapping, regCombiners->final.D.usage);
-    glFinalCombinerInputNV(GL_VARIABLE_E_NV, regCombiners->final.E.input, regCombiners->final.E.mapping, regCombiners->final.E.usage);
-    glFinalCombinerInputNV(GL_VARIABLE_F_NV, regCombiners->final.F.input, regCombiners->final.F.mapping, regCombiners->final.F.usage);
+    glFinalCombinerInputNV(GL_VARIABLE_A_NV, regCombiners->final.A.input, regCombiners->final.A.mapping,
+                           regCombiners->final.A.usage);
+    glFinalCombinerInputNV(GL_VARIABLE_B_NV, regCombiners->final.B.input, regCombiners->final.B.mapping,
+                           regCombiners->final.B.usage);
+    glFinalCombinerInputNV(GL_VARIABLE_C_NV, regCombiners->final.C.input, regCombiners->final.C.mapping,
+                           regCombiners->final.C.usage);
+    glFinalCombinerInputNV(GL_VARIABLE_D_NV, regCombiners->final.D.input, regCombiners->final.D.mapping,
+                           regCombiners->final.D.usage);
+    glFinalCombinerInputNV(GL_VARIABLE_E_NV, regCombiners->final.E.input, regCombiners->final.E.mapping,
+                           regCombiners->final.E.usage);
+    glFinalCombinerInputNV(GL_VARIABLE_F_NV, regCombiners->final.F.input, regCombiners->final.F.mapping,
+                           regCombiners->final.F.usage);
     glFinalCombinerInputNV(GL_VARIABLE_G_NV, regCombiners->final.G.input, regCombiners->final.G.mapping, GL_ALPHA);
 }

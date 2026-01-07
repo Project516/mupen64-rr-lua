@@ -440,12 +440,12 @@ void check_interrupt()
 
 void gen_interrupt()
 {
-    #ifdef MUPEN64RR_ENABLE_DYNAREC
+#ifdef MUPEN64RR_ENABLE_DYNAREC
     if (stop)
     {
         dyna_stop();
     }
-    #endif
+#endif
 
     if (skip_jump)
     {

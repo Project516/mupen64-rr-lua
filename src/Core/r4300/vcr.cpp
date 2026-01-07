@@ -1165,7 +1165,7 @@ core_result vcr_replace_author_info(const std::filesystem::path &path, std::stri
     }
 
     // 2. Compare author and description fields, and don't do any work if they remained identical
-    
+
     if (author == std::string_view(hdr.author) && description == std::string_view(hdr.description))
     {
         g_core->log_info("[VCR] Movie author or description didn't change, returning early...");

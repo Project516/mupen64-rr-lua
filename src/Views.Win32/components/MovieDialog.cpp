@@ -264,14 +264,10 @@ refresh:
         L"Rerecords",
         std::to_wstring(static_cast<uint64_t>(header.extended_data.rerecord_count) << 32 | header.rerecord_count)));
 
-    metadata.emplace_back(
-        std::make_pair(L"Video Plugin", IOUtils::to_wide_string(header.video_plugin_name)));
-    metadata.emplace_back(
-        std::make_pair(L"Input Plugin", IOUtils::to_wide_string(header.input_plugin_name)));
-    metadata.emplace_back(
-        std::make_pair(L"Sound Plugin", IOUtils::to_wide_string(header.audio_plugin_name)));
-    metadata.emplace_back(
-        std::make_pair(L"RSP Plugin", IOUtils::to_wide_string(header.rsp_plugin_name)));
+    metadata.emplace_back(std::make_pair(L"Video Plugin", IOUtils::to_wide_string(header.video_plugin_name)));
+    metadata.emplace_back(std::make_pair(L"Input Plugin", IOUtils::to_wide_string(header.input_plugin_name)));
+    metadata.emplace_back(std::make_pair(L"Sound Plugin", IOUtils::to_wide_string(header.audio_plugin_name)));
+    metadata.emplace_back(std::make_pair(L"RSP Plugin", IOUtils::to_wide_string(header.rsp_plugin_name)));
 
     for (int i = 0; i < 4; ++i)
     {
@@ -292,9 +288,8 @@ refresh:
     char authorship[5] = {0};
     memcpy(authorship, header.extended_data.authorship_tag, sizeof(header.extended_data.authorship_tag));
 
-    metadata.emplace_back(std::make_pair(L"Authorship", header.extended_version == 0
-                                                            ? L"Unknown"
-                                                            : IOUtils::to_wide_string(authorship)));
+    metadata.emplace_back(
+        std::make_pair(L"Authorship", header.extended_version == 0 ? L"Unknown" : IOUtils::to_wide_string(authorship)));
 
     metadata.emplace_back(std::make_pair(L"A Presses", std::to_wstring(count_button_presses(inputs, 7))));
     metadata.emplace_back(std::make_pair(L"B Presses", std::to_wstring(count_button_presses(inputs, 6))));

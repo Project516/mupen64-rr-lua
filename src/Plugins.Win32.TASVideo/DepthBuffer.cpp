@@ -14,25 +14,22 @@ void DepthBuffer_Init()
 
 void DepthBuffer_RemoveBottom()
 {
-    DepthBuffer* newBottom = depthBuffer.bottom->higher;
+    DepthBuffer *newBottom = depthBuffer.bottom->higher;
 
-    if (depthBuffer.bottom == depthBuffer.top)
-        depthBuffer.top == NULL;
+    if (depthBuffer.bottom == depthBuffer.top) depthBuffer.top == NULL;
 
     free(depthBuffer.bottom);
 
     depthBuffer.bottom = newBottom;
 
-    if (depthBuffer.bottom != NULL)
-        depthBuffer.bottom->lower = NULL;
+    if (depthBuffer.bottom != NULL) depthBuffer.bottom->lower = NULL;
 
     depthBuffer.numBuffers--;
 }
 
-void DepthBuffer_Remove(DepthBuffer* buffer)
+void DepthBuffer_Remove(DepthBuffer *buffer)
 {
-    if ((buffer == depthBuffer.bottom) &&
-        (buffer == depthBuffer.top))
+    if ((buffer == depthBuffer.bottom) && (buffer == depthBuffer.top))
     {
         depthBuffer.top = NULL;
         depthBuffer.bottom = NULL;
@@ -41,15 +38,13 @@ void DepthBuffer_Remove(DepthBuffer* buffer)
     {
         depthBuffer.bottom = buffer->higher;
 
-        if (depthBuffer.bottom)
-            depthBuffer.bottom->lower = NULL;
+        if (depthBuffer.bottom) depthBuffer.bottom->lower = NULL;
     }
     else if (buffer == depthBuffer.top)
     {
         depthBuffer.top = buffer->lower;
 
-        if (depthBuffer.top)
-            depthBuffer.top->higher = NULL;
+        if (depthBuffer.top) depthBuffer.top->higher = NULL;
     }
     else
     {
@@ -64,7 +59,7 @@ void DepthBuffer_Remove(DepthBuffer* buffer)
 
 void DepthBuffer_RemoveBuffer(u32 address)
 {
-    DepthBuffer* current = depthBuffer.bottom;
+    DepthBuffer *current = depthBuffer.bottom;
 
     while (current != NULL)
     {
@@ -77,18 +72,16 @@ void DepthBuffer_RemoveBuffer(u32 address)
     }
 }
 
-DepthBuffer* DepthBuffer_AddTop()
+DepthBuffer *DepthBuffer_AddTop()
 {
-    auto newtop = (DepthBuffer*)malloc(sizeof(DepthBuffer));
+    auto newtop = (DepthBuffer *)malloc(sizeof(DepthBuffer));
 
     newtop->lower = depthBuffer.top;
     newtop->higher = NULL;
 
-    if (depthBuffer.top)
-        depthBuffer.top->higher = newtop;
+    if (depthBuffer.top) depthBuffer.top->higher = newtop;
 
-    if (!depthBuffer.bottom)
-        depthBuffer.bottom = newtop;
+    if (!depthBuffer.bottom) depthBuffer.bottom = newtop;
 
     depthBuffer.top = newtop;
 
@@ -97,10 +90,9 @@ DepthBuffer* DepthBuffer_AddTop()
     return newtop;
 }
 
-void DepthBuffer_MoveToTop(DepthBuffer* newtop)
+void DepthBuffer_MoveToTop(DepthBuffer *newtop)
 {
-    if (newtop == depthBuffer.top)
-        return;
+    if (newtop == depthBuffer.top) return;
 
     if (newtop == depthBuffer.bottom)
     {
@@ -121,15 +113,14 @@ void DepthBuffer_MoveToTop(DepthBuffer* newtop)
 
 void DepthBuffer_Destroy()
 {
-    while (depthBuffer.bottom)
-        DepthBuffer_RemoveBottom();
+    while (depthBuffer.bottom) DepthBuffer_RemoveBottom();
 
     depthBuffer.top = NULL;
 }
 
 void DepthBuffer_SetBuffer(u32 address)
 {
-    DepthBuffer* current = depthBuffer.top;
+    DepthBuffer *current = depthBuffer.top;
 
     // Search through saved depth buffers
     while (current != NULL)
@@ -151,14 +142,13 @@ void DepthBuffer_SetBuffer(u32 address)
     depthBuffer.current = current;
 }
 
-DepthBuffer* DepthBuffer_FindBuffer(u32 address)
+DepthBuffer *DepthBuffer_FindBuffer(u32 address)
 {
-    DepthBuffer* current = depthBuffer.top;
+    DepthBuffer *current = depthBuffer.top;
 
     while (current)
     {
-        if (current->address == address)
-            return current;
+        if (current->address == address) return current;
         current = current->lower;
     }
 

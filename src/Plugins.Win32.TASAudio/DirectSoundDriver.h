@@ -12,8 +12,9 @@
 #include "SoundDriver.h"
 #include "SoundDriverInterface.h"
 
-class DirectSoundDriver : public SoundDriver {
-protected:
+class DirectSoundDriver : public SoundDriver
+{
+  protected:
     void (*CallBack)(DWORD);
     DWORD dwFreqTarget{};
     BOOL audioIsPlaying{};
@@ -31,8 +32,8 @@ protected:
     DWORD SampleRate{};
     DWORD SegmentSize{};
 
-public:
-    friend DWORD WINAPI AudioThreadProc(DirectSoundDriver* ac);
+  public:
+    friend DWORD WINAPI AudioThreadProc(DirectSoundDriver *ac);
 
     DirectSoundDriver() = default;
     ~DirectSoundDriver() = default;
@@ -49,8 +50,8 @@ public:
 
     void SetVolume(u32 volume);
 
-    static SoundDriverInterface* CreateSoundDriver() { return new DirectSoundDriver(); }
+    static SoundDriverInterface *CreateSoundDriver() { return new DirectSoundDriver(); }
 
-private:
+  private:
     static bool ClassRegistered;
 };

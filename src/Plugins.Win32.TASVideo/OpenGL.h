@@ -2,7 +2,8 @@
 
 #include "gSP.h"
 
-struct GLVertex {
+struct GLVertex
+{
     float x, y, z, w;
 
     struct
@@ -14,7 +15,8 @@ struct GLVertex {
     float fog;
 };
 
-struct GLInfo {
+struct GLInfo
+{
     BOOL recycle_context;
     BOOL context_initialized;
     HGLRC hRC, hPbufferRC;
@@ -29,18 +31,18 @@ struct GLInfo {
     float scaleX, scaleY;
 
     BOOL ATI_texture_env_combine3; // Radeon
-    BOOL ATIX_texture_env_route; // Radeon
+    BOOL ATIX_texture_env_route;   // Radeon
 
-    BOOL ARB_multitexture; // TNT, GeForce, Rage 128, Radeon
-    BOOL ARB_texture_env_combine; // GeForce, Rage 128, Radeon
+    BOOL ARB_multitexture;         // TNT, GeForce, Rage 128, Radeon
+    BOOL ARB_texture_env_combine;  // GeForce, Rage 128, Radeon
     BOOL ARB_texture_env_crossbar; // Radeon (GeForce supports it, but doesn't report it)
 
-    BOOL EXT_fog_coord; // TNT, GeForce, Rage 128, Radeon
+    BOOL EXT_fog_coord;           // TNT, GeForce, Rage 128, Radeon
     BOOL EXT_texture_env_combine; // TNT, GeForce, Rage 128, Radeon
-    BOOL EXT_secondary_color; // GeForce, Radeon
+    BOOL EXT_secondary_color;     // GeForce, Radeon
 
     BOOL NV_texture_env_combine4; // TNT, GeForce
-    BOOL NV_register_combiners; // GeForce
+    BOOL NV_register_combiners;   // GeForce
     BOOL ARB_buffer_region;
     BOOL ARB_pbuffer;
     BOOL ARB_render_texture;
@@ -78,20 +80,22 @@ struct GLInfo {
 
 extern GLInfo OGL;
 
-struct GLcolor {
+struct GLcolor
+{
     float r, g, b, a;
 };
 
 void OGL_ReadPixels();
 bool OGL_Start();
 void OGL_Stop();
-void OGL_AddTriangle(SPVertex* vertices, int v0, int v1, int v2);
+void OGL_AddTriangle(SPVertex *vertices, int v0, int v1, int v2);
 void OGL_DrawTriangles();
-void OGL_DrawLine(SPVertex* vertices, int v0, int v1, float width);
-void OGL_DrawRect(int ulx, int uly, int lrx, int lry, float* color);
-void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip);
+void OGL_DrawLine(SPVertex *vertices, int v0, int v1, float width);
+void OGL_DrawRect(int ulx, int uly, int lrx, int lry, float *color);
+void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt,
+                          bool flip);
 void OGL_UpdateScale();
 void OGL_ClearDepthBuffer();
-void OGL_ClearColorBuffer(float* color);
+void OGL_ClearColorBuffer(float *color);
 void OGL_ResizeWindow();
 void OGL_SaveScreenshot();

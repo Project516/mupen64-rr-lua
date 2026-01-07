@@ -1,6 +1,7 @@
-#pragma once 
+#pragma once
 
-struct TexEnv {
+struct TexEnv
+{
     GLint mode;
 
     struct
@@ -12,7 +13,7 @@ struct TexEnv {
 };
 
 void Init_texture_env();
-TexEnv* Compile_texture_env(Combiner* color, Combiner* alpha);
-void Set_texture_env(TexEnv* texEnv);
-void Update_texture_env_Colors(TexEnv* texEnv);
+TexEnv *Compile_texture_env(Combiner *color, Combiner *alpha);
+void Set_texture_env(TexEnv *texEnv);
+void Update_texture_env_Colors(TexEnv *texEnv);
 void Uninit_texture_env();

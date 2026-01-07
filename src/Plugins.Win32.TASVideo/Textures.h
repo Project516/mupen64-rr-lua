@@ -1,15 +1,17 @@
-#pragma once 
+#pragma once
 
 #include "convert.h"
 
-enum class TextureFilter {
+enum class TextureFilter
+{
     None,
     SaI,
     xBRZ,
     Hqx,
 };
 
-struct CachedTexture {
+struct CachedTexture
+{
     GLuint glName;
     u32 address;
     u32 crc;
@@ -24,10 +26,10 @@ struct CachedTexture {
     u32 format;
     u32 tMem;
     u32 palette;
-    u32 width, height; // N64 width and height
-    u32 clampWidth, clampHeight; // Size to clamp to
-    u32 realWidth, realHeight; // Actual texture size
-    f32 scaleS, scaleT; // Scale to map to 0.0-1.0
+    u32 width, height;            // N64 width and height
+    u32 clampWidth, clampHeight;  // Size to clamp to
+    u32 realWidth, realHeight;    // Actual texture size
+    f32 scaleS, scaleT;           // Scale to map to 0.0-1.0
     f32 shiftScaleS, shiftScaleT; // Scale to shift
     u32 textureBytes;
 
@@ -37,18 +39,18 @@ struct CachedTexture {
     u32 frameBufferTexture;
 };
 
-
-struct TextureCache {
+struct TextureCache
+{
     CachedTexture *bottom, *top;
 
-    CachedTexture*(current[2]);
+    CachedTexture *(current[2]);
     u32 maxBytes;
     u32 cachedBytes;
     u32 numCached;
     u32 hits, misses;
     GLuint glNoiseNames[32];
     // GLuint			glDummyName;
-    CachedTexture* dummy;
+    CachedTexture *dummy;
     TextureFilter textureFilter;
 };
 
@@ -58,8 +60,7 @@ inline u32 pow2(u32 dim)
 {
     u32 i = 1;
 
-    while (i < dim)
-        i <<= 1;
+    while (i < dim) i <<= 1;
 
     return i;
 }
@@ -78,14 +79,14 @@ inline u32 powof(u32 dim)
     return i;
 }
 
-CachedTexture* TextureCache_AddTop();
-void TextureCache_MoveToTop(CachedTexture* newtop);
-void TextureCache_Remove(CachedTexture* texture);
+CachedTexture *TextureCache_AddTop();
+void TextureCache_MoveToTop(CachedTexture *newtop);
+void TextureCache_Remove(CachedTexture *texture);
 void TextureCache_RemoveBottom();
 void TextureCache_Init();
 void TextureCache_Destroy();
 void TextureCache_Update(u32 t);
-void TextureCache_ActivateTexture(u32 t, CachedTexture* texture);
+void TextureCache_ActivateTexture(u32 t, CachedTexture *texture);
 void TextureCache_ActivateNoise(u32 t);
 void TextureCache_ActivateDummy(u32 t);
 BOOL TextureCache_Verify();

@@ -71,9 +71,9 @@
 
 extern u32 t9, k0;
 
-extern u8* DMEM;
-extern u8* IMEM;
-extern u8* DRAM;
+extern u8 *DMEM;
+extern u8 *IMEM;
+extern u8 *DRAM;
 
 extern u32 UCData, UDataLen;
 
@@ -184,15 +184,15 @@ extern s16 pack_signed(s32 slice);
 #endif
 
 #ifdef PREFER_MACRO_FUNCTIONS
-#define vsats128(vd, vs)            \
-    {                               \
-        vd[0] = pack_signed(vs[0]); \
-        vd[1] = pack_signed(vs[1]); \
-        vd[2] = pack_signed(vs[2]); \
-        vd[3] = pack_signed(vs[3]); \
+#define vsats128(vd, vs)                                                                                               \
+    {                                                                                                                  \
+        vd[0] = pack_signed(vs[0]);                                                                                    \
+        vd[1] = pack_signed(vs[1]);                                                                                    \
+        vd[2] = pack_signed(vs[2]);                                                                                    \
+        vd[3] = pack_signed(vs[3]);                                                                                    \
     }
 #else
-extern void vsats128(s16* vd, s32* vs); /* Clamp vectors using SSE2. */
+extern void vsats128(s16 *vd, s32 *vs); /* Clamp vectors using SSE2. */
 #endif
 
 /*
@@ -214,7 +214,7 @@ extern void vsats128(s16* vd, s32* vs); /* Clamp vectors using SSE2. */
  * modern hardware there is no reason to force memory alignment constrictions
  * or to use MOVDQA/MOVAPS and risk unaligned memory access seg. faults.
  */
-extern void copy_vector(void* vd, const void* vs);
+extern void copy_vector(void *vd, const void *vs);
 
 /*
  * Unfortunately, as much of the RSP analysis had to work around some early
@@ -228,4 +228,4 @@ extern void copy_vector(void* vd, const void* vs);
  * of that scenario until the memory layout is improved more permanently in
  * later changes.
  */
-extern void swap_elements(void* vd, const void* vs);
+extern void swap_elements(void *vd, const void *vs);

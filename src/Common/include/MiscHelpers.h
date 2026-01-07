@@ -281,7 +281,7 @@ template <class CharT, class Traits = std::char_traits<CharT>> class StringSplit
 
     template <class CharT2, class Traits2>
     inline friend auto ::MiscHelpers::split_basic_string(std::basic_string_view<CharT2, Traits2> str,
-                                   std::basic_string_view<CharT2, Traits2> delim);
+                                                         std::basic_string_view<CharT2, Traits2> delim);
 
     value_type operator*() const
     {
@@ -394,14 +394,14 @@ template <typename T> inline T wrapping_clamp(const T value, T min, T max)
 }
 
 /**
- * \brief Limits a value to a specific range, wrapping around if it exceeds the bounds. The wrap around can only happen once.
+ * \brief Limits a value to a specific range, wrapping around if it exceeds the bounds. The wrap around can only happen
+ * once.
  * \param value The value to limit.
  * \param min The lower bound.
  * \param max The upper bound.
  * \return The value, limited to the specified range.
  */
-template <typename T>
-static T wrapping_clamp_decimal(T value, T min, T max)
+template <typename T> static T wrapping_clamp_decimal(T value, T min, T max)
 {
     if (value < min)
     {

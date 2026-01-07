@@ -9,16 +9,15 @@
 
 bool t_combo::uses_joystick() const
 {
-    return std::any_of(samples.begin(), samples.end(), [](const core_buttons sample) {
-        return sample.x != 0 || sample.y != 0;
-    });
+    return std::any_of(samples.begin(), samples.end(),
+                       [](const core_buttons sample) { return sample.x != 0 || sample.y != 0; });
 }
 
 std::vector<uint8_t> t_combo::serialize() const
 {
     // 1. Write the name of the combo as a null-terminated string.
     std::vector<uint8_t> buffer{};
-    for (const auto& c : this->name)
+    for (const auto &c : this->name)
     {
         buffer.emplace_back(c);
     }
@@ -26,17 +25,19 @@ std::vector<uint8_t> t_combo::serialize() const
 
     // 2. Write the size of the samples vector.
     uint32_t samples_size = this->samples.size();
-    buffer.insert(buffer.end(), reinterpret_cast<uint8_t*>(&samples_size), reinterpret_cast<uint8_t*>(&samples_size) + sizeof(samples_size));
+    buffer.insert(buffer.end(), reinterpret_cast<uint8_t *>(&samples_size),
+                  reinterpret_cast<uint8_t *>(&samples_size) + sizeof(samples_size));
 
     // 3. Write the samples vector.
     const auto input_begin_offset = buffer.size();
     buffer.resize(buffer.size() + sizeof(this->samples[0]) * this->samples.size());
-    std::memcpy(buffer.data() + input_begin_offset, this->samples.data(), sizeof(this->samples[0]) * this->samples.size());
+    std::memcpy(buffer.data() + input_begin_offset, this->samples.data(),
+                sizeof(this->samples[0]) * this->samples.size());
 
     return buffer;
 }
 
-std::variant<t_combo, std::wstring> t_combo::deserialize(const std::span<uint8_t>& data)
+std::variant<t_combo, std::wstring> t_combo::deserialize(const std::span<uint8_t> &data)
 {
     t_combo result{};
 
@@ -79,10 +80,10 @@ std::variant<t_combo, std::wstring> t_combo::deserialize(const std::span<uint8_t
     return result;
 }
 
-std::vector<uint8_t> t_combo::serialize_combos(const std::vector<t_combo>& combos)
+std::vector<uint8_t> t_combo::serialize_combos(const std::vector<t_combo> &combos)
 {
     std::vector<uint8_t> buffer{};
-    for (const auto& combo : combos)
+    for (const auto &combo : combos)
     {
         const auto serialized = combo.serialize();
         buffer.insert(buffer.end(), serialized.begin(), serialized.end());
@@ -90,7 +91,7 @@ std::vector<uint8_t> t_combo::serialize_combos(const std::vector<t_combo>& combo
     return buffer;
 }
 
-std::vector<t_combo> t_combo::deserialize_combos(const std::span<uint8_t>& data)
+std::vector<t_combo> t_combo::deserialize_combos(const std::span<uint8_t> &data)
 {
     std::vector<t_combo> combos{};
 

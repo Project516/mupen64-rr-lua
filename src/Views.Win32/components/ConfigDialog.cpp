@@ -443,9 +443,8 @@ INT_PTR CALLBACK plugins_cfg(const HWND hwnd, const UINT message, const WPARAM w
             }
             // we add the string and associate a pointer to the plugin with the item
             const int i = SendDlgItemMessage(hwnd, id, CB_GETCOUNT, 0, 0);
-            SendDlgItemMessage(
-                hwnd, id, CB_ADDSTRING, 0,
-                reinterpret_cast<LPARAM>(IOUtils::to_wide_string(plugin->name()).c_str()));
+            SendDlgItemMessage(hwnd, id, CB_ADDSTRING, 0,
+                               reinterpret_cast<LPARAM>(IOUtils::to_wide_string(plugin->name()).c_str()));
             SendDlgItemMessage(hwnd, id, CB_SETITEMDATA, i, (LPARAM)plugin.get());
         }
 
@@ -882,7 +881,8 @@ std::vector<t_options_group> get_static_option_groups()
         .type = t_options_item::Type::Bool,
         .group_id = core_group.id,
         .name = L"Emulate SD Card",
-        .tooltip = L"Enable SD card emulation.\nRequires a VHD-formatted SD card file named card.vhd in the save data folder.",
+        .tooltip =
+            L"Enable SD card emulation.\nRequires a VHD-formatted SD card file named card.vhd in the save data folder.",
         GENPROPS(int32_t, core.use_summercart),
     });
     core_group.items.emplace_back(t_options_item{

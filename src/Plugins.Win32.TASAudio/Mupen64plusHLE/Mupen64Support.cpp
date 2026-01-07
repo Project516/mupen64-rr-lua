@@ -10,11 +10,11 @@
 
 static hle_t hle;
 
-void HleWarnMessage(void* user_defined, const char* message, ...)
+void HleWarnMessage(void *user_defined, const char *message, ...)
 {
 }
 
-void HleVerboseMessage(void* user_defined, const char* message, ...)
+void HleVerboseMessage(void *user_defined, const char *message, ...)
 {
 }
 

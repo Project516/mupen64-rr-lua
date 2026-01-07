@@ -7,7 +7,7 @@
 #include "SoundDriver.h"
 
 // Load the buffer from the AI interface to our emulated buffer
-void SoundDriver::AI_LenChanged(u8* start, u32 length)
+void SoundDriver::AI_LenChanged(u8 *start, u32 length)
 {
     if (length == 0)
     {
@@ -96,8 +96,7 @@ u32 SoundDriver::AI_ReadLength()
     const u32 LENGTHFACTOR = 32;
     u32 retVal;
 
-    if (Configuration::getAIEmulation() == false || lastLength == 0)
-        return 0;
+    if (Configuration::getAIEmulation() == false || lastLength == 0) return 0;
 
     WaitForSingleObject(m_hMutex, INFINITE);
 
@@ -166,8 +165,7 @@ void SoundDriver::AI_Shutdown()
 void SoundDriver::AI_ResetAudio()
 {
     m_BufferRemaining = 0;
-    if (m_audioIsInitialized == true)
-        AI_Shutdown();
+    if (m_audioIsInitialized == true) AI_Shutdown();
     DeInitialize();
     m_audioIsInitialized = false;
     AI_Startup();
@@ -177,20 +175,18 @@ void SoundDriver::AI_ResetAudio()
 
 void SoundDriver::AI_Update(Boolean Wait)
 {
-    if (Wait)
-        Sleep(10); // TODO:  Fixme -- Ai Update appears to be problematic
+    if (Wait) Sleep(10); // TODO:  Fixme -- Ai Update appears to be problematic
     AiUpdate(Wait);
 }
 
 void SoundDriver::BufferAudio()
 {
     m_DMAEnabled = (*AudioInfo.ai_control_reg & AI_CONTROL_DMA_ON) == AI_CONTROL_DMA_ON;
-    if (m_DMAEnabled == false)
-        return;
+    if (m_DMAEnabled == false) return;
     while (m_BufferRemaining < m_MaxBufferSize && (m_AI_DMAPrimaryBytes > 0 || m_AI_DMASecondaryBytes > 0))
     {
-        *(u16*)(m_Buffer + m_CurrentWriteLoc) = *(u16*)(m_AI_DMAPrimaryBuffer + 2);
-        *(u16*)(m_Buffer + m_CurrentWriteLoc + 2) = *(u16*)m_AI_DMAPrimaryBuffer;
+        *(u16 *)(m_Buffer + m_CurrentWriteLoc) = *(u16 *)(m_AI_DMAPrimaryBuffer + 2);
+        *(u16 *)(m_Buffer + m_CurrentWriteLoc + 2) = *(u16 *)m_AI_DMAPrimaryBuffer;
         m_CurrentWriteLoc += 4;
         m_AI_DMAPrimaryBuffer += 4;
         m_CurrentWriteLoc %= m_MaxBufferSize;
@@ -212,24 +208,22 @@ void SoundDriver::BufferAudio()
                 *AudioInfo.ai_status_reg &= ~AI_STATUS_FIFO_FULL;
                 *AudioInfo.mi_intr_reg |= MI_INTR_AI;
                 AudioInfo.check_interrupts();
-                if (m_AI_DMAPrimaryBytes == 0)
-                    *AudioInfo.ai_status_reg = 0;
+                if (m_AI_DMAPrimaryBytes == 0) *AudioInfo.ai_status_reg = 0;
             }
         }
     }
 }
 
 // Copies data to the audio playback buffer
-u32 SoundDriver::LoadAiBuffer(u8* start, u32 length)
+u32 SoundDriver::LoadAiBuffer(u8 *start, u32 length)
 {
     u32 bytesToMove = length;
-    u8* ptrStart = start;
+    u8 *ptrStart = start;
     u8 nullBuff[MAX_SIZE];
     u32 writePtr = 0;
     static u32 lastSample = 0;
 
-    if (start == NULL)
-        ptrStart = nullBuff;
+    if (start == NULL) ptrStart = nullBuff;
 
     assert((length & 0x3) == 0);
     assert(bytesToMove <= m_MaxBufferSize); // We shouldn't be asking for more.
@@ -259,7 +253,7 @@ u32 SoundDriver::LoadAiBuffer(u8* start, u32 length)
     {
         while (bytesToMove > 0 && m_BufferRemaining > 0)
         {
-            lastSample = *(u32*)(ptrStart + writePtr) = *(u32*)(m_Buffer + m_CurrentReadLoc);
+            lastSample = *(u32 *)(ptrStart + writePtr) = *(u32 *)(m_Buffer + m_CurrentReadLoc);
             m_CurrentReadLoc += 4;
             writePtr += 4;
             m_CurrentReadLoc %= m_MaxBufferSize;
@@ -274,7 +268,7 @@ u32 SoundDriver::LoadAiBuffer(u8* start, u32 length)
     // Step 2: Fill bytesToMove with silence
     while (bytesToMove > 0)
     {
-        *(u32*)(ptrStart + writePtr) = lastSample;
+        *(u32 *)(ptrStart + writePtr) = lastSample;
         writePtr += 4;
         bytesToMove -= 4;
     }

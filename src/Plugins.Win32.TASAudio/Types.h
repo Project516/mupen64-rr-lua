@@ -275,24 +275,24 @@ typedef double f64;
  *     ex) i32 *a, *b, *c;
  *     neutral:  `pi32 pointer;' or `pi32 a, b, c;'
  */
-typedef i8* pi8;
-typedef i16* pi16;
-typedef i32* pi32;
-typedef i64* pi64;
+typedef i8 *pi8;
+typedef i16 *pi16;
+typedef i32 *pi32;
+typedef i64 *pi64;
 
-typedef s8* ps8;
-typedef s16* ps16;
-typedef s32* ps32;
-typedef s64* ps64;
+typedef s8 *ps8;
+typedef s16 *ps16;
+typedef s32 *ps32;
+typedef s64 *ps64;
 
-typedef u8* pu8;
-typedef u16* pu16;
-typedef u32* pu32;
-typedef u64* pu64;
+typedef u8 *pu8;
+typedef u16 *pu16;
+typedef u32 *pu32;
+typedef u64 *pu64;
 
-typedef f32* pf32;
-typedef f64* pf64;
-typedef void* p_void;
+typedef f32 *pf32;
+typedef f64 *pf64;
+typedef void *p_void;
 typedef void (*p_func)(void);
 
 /*
@@ -395,7 +395,8 @@ typedef union {
  * extra types of encoding for the well-known MIPS RISC architecture
  * Possibly implement other machine types in future versions of this header.
  */
-typedef struct {
+typedef struct
+{
     unsigned opcode : 6;
     unsigned rs : 5;
     unsigned rt : 5;
@@ -403,7 +404,8 @@ typedef struct {
     unsigned sa : 5;
     unsigned function : 6;
 } MIPS_type_R;
-typedef struct {
+typedef struct
+{
     unsigned opcode : 6;
     unsigned rs : 5;
     unsigned rt : 5;
@@ -432,7 +434,8 @@ typedef struct {
 typedef int Boolean;
 
 #if !defined(FALSE) && !defined(TRUE)
-enum {
+enum
+{
     FALSE = 0,
     TRUE = 1
 };

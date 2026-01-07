@@ -11,13 +11,13 @@ void Uninit_texture_env()
 {
 }
 
-void Update_texture_env_Colors(TexEnv* texEnv)
+void Update_texture_env_Colors(TexEnv *texEnv)
 {
 }
 
-TexEnv* Compile_texture_env(Combiner* color, Combiner* alpha)
+TexEnv *Compile_texture_env(Combiner *color, Combiner *alpha)
 {
-    auto texEnv = (TexEnv*)malloc(sizeof(TexEnv));
+    auto texEnv = (TexEnv *)malloc(sizeof(TexEnv));
 
     texEnv->usesT0 = FALSE;
     texEnv->usesT1 = FALSE;
@@ -48,13 +48,17 @@ TexEnv* Compile_texture_env(Combiner* color, Combiner* alpha)
             case SUB:
                 break;
             case MUL:
-                if (((alpha->stage[i].op[j].param1 == TEXEL0_ALPHA) || (alpha->stage[i].op[j].param1 == TEXEL1_ALPHA)) &&
-                    ((alpha->stage[i].op[j - 1].param1 != TEXEL0_ALPHA) || (alpha->stage[i].op[j - 1].param1 != TEXEL1_ALPHA)))
+                if (((alpha->stage[i].op[j].param1 == TEXEL0_ALPHA) ||
+                     (alpha->stage[i].op[j].param1 == TEXEL1_ALPHA)) &&
+                    ((alpha->stage[i].op[j - 1].param1 != TEXEL0_ALPHA) ||
+                     (alpha->stage[i].op[j - 1].param1 != TEXEL1_ALPHA)))
                 {
                     texEnv->mode = GL_MODULATE;
                 }
-                else if (((alpha->stage[i].op[j].param1 != TEXEL0_ALPHA) || (alpha->stage[i].op[j].param1 != TEXEL1_ALPHA)) &&
-                         ((alpha->stage[i].op[j - 1].param1 == TEXEL0_ALPHA) || (alpha->stage[i].op[j - 1].param1 == TEXEL1_ALPHA)))
+                else if (((alpha->stage[i].op[j].param1 != TEXEL0_ALPHA) ||
+                          (alpha->stage[i].op[j].param1 != TEXEL1_ALPHA)) &&
+                         ((alpha->stage[i].op[j - 1].param1 == TEXEL0_ALPHA) ||
+                          (alpha->stage[i].op[j - 1].param1 == TEXEL1_ALPHA)))
                 {
                     texEnv->fragment.alpha = alpha->stage[i].op[j].param1;
                     texEnv->mode = GL_MODULATE;
@@ -77,16 +81,14 @@ TexEnv* Compile_texture_env(Combiner* color, Combiner* alpha)
             case LOAD:
                 if ((color->stage[i].op[j].param1 == TEXEL0) || (color->stage[i].op[j].param1 == TEXEL0_ALPHA))
                 {
-                    if (texEnv->mode == GL_MODULATE)
-                        texEnv->fragment.color = ONE;
+                    if (texEnv->mode == GL_MODULATE) texEnv->fragment.color = ONE;
 
                     texEnv->usesT0 = TRUE;
                     texEnv->usesT1 = FALSE;
                 }
                 else if ((color->stage[i].op[j].param1 == TEXEL1) || (color->stage[i].op[j].param1 == TEXEL1_ALPHA))
                 {
-                    if (texEnv->mode == GL_MODULATE)
-                        texEnv->fragment.color = ONE;
+                    if (texEnv->mode == GL_MODULATE) texEnv->fragment.color = ONE;
 
                     texEnv->usesT0 = FALSE;
                     texEnv->usesT1 = TRUE;
@@ -155,8 +157,7 @@ TexEnv* Compile_texture_env(Combiner* color, Combiner* alpha)
     return texEnv;
 }
 
-
-void Set_texture_env(TexEnv* texEnv)
+void Set_texture_env(TexEnv *texEnv)
 {
     combiner.usesT0 = texEnv->usesT0;
     combiner.usesT1 = texEnv->usesT1;
@@ -167,8 +168,7 @@ void Set_texture_env(TexEnv* texEnv)
     combiner.vertex.alpha = texEnv->fragment.alpha;
 
     // Shouldn't ever happen, but who knows?
-    if (OGL.ARB_multitexture)
-        glActiveTextureARB(GL_TEXTURE0_ARB);
+    if (OGL.ARB_multitexture) glActiveTextureARB(GL_TEXTURE0_ARB);
 
     if (texEnv->usesT0 || texEnv->usesT1)
         glEnable(GL_TEXTURE_2D);

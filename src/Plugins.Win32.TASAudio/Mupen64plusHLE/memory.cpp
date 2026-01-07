@@ -16,27 +16,25 @@
  * modular design, but the below 3 functions are straightforward to paste in.
  */
 
-
-static uint8_t* pt_u8(const unsigned char* buffer, unsigned address)
+static uint8_t *pt_u8(const unsigned char *buffer, unsigned address)
 {
-    return (uint8_t*)(buffer + (address ^ ENDIAN_SWAP_BYTE));
+    return (uint8_t *)(buffer + (address ^ ENDIAN_SWAP_BYTE));
 }
 
-static uint16_t* pt_u16(const unsigned char* buffer, unsigned address)
+static uint16_t *pt_u16(const unsigned char *buffer, unsigned address)
 {
     assert((address & 1) == 0);
-    return (uint16_t*)(buffer + (address ^ ENDIAN_SWAP_HALF));
+    return (uint16_t *)(buffer + (address ^ ENDIAN_SWAP_HALF));
 }
 
-static uint32_t* pt_u32(const unsigned char* buffer, unsigned address)
+static uint32_t *pt_u32(const unsigned char *buffer, unsigned address)
 {
     assert((address & 3) == 0);
-    return (uint32_t*)(buffer + address);
+    return (uint32_t *)(buffer + address);
 }
 
-
 /* Global functions */
-void load_u8(uint8_t* dst, const unsigned char* buffer, unsigned address, size_t count)
+void load_u8(uint8_t *dst, const unsigned char *buffer, unsigned address, size_t count)
 {
     while (count != 0)
     {
@@ -46,7 +44,7 @@ void load_u8(uint8_t* dst, const unsigned char* buffer, unsigned address, size_t
     }
 }
 
-void load_u16(uint16_t* dst, const unsigned char* buffer, unsigned address, size_t count)
+void load_u16(uint16_t *dst, const unsigned char *buffer, unsigned address, size_t count)
 {
     while (count != 0)
     {
@@ -56,13 +54,13 @@ void load_u16(uint16_t* dst, const unsigned char* buffer, unsigned address, size
     }
 }
 
-void load_u32(uint32_t* dst, const unsigned char* buffer, unsigned address, size_t count)
+void load_u32(uint32_t *dst, const unsigned char *buffer, unsigned address, size_t count)
 {
     /* Optimization for uint32_t */
     memcpy(dst, pt_u32(buffer, address), count * sizeof(uint32_t));
 }
 
-void store_u8(unsigned char* buffer, unsigned address, const uint8_t* src, size_t count)
+void store_u8(unsigned char *buffer, unsigned address, const uint8_t *src, size_t count)
 {
     while (count != 0)
     {
@@ -72,7 +70,7 @@ void store_u8(unsigned char* buffer, unsigned address, const uint8_t* src, size_
     }
 }
 
-void store_u16(unsigned char* buffer, unsigned address, const uint16_t* src, size_t count)
+void store_u16(unsigned char *buffer, unsigned address, const uint16_t *src, size_t count)
 {
     while (count != 0)
     {
@@ -82,7 +80,7 @@ void store_u16(unsigned char* buffer, unsigned address, const uint16_t* src, siz
     }
 }
 
-void store_u32(unsigned char* buffer, unsigned address, const uint32_t* src, size_t count)
+void store_u32(unsigned char *buffer, unsigned address, const uint32_t *src, size_t count)
 {
     /* Optimization for uint32_t */
     memcpy(pt_u32(buffer, address), src, count * sizeof(uint32_t));

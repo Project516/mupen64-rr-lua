@@ -12,8 +12,7 @@ DWORD Reflect(DWORD ref, char ch)
     // bit 1 for bit 6, etc.
     for (int i = 1; i < (ch + 1); i++)
     {
-        if (ref & 1)
-            value |= 1 << (ch - i);
+        if (ref & 1) value |= 1 << (ch - i);
         ref >>= 1;
     }
     return value;
@@ -26,31 +25,29 @@ void CRC_BuildTable()
     for (int i = 0; i <= 255; i++)
     {
         crc = Reflect(i, 8) << 24;
-        for (int j = 0; j < 8; j++)
-            crc = (crc << 1) ^ (crc & (1 << 31) ? CRC32_POLYNOMIAL : 0);
+        for (int j = 0; j < 8; j++) crc = (crc << 1) ^ (crc & (1 << 31) ? CRC32_POLYNOMIAL : 0);
 
         CRCTable[i] = Reflect(crc, 32);
     }
 }
 
-DWORD CRC_Calculate(DWORD crc, void* buffer, DWORD count)
+DWORD CRC_Calculate(DWORD crc, void *buffer, DWORD count)
 {
-    BYTE* p;
+    BYTE *p;
     DWORD orig = crc;
 
-    p = (BYTE*)buffer;
-    while (count--)
-        crc = (crc >> 8) ^ CRCTable[(crc & 0xFF) ^ *p++];
+    p = (BYTE *)buffer;
+    while (count--) crc = (crc >> 8) ^ CRCTable[(crc & 0xFF) ^ *p++];
 
     return crc ^ orig;
 }
 
-DWORD CRC_CalculatePalette(DWORD crc, void* buffer, DWORD count)
+DWORD CRC_CalculatePalette(DWORD crc, void *buffer, DWORD count)
 {
-    BYTE* p;
+    BYTE *p;
     DWORD orig = crc;
 
-    p = (BYTE*)buffer;
+    p = (BYTE *)buffer;
     while (count--)
     {
         crc = (crc >> 8) ^ CRCTable[(crc & 0xFF) ^ *p++];

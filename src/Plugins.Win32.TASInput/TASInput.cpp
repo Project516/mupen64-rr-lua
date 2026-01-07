@@ -19,13 +19,15 @@
 #define WM_EDIT_END (WM_USER + 3)
 #define WM_UPDATE_VISUALS (WM_USER + 4)
 
-enum class ComboTask {
+enum class ComboTask
+{
     Idle,
     Play,
     Record
 };
 
-struct Status {
+struct Status
+{
     /**
      * \brief The instance's UI thread
      */
@@ -52,7 +54,8 @@ struct Status {
     POINT dragging_window_cursor_diff;
 
     /**
-     * \brief The window's position. Used for restoring the position after dialog changes and its position is reset by window manager
+     * \brief The window's position. Used for restoring the position after dialog changes and its position is reset by
+     * window manager
      */
     POINT window_position{};
 
@@ -115,7 +118,7 @@ struct Status {
     int controller_index;
     ComboTask combo_task = ComboTask::Idle;
 
-    void set_status(const std::wstring& str);
+    void set_status(const std::wstring &str);
 
     bool show_context_menu(int x, int y);
 
@@ -131,11 +134,11 @@ struct Status {
     /**
      * \brief Loads the combo list from a file
      */
-    void load_combos(const std::filesystem::path& path);
+    void load_combos(const std::filesystem::path &path);
 
     void start_edit(int);
 
-    void end_edit(int, wchar_t*);
+    void end_edit(int, wchar_t *);
 
     /**
      * \brief Updates the UI
@@ -158,7 +161,7 @@ struct Status {
 
     void on_config_changed();
 
-    void get_input(core_buttons* keys);
+    void get_input(core_buttons *keys);
 };
 
 static ULONG gdi_plus_token{};
@@ -183,7 +186,7 @@ EXPORT void CALL CloseDLL()
     }
 }
 
-EXPORT void CALL DllAbout(void* hParent)
+EXPORT void CALL DllAbout(void *hParent)
 {
     const auto msg = PLUGIN_NAME L"\n"
                                  L"Part of the Mupen64 project family."
@@ -193,21 +196,21 @@ EXPORT void CALL DllAbout(void* hParent)
     MessageBox((HWND)hParent, msg, L"About", MB_ICONINFORMATION | MB_OK);
 }
 
-EXPORT void CALL DllConfig(void* hParent)
+EXPORT void CALL DllConfig(void *hParent)
 {
     ConfigDialog::show((HWND)hParent);
 
     // TODO: Do we have to restart the dialogs here like in old version?
 }
 
-EXPORT void CALL GetDllInfo(core_plugin_info* info)
+EXPORT void CALL GetDllInfo(core_plugin_info *info)
 {
     info->ver = 0x0100;
     info->type = plugin_input;
     strncpy_s(info->name, IOUtils::to_utf8_string(PLUGIN_NAME).c_str(), std::size(info->name));
 }
 
-EXPORT void CALL GetKeys(int Control, core_buttons* Keys)
+EXPORT void CALL GetKeys(int Control, core_buttons *Keys)
 {
     if (new_frame)
     {
@@ -227,22 +230,20 @@ LRESULT CALLBACK EditBoxProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, 
 {
     switch (msg)
     {
-    case WM_GETDLGCODE:
-        {
-            if (wParam == VK_RETURN)
-            {
-                goto apply;
-            }
-            if (wParam == VK_ESCAPE)
-            {
-                DestroyWindow(hwnd);
-            }
-            break;
-        }
-    case WM_KILLFOCUS:
+    case WM_GETDLGCODE: {
+        if (wParam == VK_RETURN)
         {
             goto apply;
         }
+        if (wParam == VK_ESCAPE)
+        {
+            DestroyWindow(hwnd);
+        }
+        break;
+    }
+    case WM_KILLFOCUS: {
+        goto apply;
+    }
     case WM_NCDESTROY:
         RemoveWindowSubclass(hwnd, EditBoxProc, sId);
     }
@@ -258,8 +259,7 @@ apply:
     return DefSubclassProc(hwnd, msg, wParam, lParam);
 }
 
-
-void Status::get_input(core_buttons* keys)
+void Status::get_input(core_buttons *keys)
 {
     keys->value = get_processed_input(current_input).value;
 
@@ -283,7 +283,8 @@ void Status::get_input(core_buttons* keys)
             }
         }
 
-        set_status(std::format(L"Playing... ({} / {})", combo_frame + 1, combos[active_combo_index].samples.size() - 1));
+        set_status(
+            std::format(L"Playing... ({} / {})", combo_frame + 1, combos[active_combo_index].samples.size() - 1));
         combo_frame++;
     }
 
@@ -326,7 +327,8 @@ core_buttons Status::get_processed_input(core_buttons input)
 
 void Status::activate_emulator_window()
 {
-    if (GetFocus() == GetDlgItem(hwnd, IDC_EDITX) || GetFocus() == GetDlgItem(hwnd, IDC_EDITY) || (combo_edit_box != nullptr && GetFocus() == combo_edit_box))
+    if (GetFocus() == GetDlgItem(hwnd, IDC_EDITX) || GetFocus() == GetDlgItem(hwnd, IDC_EDITY) ||
+        (combo_edit_box != nullptr && GetFocus() == combo_edit_box))
     {
         return;
     }
@@ -388,18 +390,18 @@ static int get_joystick_increment(const bool up)
 
 INT_PTR CALLBACK combos_dlgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-    auto ctx = reinterpret_cast<Status*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+    auto ctx = reinterpret_cast<Status *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
     switch (msg)
     {
     case WM_INITDIALOG:
         SetWindowLongPtr(hwnd, GWLP_USERDATA, lparam);
-        ctx = reinterpret_cast<Status*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        ctx = reinterpret_cast<Status *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
         ctx->combo_listbox = GetDlgItem(hwnd, IDC_MACROLIST);
         ctx->load_combos("combos.cmb");
         break;
     case WM_EDIT_END:
-        ctx->end_edit(ctx->renaming_combo_index, (wchar_t*)lparam);
+        ctx->end_edit(ctx->renaming_combo_index, (wchar_t *)lparam);
         ctx->combo_edit_box = nullptr;
         break;
     case WM_COMMAND:
@@ -437,7 +439,8 @@ INT_PTR CALLBACK combos_dlgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
             ctx->set_status(L"Recording new combo...");
             ctx->combos.push_back({.name = "Unnamed Combo"});
-            ctx->active_combo_index = ListBox_InsertString(ctx->combo_listbox, -1, IOUtils::to_wide_string(ctx->combos.back().name).c_str());
+            ctx->active_combo_index =
+                ListBox_InsertString(ctx->combo_listbox, -1, IOUtils::to_wide_string(ctx->combos.back().name).c_str());
             ListBox_SetCurSel(ctx->combo_listbox, ctx->active_combo_index);
             ctx->combo_task = ComboTask::Record;
             break;
@@ -456,25 +459,24 @@ INT_PTR CALLBACK combos_dlgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             ctx->combos.clear();
             ListBox_ResetContent(ctx->combo_listbox);
             break;
-        case IDC_IMPORT:
-            {
-                wchar_t file[MAX_PATH]{};
+        case IDC_IMPORT: {
+            wchar_t file[MAX_PATH]{};
 
-                ctx->set_status(L"Importing...");
-                OPENFILENAME data{};
-                data.lStructSize = sizeof(data);
-                data.lpstrFilter = L"Combo file (*.cmb)\0*.cmb\0\0";
-                data.nFilterIndex = 1;
-                data.nMaxFile = MAX_PATH;
-                data.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-                data.lpstrFile = file;
-                if (GetOpenFileName(&data))
-                {
-                    ctx->load_combos(file);
-                }
-                ctx->set_status(L"Imported combo data");
-                break;
+            ctx->set_status(L"Importing...");
+            OPENFILENAME data{};
+            data.lStructSize = sizeof(data);
+            data.lpstrFilter = L"Combo file (*.cmb)\0*.cmb\0\0";
+            data.nFilterIndex = 1;
+            data.nMaxFile = MAX_PATH;
+            data.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+            data.lpstrFile = file;
+            if (GetOpenFileName(&data))
+            {
+                ctx->load_combos(file);
             }
+            ctx->set_status(L"Imported combo data");
+            break;
+        }
         case IDC_SAVE:
             ctx->save_combos();
             ctx->set_status(L"Saved to combos.cmb");
@@ -496,7 +498,7 @@ INT_PTR CALLBACK combos_dlgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 INT_PTR CALLBACK wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-    auto ctx = reinterpret_cast<Status*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+    auto ctx = reinterpret_cast<Status *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
     bool lmb_down = GetAsyncKeyState(MOUSE_LBUTTONREDEFINITION) & 0x8000;
     bool rmb_down = GetAsyncKeyState(MOUSE_RBUTTONREDEFINITION) & 0x8000;
@@ -508,48 +510,53 @@ INT_PTR CALLBACK wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
     switch (msg)
     {
-    case WM_INITDIALOG:
-        {
-            SetWindowLongPtr(hwnd, GWLP_USERDATA, lparam);
-            ctx = reinterpret_cast<Status*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
-            ctx->hwnd = hwnd;
+    case WM_INITDIALOG: {
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, lparam);
+        ctx = reinterpret_cast<Status *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        ctx->hwnd = hwnd;
 
-            GetClientRect(ctx->hwnd, &ctx->initial_client_rect);
-            GetWindowRect(ctx->hwnd, &ctx->initial_window_rect);
+        GetClientRect(ctx->hwnd, &ctx->initial_client_rect);
+        GetWindowRect(ctx->hwnd, &ctx->initial_window_rect);
 
-            SetWindowPos(ctx->hwnd, nullptr, ctx->window_position.x, ctx->window_position.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+        SetWindowPos(ctx->hwnd, nullptr, ctx->window_position.x, ctx->window_position.y, 0, 0,
+                     SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 
-            SetWindowText(ctx->hwnd, std::format(L"TASInput - Controller {}", ctx->controller_index + 1).c_str());
+        SetWindowText(ctx->hwnd, std::format(L"TASInput - Controller {}", ctx->controller_index + 1).c_str());
 
-            SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_SETRANGE, TRUE, MAKELONG(10, 2010));
-            SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_SETPOS, TRUE,
-                               (int)MiscHelpers::remap(new_config.controller_config[ctx->controller_index].x_scale, 0.0f, 1.0f, 10.0f, 2010.0f));
-            SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_SETRANGE, TRUE, MAKELONG(10, 2010));
-            SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_SETPOS, TRUE, (int)MiscHelpers::remap(new_config.controller_config[ctx->controller_index].y_scale, 0.0f, 1.0f, 10.0f, 2010.0f));
+        SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_SETRANGE, TRUE, MAKELONG(10, 2010));
+        SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_SETPOS, TRUE,
+                           (int)MiscHelpers::remap(new_config.controller_config[ctx->controller_index].x_scale, 0.0f,
+                                                   1.0f, 10.0f, 2010.0f));
+        SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_SETRANGE, TRUE, MAKELONG(10, 2010));
+        SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_SETPOS, TRUE,
+                           (int)MiscHelpers::remap(new_config.controller_config[ctx->controller_index].y_scale, 0.0f,
+                                                   1.0f, 10.0f, 2010.0f));
 
-            SendMessage(GetDlgItem(ctx->hwnd, IDC_X_DOWN), WM_SETFONT, (WPARAM)icon_font, TRUE);
-            SendMessage(GetDlgItem(ctx->hwnd, IDC_X_UP), WM_SETFONT, (WPARAM)icon_font, TRUE);
-            SendMessage(GetDlgItem(ctx->hwnd, IDC_Y_DOWN), WM_SETFONT, (WPARAM)icon_font, TRUE);
-            SendMessage(GetDlgItem(ctx->hwnd, IDC_Y_UP), WM_SETFONT, (WPARAM)icon_font, TRUE);
+        SendMessage(GetDlgItem(ctx->hwnd, IDC_X_DOWN), WM_SETFONT, (WPARAM)icon_font, TRUE);
+        SendMessage(GetDlgItem(ctx->hwnd, IDC_X_UP), WM_SETFONT, (WPARAM)icon_font, TRUE);
+        SendMessage(GetDlgItem(ctx->hwnd, IDC_Y_DOWN), WM_SETFONT, (WPARAM)icon_font, TRUE);
+        SendMessage(GetDlgItem(ctx->hwnd, IDC_Y_UP), WM_SETFONT, (WPARAM)icon_font, TRUE);
 
-            SetDlgItemText(ctx->hwnd, IDC_X_DOWN, L"3");
-            SetDlgItemText(ctx->hwnd, IDC_X_UP, L"4");
-            SetDlgItemText(ctx->hwnd, IDC_Y_DOWN, L"6");
-            SetDlgItemText(ctx->hwnd, IDC_Y_UP, L"5");
+        SetDlgItemText(ctx->hwnd, IDC_X_DOWN, L"3");
+        SetDlgItemText(ctx->hwnd, IDC_X_UP, L"4");
+        SetDlgItemText(ctx->hwnd, IDC_Y_DOWN, L"6");
+        SetDlgItemText(ctx->hwnd, IDC_Y_UP, L"5");
 
-            const auto scale = GetDpiForWindow(hwnd) / 96.0;
+        const auto scale = GetDpiForWindow(hwnd) / 96.0;
 
-            ctx->joy_hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, JoystickControl::CLASS_NAME, L"", WS_CHILD | WS_VISIBLE, 8, 4, 131 * scale, 131 * scale, ctx->hwnd, nullptr, g_inst, nullptr);
+        ctx->joy_hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, JoystickControl::CLASS_NAME, L"", WS_CHILD | WS_VISIBLE, 8, 4,
+                                       131 * scale, 131 * scale, ctx->hwnd, nullptr, g_inst, nullptr);
 
-            // It can take a bit until we receive the first GetKeys, so let's just show some basic default state in the meanwhile
-            ctx->set_visuals(ctx->current_input);
+        // It can take a bit until we receive the first GetKeys, so let's just show some basic default state in the
+        // meanwhile
+        ctx->set_visuals(ctx->current_input);
 
-            SetTimer(ctx->hwnd, IDT_TIMER_STATUS_0 + ctx->controller_index, 1, nullptr);
-            ctx->on_config_changed();
+        SetTimer(ctx->hwnd, IDT_TIMER_STATUS_0 + ctx->controller_index, 1, nullptr);
+        ctx->on_config_changed();
 
-            ctx->ready = true;
-        }
-        break;
+        ctx->ready = true;
+    }
+    break;
     case WM_SHOWWINDOW:
         if (!wparam)
         {
@@ -559,28 +566,26 @@ INT_PTR CALLBACK wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     case SC_MINIMIZE:
         DestroyMenu(hmenu);
         break;
-    case WM_DESTROY:
+    case WM_DESTROY: {
+        ctx->ready = false;
+        DestroyWindow(ctx->joy_hwnd);
+        KillTimer(ctx->hwnd, IDT_TIMER_STATUS_0 + ctx->controller_index);
+        ctx->hwnd = nullptr;
+    }
+    break;
+    case JoystickControl::WM_JOYSTICK_POSITION_CHANGED: {
+        int x{}, y{};
+        JoystickControl::get_position(ctx->joy_hwnd, &x, &y);
+
+        ctx->current_input.x = (int8_t)x;
+        ctx->current_input.y = (int8_t)y;
+
+        if (!wparam)
         {
-            ctx->ready = false;
-            DestroyWindow(ctx->joy_hwnd);
-            KillTimer(ctx->hwnd, IDT_TIMER_STATUS_0 + ctx->controller_index);
-            ctx->hwnd = nullptr;
+            ctx->set_visuals(ctx->current_input);
         }
         break;
-    case JoystickControl::WM_JOYSTICK_POSITION_CHANGED:
-        {
-            int x{}, y{};
-            JoystickControl::get_position(ctx->joy_hwnd, &x, &y);
-
-            ctx->current_input.x = (int8_t)x;
-            ctx->current_input.y = (int8_t)y;
-        
-            if (!wparam)
-            {
-                ctx->set_visuals(ctx->current_input);
-            }
-            break;
-        }
+    }
     case JoystickControl::WM_JOYSTICK_DRAG_BEGIN:
         ctx->activate_emulator_window();
         break;
@@ -590,295 +595,289 @@ INT_PTR CALLBACK wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             ctx->show_context_menu(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
         }
         break;
-    case WM_LBUTTONDOWN:
+    case WM_LBUTTONDOWN: {
+        if (!new_config.client_drag || is_mouse_over_control(ctx->joy_hwnd))
         {
-            if (!new_config.client_drag || is_mouse_over_control(ctx->joy_hwnd))
-            {
-                break;
-            }
+            break;
+        }
 
-            POINT cursor_position{};
-            GetCursorPos(&cursor_position);
+        POINT cursor_position{};
+        GetCursorPos(&cursor_position);
 
-            RECT rect{};
-            GetWindowRect(ctx->hwnd, &rect);
+        RECT rect{};
+        GetWindowRect(ctx->hwnd, &rect);
 
-            ctx->is_dragging_window = true;
-            ctx->dragging_window_cursor_diff = {
+        ctx->is_dragging_window = true;
+        ctx->dragging_window_cursor_diff = {
             cursor_position.x - rect.left,
             cursor_position.y - rect.top,
-            };
+        };
 
-            break;
-        }
-    case WM_SETCURSOR:
-        {
-            const bool lmb_just_up = !lmb_down && ctx->last_lmb_down;
-            const bool rmb_just_up = !rmb_down && ctx->last_rmb_down;
-            const bool rmb_just_down = rmb_down && !ctx->last_rmb_down;
-
-            if (ctx->is_dragging_window)
-            {
-                POINT cursor_position = {0};
-                GetCursorPos(&cursor_position);
-                SetWindowPos(ctx->hwnd, nullptr, cursor_position.x - ctx->dragging_window_cursor_diff.x, cursor_position.y - ctx->dragging_window_cursor_diff.y, 0, 0, SWP_NOSIZE | SWP_NOREDRAW);
-            }
-
-            if (lmb_just_up || rmb_just_up)
-            {
-                // activate mupen window to allow it to get key inputs
-                ctx->activate_emulator_window();
-            }
-
-            if (rmb_just_down && is_mouse_over_control(ctx->hwnd, IDC_SLIDERX))
-            {
-                const auto max = SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_GETRANGEMAX, 0, 0);
-                SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_SETPOS, TRUE, max);
-            }
-
-            if (rmb_just_down && is_mouse_over_control(ctx->hwnd, IDC_SLIDERY))
-            {
-                const auto max = SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_GETRANGEMAX, 0, 0);
-                SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_SETPOS, TRUE, max);
-            }
-
-            if (rmb_just_down)
-            {
-
-#define AUTOFIRE(id, field)                                                    \
-    {                                                                          \
-        if (is_mouse_over_control(ctx->hwnd, id))                              \
-        {                                                                      \
-            if (ctx->autofire_input_a.field || ctx->autofire_input_b.field)    \
-            {                                                                  \
-                ctx->autofire_input_a.field = ctx->autofire_input_b.field = 0; \
-            }                                                                  \
-            else                                                               \
-            {                                                                  \
-                if (frame_counter % 2 == 0)                                    \
-                    ctx->autofire_input_a.field ^= 1;                          \
-                else                                                           \
-                    ctx->autofire_input_b.field ^= 1;                          \
-            }                                                                  \
-        }                                                                      \
-    }
-                AUTOFIRE(IDC_CHECK_A, a);
-                AUTOFIRE(IDC_CHECK_B, b);
-                AUTOFIRE(IDC_CHECK_START, start);
-                AUTOFIRE(IDC_CHECK_L, l);
-                AUTOFIRE(IDC_CHECK_R, r);
-                AUTOFIRE(IDC_CHECK_Z, z);
-                AUTOFIRE(IDC_CHECK_CUP, cu);
-                AUTOFIRE(IDC_CHECK_CLEFT, cl);
-                AUTOFIRE(IDC_CHECK_CRIGHT, cr);
-                AUTOFIRE(IDC_CHECK_CDOWN, cd);
-                AUTOFIRE(IDC_CHECK_DUP, du);
-                AUTOFIRE(IDC_CHECK_DLEFT, dl);
-                AUTOFIRE(IDC_CHECK_DRIGHT, dr);
-                AUTOFIRE(IDC_CHECK_DDOWN, dd);
-#undef AUTOFIRE
-                ctx->set_visuals(ctx->current_input);
-            }
-
-            ctx->last_lmb_down = GetAsyncKeyState(MOUSE_LBUTTONREDEFINITION) & 0x8000;
-            ctx->last_rmb_down = GetAsyncKeyState(MOUSE_RBUTTONREDEFINITION) & 0x8000;
-        }
         break;
-        case WM_TIMER: {
-            core_buttons controller_input = GamepadManager::get_input(ctx->controller_index);
+    }
+    case WM_SETCURSOR: {
+        const bool lmb_just_up = !lmb_down && ctx->last_lmb_down;
+        const bool rmb_just_up = !rmb_down && ctx->last_rmb_down;
+        const bool rmb_just_down = rmb_down && !ctx->last_rmb_down;
 
-            if (controller_input.value != ctx->last_controller_input.value)
-            {
-                // Input changed, override everything with current
+        if (ctx->is_dragging_window)
+        {
+            POINT cursor_position = {0};
+            GetCursorPos(&cursor_position);
+            SetWindowPos(ctx->hwnd, nullptr, cursor_position.x - ctx->dragging_window_cursor_diff.x,
+                         cursor_position.y - ctx->dragging_window_cursor_diff.y, 0, 0, SWP_NOSIZE | SWP_NOREDRAW);
+        }
+
+        if (lmb_just_up || rmb_just_up)
+        {
+            // activate mupen window to allow it to get key inputs
+            ctx->activate_emulator_window();
+        }
+
+        if (rmb_just_down && is_mouse_over_control(ctx->hwnd, IDC_SLIDERX))
+        {
+            const auto max = SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_GETRANGEMAX, 0, 0);
+            SendDlgItemMessage(ctx->hwnd, IDC_SLIDERX, TBM_SETPOS, TRUE, max);
+        }
+
+        if (rmb_just_down && is_mouse_over_control(ctx->hwnd, IDC_SLIDERY))
+        {
+            const auto max = SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_GETRANGEMAX, 0, 0);
+            SendDlgItemMessage(ctx->hwnd, IDC_SLIDERY, TBM_SETPOS, TRUE, max);
+        }
+
+        if (rmb_just_down)
+        {
+
+#define AUTOFIRE(id, field)                                                                                            \
+    {                                                                                                                  \
+        if (is_mouse_over_control(ctx->hwnd, id))                                                                      \
+        {                                                                                                              \
+            if (ctx->autofire_input_a.field || ctx->autofire_input_b.field)                                            \
+            {                                                                                                          \
+                ctx->autofire_input_a.field = ctx->autofire_input_b.field = 0;                                         \
+            }                                                                                                          \
+            else                                                                                                       \
+            {                                                                                                          \
+                if (frame_counter % 2 == 0)                                                                            \
+                    ctx->autofire_input_a.field ^= 1;                                                                  \
+                else                                                                                                   \
+                    ctx->autofire_input_b.field ^= 1;                                                                  \
+            }                                                                                                          \
+        }                                                                                                              \
+    }
+            AUTOFIRE(IDC_CHECK_A, a);
+            AUTOFIRE(IDC_CHECK_B, b);
+            AUTOFIRE(IDC_CHECK_START, start);
+            AUTOFIRE(IDC_CHECK_L, l);
+            AUTOFIRE(IDC_CHECK_R, r);
+            AUTOFIRE(IDC_CHECK_Z, z);
+            AUTOFIRE(IDC_CHECK_CUP, cu);
+            AUTOFIRE(IDC_CHECK_CLEFT, cl);
+            AUTOFIRE(IDC_CHECK_CRIGHT, cr);
+            AUTOFIRE(IDC_CHECK_CDOWN, cd);
+            AUTOFIRE(IDC_CHECK_DUP, du);
+            AUTOFIRE(IDC_CHECK_DLEFT, dl);
+            AUTOFIRE(IDC_CHECK_DRIGHT, dr);
+            AUTOFIRE(IDC_CHECK_DDOWN, dd);
+#undef AUTOFIRE
+            ctx->set_visuals(ctx->current_input);
+        }
+
+        ctx->last_lmb_down = GetAsyncKeyState(MOUSE_LBUTTONREDEFINITION) & 0x8000;
+        ctx->last_rmb_down = GetAsyncKeyState(MOUSE_RBUTTONREDEFINITION) & 0x8000;
+    }
+    break;
+    case WM_TIMER: {
+        core_buttons controller_input = GamepadManager::get_input(ctx->controller_index);
+
+        if (controller_input.value != ctx->last_controller_input.value)
+        {
+            // Input changed, override everything with current
 
 #define BTN(field)                                                                                                     \
-        if (controller_input.field && !ctx->last_controller_input.field)                                               \
-        {                                                                                                              \
-            ctx->current_input.field = 1;                                                                              \
-        }                                                                                                              \
-        if (!controller_input.field && ctx->last_controller_input.field)                                               \
-        {                                                                                                              \
-            ctx->current_input.field = 0;                                                                              \
-        }
+    if (controller_input.field && !ctx->last_controller_input.field)                                                   \
+    {                                                                                                                  \
+        ctx->current_input.field = 1;                                                                                  \
+    }                                                                                                                  \
+    if (!controller_input.field && ctx->last_controller_input.field)                                                   \
+    {                                                                                                                  \
+        ctx->current_input.field = 0;                                                                                  \
+    }
 #define JOY(field, i)                                                                                                  \
-        if (controller_input.field != ctx->last_controller_input.field)                                                \
+    if (controller_input.field != ctx->last_controller_input.field)                                                    \
+    {                                                                                                                  \
+        if (controller_input.field > ctx->last_controller_input.field)                                                 \
         {                                                                                                              \
-            if (controller_input.field > ctx->last_controller_input.field)                                             \
+            if (ctx->ignore_next_down[i])                                                                              \
             {                                                                                                          \
-                if (ctx->ignore_next_down[i])                                                                          \
-                {                                                                                                      \
-                    ctx->ignore_next_down[i] = false;                                                                  \
-                }                                                                                                      \
-                else                                                                                                   \
-                {                                                                                                      \
-                    ctx->current_input.field = ctx->current_input.field + 5;                                           \
-                    ctx->ignore_next_up[i] = true;                                                                     \
-                }                                                                                                      \
+                ctx->ignore_next_down[i] = false;                                                                      \
             }                                                                                                          \
-            else if (controller_input.field < ctx->last_controller_input.field)                                        \
+            else                                                                                                       \
             {                                                                                                          \
-                if (ctx->ignore_next_up[i])                                                                            \
-                {                                                                                                      \
-                    ctx->ignore_next_up[i] = false;                                                                    \
-                }                                                                                                      \
-                else                                                                                                   \
-                {                                                                                                      \
-                    ctx->current_input.field = ctx->current_input.field - 5;                                           \
-                    ctx->ignore_next_down[i] = true;                                                                   \
-                }                                                                                                      \
+                ctx->current_input.field = ctx->current_input.field + 5;                                               \
+                ctx->ignore_next_up[i] = true;                                                                         \
             }                                                                                                          \
-        }
-                BTN(dr)
-                BTN(dl)
-                BTN(dd)
-                BTN(du)
-                BTN(start)
-                BTN(z)
-                BTN(b)
-                BTN(a)
-                BTN(cr)
-                BTN(cl)
-                BTN(cd)
-                BTN(cu)
-                BTN(r)
-                BTN(l)
+        }                                                                                                              \
+        else if (controller_input.field < ctx->last_controller_input.field)                                            \
+        {                                                                                                              \
+            if (ctx->ignore_next_up[i])                                                                                \
+            {                                                                                                          \
+                ctx->ignore_next_up[i] = false;                                                                        \
+            }                                                                                                          \
+            else                                                                                                       \
+            {                                                                                                          \
+                ctx->current_input.field = ctx->current_input.field - 5;                                               \
+                ctx->ignore_next_down[i] = true;                                                                       \
+            }                                                                                                          \
+        }                                                                                                              \
+    }
+            BTN(dr)
+            BTN(dl)
+            BTN(dd)
+            BTN(du)
+            BTN(start)
+            BTN(z)
+            BTN(b)
+            BTN(a)
+            BTN(cr)
+            BTN(cl)
+            BTN(cd)
+            BTN(cu)
+            BTN(r)
+            BTN(l)
 
-                if (new_config.relative_mode)
-                {
-                    JOY(x, 0)
-                    JOY(y, 1)
-                }
-                if(!new_config.relative_mode && !new_config.approach_mode)
-                {
-                    // If either axis changed, just override both
-                    if (controller_input.x != ctx->last_controller_input.x ||
-                        controller_input.y != ctx->last_controller_input.y)
-                    {
-                        ctx->current_input.x = controller_input.x;
-                        ctx->current_input.y = controller_input.y;
-                    }
-                }
-
-                ctx->set_visuals(ctx->current_input);
-            }
-
-            if(new_config.approach_mode)
+            if (new_config.relative_mode)
             {
-                int x = ctx->current_input.x;
-                int y = ctx->current_input.y;
-
-                if(controller_input.x > 0)
-                    x += 2;
-                else if(controller_input.x < 0)
-                    x -= 2;
-
-                if(controller_input.y > 0)
-                    y += 2;
-                else if(controller_input.y < 0)
-                    y -= 2;
-
-                ctx->current_input.x = std::clamp(x, -128, 127);
-                ctx->current_input.y = std::clamp(y, -128, 127);
-                
-                ctx->set_visuals(ctx->current_input);
+                JOY(x, 0)
+                JOY(y, 1)
             }
-            ctx->last_controller_input = controller_input;
+            if (!new_config.relative_mode && !new_config.approach_mode)
+            {
+                // If either axis changed, just override both
+                if (controller_input.x != ctx->last_controller_input.x ||
+                    controller_input.y != ctx->last_controller_input.y)
+                {
+                    ctx->current_input.x = controller_input.x;
+                    ctx->current_input.y = controller_input.y;
+                }
+            }
 
-            break;
+            ctx->set_visuals(ctx->current_input);
         }
-    case WM_NOTIFY:
+
+        if (new_config.approach_mode)
         {
-            switch (LOWORD(wparam))
+            int x = ctx->current_input.x;
+            int y = ctx->current_input.y;
+
+            if (controller_input.x > 0)
+                x += 2;
+            else if (controller_input.x < 0)
+                x -= 2;
+
+            if (controller_input.y > 0)
+                y += 2;
+            else if (controller_input.y < 0)
+                y -= 2;
+
+            ctx->current_input.x = std::clamp(x, -128, 127);
+            ctx->current_input.y = std::clamp(y, -128, 127);
+
+            ctx->set_visuals(ctx->current_input);
+        }
+        ctx->last_controller_input = controller_input;
+
+        break;
+    }
+    case WM_NOTIFY: {
+        switch (LOWORD(wparam))
+        {
+        case IDC_SLIDERX:
+        case IDC_SLIDERY: {
+            const auto id = LOWORD(wparam);
+            const auto min = (float)SendDlgItemMessage(ctx->hwnd, id, TBM_GETRANGEMIN, 0, 0);
+            const auto max = (float)SendDlgItemMessage(ctx->hwnd, id, TBM_GETRANGEMAX, 0, 0);
+            const auto pos = (float)SendDlgItemMessage(ctx->hwnd, id, TBM_GETPOS, 0, 0);
+            const auto scale = MiscHelpers::remap(pos, min, max, 0.0f, 1.0f);
+            if (id == IDC_SLIDERX)
             {
-            case IDC_SLIDERX:
-            case IDC_SLIDERY:
-                {
-                    const auto id = LOWORD(wparam);
-                    const auto min = (float)SendDlgItemMessage(ctx->hwnd, id, TBM_GETRANGEMIN, 0, 0);
-                    const auto max = (float)SendDlgItemMessage(ctx->hwnd, id, TBM_GETRANGEMAX, 0, 0);
-                    const auto pos = (float)SendDlgItemMessage(ctx->hwnd, id, TBM_GETPOS, 0, 0);
-                    const auto scale = MiscHelpers::remap(pos, min, max, 0.0f, 1.0f);
-                    if (id == IDC_SLIDERX)
-                    {
-                        new_config.controller_config[ctx->controller_index].x_scale = scale;
-                    }
-                    else
-                    {
-                        new_config.controller_config[ctx->controller_index].y_scale = scale;
-                    }
-                }
-                break;
-            default:
-                break;
+                new_config.controller_config[ctx->controller_index].x_scale = scale;
+            }
+            else
+            {
+                new_config.controller_config[ctx->controller_index].y_scale = scale;
             }
         }
         break;
+        default:
+            break;
+        }
+    }
+    break;
     case WM_UPDATE_VISUALS:
         ctx->set_visuals(static_cast<core_buttons>(lparam), false);
         break;
     case WM_SIZE:
-    case WM_MOVE:
-        {
-            RECT window_rect{};
-            GetWindowRect(ctx->hwnd, &window_rect);
-            ctx->window_position = {
+    case WM_MOVE: {
+        RECT window_rect{};
+        GetWindowRect(ctx->hwnd, &window_rect);
+        ctx->window_position = {
             window_rect.left,
             window_rect.top,
-            };
-        }
-        break;
+        };
+    }
+    break;
     case WM_COMMAND:
         switch (LOWORD(wparam))
         {
-        case IDC_EDITX:
+        case IDC_EDITX: {
+            if (HIWORD(wparam) != EN_CHANGE)
             {
-                if (HIWORD(wparam) != EN_CHANGE)
-                {
-                    break;
-                }
-                core_buttons last_input = ctx->current_input;
-                wchar_t str[8]{};
-                GetDlgItemText(ctx->hwnd, LOWORD(wparam), str, std::size(str));
-                try
-                {
-                    ctx->current_input.x = std::stol(str);
-                }
-                catch (...)
-                {
-                }
-
-                // We don't want an infinite loop, since set_visuals will send IDC_EDITX again
-                if (ctx->current_input.x != last_input.x)
-                {
-                    ctx->set_visuals(ctx->current_input);
-                }
+                break;
             }
-            break;
-
-        case IDC_EDITY:
+            core_buttons last_input = ctx->current_input;
+            wchar_t str[8]{};
+            GetDlgItemText(ctx->hwnd, LOWORD(wparam), str, std::size(str));
+            try
             {
-                if (HIWORD(wparam) != EN_CHANGE)
-                {
-                    break;
-                }
-                core_buttons last_input = ctx->current_input;
-                wchar_t str[8]{};
-                GetDlgItemText(ctx->hwnd, LOWORD(wparam), str, std::size(str));
-                try
-                {
-                    ctx->current_input.y = std::stol(str);
-                }
-                catch (...)
-                {
-                }
-
-                // We don't want an infinite loop, since set_visuals will send IDC_EDITX again
-                if (ctx->current_input.y != last_input.y)
-                {
-                    ctx->set_visuals(ctx->current_input);
-                }
+                ctx->current_input.x = std::stol(str);
             }
-            break;
+            catch (...)
+            {
+            }
+
+            // We don't want an infinite loop, since set_visuals will send IDC_EDITX again
+            if (ctx->current_input.x != last_input.x)
+            {
+                ctx->set_visuals(ctx->current_input);
+            }
+        }
+        break;
+
+        case IDC_EDITY: {
+            if (HIWORD(wparam) != EN_CHANGE)
+            {
+                break;
+            }
+            core_buttons last_input = ctx->current_input;
+            wchar_t str[8]{};
+            GetDlgItemText(ctx->hwnd, LOWORD(wparam), str, std::size(str));
+            try
+            {
+                ctx->current_input.y = std::stol(str);
+            }
+            catch (...)
+            {
+            }
+
+            // We don't want an infinite loop, since set_visuals will send IDC_EDITX again
+            if (ctx->current_input.y != last_input.y)
+            {
+                ctx->set_visuals(ctx->current_input);
+            }
+        }
+        break;
         case IDC_CLEARINPUT:
             ctx->current_input = {0};
             ctx->autofire_input_a = {0};
@@ -886,30 +885,28 @@ INT_PTR CALLBACK wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             ctx->set_visuals(ctx->current_input);
             break;
         case IDC_X_DOWN:
-        case IDC_X_UP:
-            {
-                int increment = get_joystick_increment(LOWORD(wparam) == IDC_X_UP);
-                ctx->current_input.x = MiscHelpers::wrapping_clamp(ctx->current_input.x + increment, -128, 127);
-                ctx->set_visuals(ctx->current_input);
-            }
-            break;
+        case IDC_X_UP: {
+            int increment = get_joystick_increment(LOWORD(wparam) == IDC_X_UP);
+            ctx->current_input.x = MiscHelpers::wrapping_clamp(ctx->current_input.x + increment, -128, 127);
+            ctx->set_visuals(ctx->current_input);
+        }
+        break;
         case IDC_Y_DOWN:
-        case IDC_Y_UP:
-            {
-                int increment = get_joystick_increment(LOWORD(wparam) == IDC_Y_UP);
-                ctx->current_input.y = MiscHelpers::wrapping_clamp(ctx->current_input.y + increment, -128, 127);
-                ctx->set_visuals(ctx->current_input);
-            }
-            break;
+        case IDC_Y_UP: {
+            int increment = get_joystick_increment(LOWORD(wparam) == IDC_Y_UP);
+            ctx->current_input.y = MiscHelpers::wrapping_clamp(ctx->current_input.y + increment, -128, 127);
+            ctx->set_visuals(ctx->current_input);
+        }
+        break;
         case IDC_EXPAND:
             new_config.dialog_expanded[ctx->controller_index] ^= true;
             save_config();
             ctx->on_config_changed();
             break;
-#define TOGGLE(field)                                                                     \
-    {                                                                                     \
-        ctx->current_input.field = IsDlgButtonChecked(ctx->hwnd, LOWORD(wparam)) ? 1 : 0; \
-        ctx->autofire_input_a.field = ctx->autofire_input_b.field = 0;                    \
+#define TOGGLE(field)                                                                                                  \
+    {                                                                                                                  \
+        ctx->current_input.field = IsDlgButtonChecked(ctx->hwnd, LOWORD(wparam)) ? 1 : 0;                              \
+        ctx->autofire_input_a.field = ctx->autofire_input_b.field = 0;                                                 \
     }
         case IDC_CHECK_A:
             TOGGLE(a)
@@ -966,7 +963,7 @@ INT_PTR CALLBACK wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     return FALSE;
 }
 
-EXPORT void CALL InitiateControllers(void* hMainWindow, core_controller Controls[4])
+EXPORT void CALL InitiateControllers(void *hMainWindow, core_controller Controls[4])
 {
     emulator_hwnd = (HWND)hMainWindow;
 
@@ -986,7 +983,7 @@ EXPORT void CALL InitiateControllers(void* hMainWindow, core_controller Controls
     }
 }
 
-EXPORT void CALL ReadController(int Control, BYTE* Command)
+EXPORT void CALL ReadController(int Control, BYTE *Command)
 {
     if (Control == -1)
     {
@@ -998,7 +995,7 @@ EXPORT void CALL RomClosed(void)
 {
     rom_open = false;
 
-    for (auto& st : status)
+    for (auto &st : status)
     {
         ShowWindow(st.hwnd, SW_HIDE);
     }
@@ -1007,7 +1004,7 @@ EXPORT void CALL RomClosed(void)
 static void show_activated_windows()
 {
     size_t i = 0;
-    for (const auto& st : status)
+    for (const auto &st : status)
     {
         ShowWindow(st.hwnd, new_config.controller_active[i] ? SW_SHOW : SW_HIDE);
         i++;
@@ -1017,25 +1014,12 @@ static void show_activated_windows()
 static void ui_thread()
 {
     Main::init_sdl();
-    
+
     Gdiplus::GdiplusStartupInput startup_input;
     GdiplusStartup(&gdi_plus_token, &startup_input, NULL);
 
-    icon_font = CreateFont(
-    -20,
-    0,
-    0,
-    0,
-    FW_NORMAL,
-    FALSE,
-    FALSE,
-    FALSE,
-    SYMBOL_CHARSET,
-    OUT_DEFAULT_PRECIS,
-    CLIP_DEFAULT_PRECIS,
-    DEFAULT_QUALITY,
-    DEFAULT_PITCH,
-    TEXT("Marlett"));
+    icon_font = CreateFont(-20, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, SYMBOL_CHARSET, OUT_DEFAULT_PRECIS,
+                           CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, TEXT("Marlett"));
 
     // HACK: perform windows left handed mode check
     // and adjust accordingly
@@ -1050,7 +1034,8 @@ static void ui_thread()
     for (size_t i = 0; i < std::size(status); ++i)
     {
         status[i].controller_index = i;
-        status[i].hwnd = CreateDialogParam(g_inst, MAKEINTRESOURCE(IDD_MAIN), nullptr, wndproc, reinterpret_cast<LPARAM>(&status[i]));
+        status[i].hwnd = CreateDialogParam(g_inst, MAKEINTRESOURCE(IDD_MAIN), nullptr, wndproc,
+                                           reinterpret_cast<LPARAM>(&status[i]));
     }
 
     show_activated_windows();
@@ -1059,12 +1044,7 @@ static void ui_thread()
     bool running = true;
     while (running)
     {
-        DWORD result = MsgWaitForMultipleObjects(
-        0,
-        NULL,
-        FALSE,
-        INFINITE,
-        QS_ALLINPUT);
+        DWORD result = MsgWaitForMultipleObjects(0, NULL, FALSE, INFINITE, QS_ALLINPUT);
 
         if (result == WAIT_OBJECT_0)
         {
@@ -1077,7 +1057,7 @@ static void ui_thread()
                 }
 
                 bool handled = false;
-                for (auto& st : status)
+                for (auto &st : status)
                 {
                     if (IsDialogMessage(st.hwnd, &msg))
                     {
@@ -1125,7 +1105,7 @@ bool Status::combo_active()
     return active_combo_index != -1;
 }
 
-void Status::set_status(const std::wstring& str)
+void Status::set_status(const std::wstring &str)
 {
     if (combos_hwnd)
     {
@@ -1137,23 +1117,24 @@ void Status::start_edit(int id)
 {
     RECT item_rect;
     ListBox_GetItemRect(combo_listbox, id, &item_rect);
-    combo_edit_box = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_TABSTOP, item_rect.left, item_rect.top, item_rect.right - item_rect.left, item_rect.bottom - item_rect.top + 4, combo_listbox, 0, g_inst, 0);
+    combo_edit_box = CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_TABSTOP, item_rect.left,
+                                    item_rect.top, item_rect.right - item_rect.left,
+                                    item_rect.bottom - item_rect.top + 4, combo_listbox, 0, g_inst, 0);
     // Clear selection to prevent it from repainting randomly and fighting with our textbox
     ListBox_SetCurSel(combo_listbox, -1);
     SendMessage(combo_edit_box, WM_SETFONT, (WPARAM)SendMessage(combo_listbox, WM_GETFONT, 0, 0), 0);
     SetWindowSubclass(combo_edit_box, EditBoxProc, 0, 0);
 
     const auto len = ListBox_GetTextLen(combo_listbox, id);
-    if(len == LB_ERR) 
-        return;
+    if (len == LB_ERR) return;
     std::wstring text(len, L'\0');
     ListBox_GetText(combo_listbox, id, text.data());
-    
+
     SendMessage(combo_edit_box, WM_SETTEXT, 0, (LPARAM)text.c_str());
     PostMessage(hwnd, WM_NEXTDLGCTL, (WPARAM)combo_edit_box, TRUE);
 }
 
-void Status::end_edit(int id, wchar_t* name)
+void Status::end_edit(int id, wchar_t *name)
 {
     if (name != NULL)
     {
@@ -1178,7 +1159,7 @@ void Status::save_combos()
 
     g_ef->log_trace(std::format(L"Saving combos to {}...", path).c_str());
 
-    FILE* f{};
+    FILE *f{};
     if (_tfopen_s(&f, path, _T("wb")))
     {
         return;
@@ -1191,7 +1172,7 @@ void Status::save_combos()
     (void)fclose(f);
 }
 
-void Status::load_combos(const std::filesystem::path& path)
+void Status::load_combos(const std::filesystem::path &path)
 {
     g_ef->log_trace(std::format(L"Loading combos from {}...", path.c_str()).c_str());
 
@@ -1205,17 +1186,15 @@ void Status::load_combos(const std::filesystem::path& path)
     combos = t_combo::deserialize_combos(buf);
 
     ListBox_ResetContent(combo_listbox);
-    for (const auto& combo : combos)
+    for (const auto &combo : combos)
     {
         ListBox_InsertString(combo_listbox, -1, IOUtils::to_wide_string(combo.name).c_str());
     }
 }
 
-
 bool Status::show_context_menu(int x, int y)
 {
-    if (is_mouse_over_control(joy_hwnd) || (GetKeyState(MOUSE_LBUTTONREDEFINITION) & 0x8000))
-        return TRUE;
+    if (is_mouse_over_control(joy_hwnd) || (GetKeyState(MOUSE_LBUTTONREDEFINITION) & 0x8000)) return TRUE;
 
     const auto prev_config = new_config;
 
@@ -1235,17 +1214,18 @@ bool Status::show_context_menu(int x, int y)
 
     if (offset != 0)
     {
-        // offset is the offset into menu config struct of the field which was selected by user, we need to convert it from byte offset to int-width offset
-        auto arr = reinterpret_cast<int32_t*>(&new_config);
+        // offset is the offset into menu config struct of the field which was selected by user, we need to convert it
+        // from byte offset to int-width offset
+        auto arr = reinterpret_cast<int32_t *>(&new_config);
         arr[offset / sizeof(int32_t)] ^= true;
     }
 
     // Apply mutually exclusive relative/approach toggle
-    if (new_config.relative_mode && !prev_config.relative_mode) 
+    if (new_config.relative_mode && !prev_config.relative_mode)
     {
         new_config.approach_mode = false;
     }
-    if (new_config.approach_mode && !prev_config.approach_mode) 
+    if (new_config.approach_mode && !prev_config.approach_mode)
     {
         new_config.relative_mode = false;
     }
@@ -1320,6 +1300,6 @@ void TASInput::on_detach()
         DeleteFont(icon_font);
         icon_font = {};
     }
-    
+
     main_thread.join();
 }

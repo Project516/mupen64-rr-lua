@@ -20,21 +20,21 @@ u32 t9, k0;
 u64 ProfileStartTimes[30];
 u64 ProfileTimes[30];
 
-u8* DMEM;
-u8* IMEM;
-u8* DRAM;
+u8 *DMEM;
+u8 *IMEM;
+u8 *DRAM;
 
 // Variables needed for ABI HLE
 u8 BufferSpace[0x10000];
 short hleMixerWorkArea[256];
 u32 SEGMENTS[0x10]; // 0x0320
-u16 AudioInBuffer; // 0x0000(T8)
+u16 AudioInBuffer;  // 0x0000(T8)
 u16 AudioOutBuffer; // 0x0002(T8)
-u16 AudioCount; // 0x0004(T8)
-u16 AudioAuxA; // 0x000A(T8)
-u16 AudioAuxC; // 0x000C(T8)
-u16 AudioAuxE; // 0x000E(T8)
-u32 loopval; // 0x0010(T8) // Value set by A_SETLOOP : Possible conflict with SETVOLUME???
+u16 AudioCount;     // 0x0004(T8)
+u16 AudioAuxA;      // 0x000A(T8)
+u16 AudioAuxC;      // 0x000C(T8)
+u16 AudioAuxE;      // 0x000E(T8)
+u32 loopval;        // 0x0010(T8) // Value set by A_SETLOOP : Possible conflict with SETVOLUME???
 bool isMKABI = false;
 bool isZeldaABI = false;
 
@@ -94,32 +94,32 @@ u32 UCData, UDataLen;
 // #define ENABLELOG
 #ifdef ENABLELOG
 #pragma message("Logging of Timing info is enabled!!!")
-FILE* dfile = fopen("d:\\HLEInfo.txt", "wt");
+FILE *dfile = fopen("d:\\HLEInfo.txt", "wt");
 #endif
 
 u32 base, dmembase;
 
 void HLEStart()
 {
-    u32 List = ((u32*)DMEM)[0xFF0 / 4], ListLen = ((u32*)DMEM)[0xFF4 / 4];
-    u32* HLEPtr = (u32*)(DRAM + List);
+    u32 List = ((u32 *)DMEM)[0xFF0 / 4], ListLen = ((u32 *)DMEM)[0xFF4 / 4];
+    u32 *HLEPtr = (u32 *)(DRAM + List);
 
-    UCData = ((u32*)DMEM)[0xFD8 / 4];
-    UDataLen = ((u32*)DMEM)[0xFDC / 4];
-    base = ((u32*)DMEM)[0xFD0 / 4];
-    dmembase = ((u32*)DMEM)[0xFD8 / 4];
+    UCData = ((u32 *)DMEM)[0xFD8 / 4];
+    UDataLen = ((u32 *)DMEM)[0xFDC / 4];
+    base = ((u32 *)DMEM)[0xFD0 / 4];
+    dmembase = ((u32 *)DMEM)[0xFD8 / 4];
 
     loopval = 0;
     memset(SEGMENTS, 0, 0x10 * 4);
     isMKABI = false;
     isZeldaABI = false;
 
-    u8* UData = DRAM + UCData;
+    u8 *UData = DRAM + UCData;
 
     // Detect uCode
-    if (((u32*)UData)[0] != 0x1)
+    if (((u32 *)UData)[0] != 0x1)
     {
-        switch (*(u32*)(UData + 0x10))
+        switch (*(u32 *)(UData + 0x10))
         {
         case 0x00000001: // MusyX v1
             // RogueSquadron, ResidentEvil2, PolarisSnoCross,
@@ -145,9 +145,9 @@ void HLEStart()
     }
     else
     {
-        if (*(u32*)(UData + 0x30) == 0xF0000F00)
+        if (*(u32 *)(UData + 0x30) == 0xF0000F00)
         { // Should be common in ABI 1
-            switch (*(u32*)(UData + 0x28))
+            switch (*(u32 *)(UData + 0x28))
             {
             case 0x1e24138c:
                 memcpy(ABI, ABI1, NUM_ABI_COMMANDS * sizeof(p_func));
@@ -164,7 +164,7 @@ void HLEStart()
         }
         else
         {
-            switch (*(u32*)(UData + 0x10)) // ABI2 and MusyX
+            switch (*(u32 *)(UData + 0x10)) // ABI2 and MusyX
             {
             case 0x00010010: // MusyX v2 (IndianaJones, BattleForNaboo)
                 ProcessMusyX_v2();
@@ -219,7 +219,7 @@ INLINE s32 sats_over(s32 slice)
     s32 adder, mask;
 
     adder = +32767 - slice;
-    mask = (s32)adder >> 31; /* if (+32767 - x < 0 */
+    mask = (s32)adder >> 31;     /* if (+32767 - x < 0 */
     mask &= ~((s32)slice >> 31); /*  && x >= 0) */
     adder &= mask;
     return (s32)(slice + adder); /* slice + (+32767 - slice) == +32767 */
@@ -229,7 +229,7 @@ INLINE s32 sats_under(s32 slice)
     s32 adder, mask;
 
     adder = +32768 + slice;
-    mask = (s32)adder >> 31; /* if (x + 32768 < 0 */
+    mask = (s32)adder >> 31;  /* if (x + 32768 < 0 */
     mask &= (s32)slice >> 31; /*  && x < 0) */
     adder &= mask;
     return (s32)(slice - adder); /* slice - (slice + 32768) == -32768 */
@@ -244,28 +244,28 @@ s16 pack_signed(s32 slice)
     return (s16)_mm_cvtsi128_si32(xmm); /* or:  return _mm_extract_epi16(xmm, 0); */
 }
 
-void vsats128(s16* vd, s32* vs)
+void vsats128(s16 *vd, s32 *vs)
 {
     __m128i result, xmm_hi, xmm_lo;
 
-    xmm_hi = _mm_loadu_si128((__m128i*)&vs[0]);
-    xmm_lo = _mm_loadu_si128((__m128i*)&vs[4]);
+    xmm_hi = _mm_loadu_si128((__m128i *)&vs[0]);
+    xmm_lo = _mm_loadu_si128((__m128i *)&vs[4]);
     result = _mm_packs_epi32(xmm_hi, xmm_lo);
-    _mm_storeu_si128((__m128i*)vd, result);
+    _mm_storeu_si128((__m128i *)vd, result);
 }
 #endif
 
-void copy_vector(void* vd, const void* vs)
+void copy_vector(void *vd, const void *vs)
 {
-    _mm_storeu_si128((__m128i*)vd, _mm_loadu_si128((__m128i*)vs));
+    _mm_storeu_si128((__m128i *)vd, _mm_loadu_si128((__m128i *)vs));
 }
 
-void swap_elements(void* vd, const void* vs)
+void swap_elements(void *vd, const void *vs)
 {
     __m128i RSP_as_XMM;
 
-    RSP_as_XMM = _mm_loadu_si128((__m128i*)vs);
+    RSP_as_XMM = _mm_loadu_si128((__m128i *)vs);
     RSP_as_XMM = _mm_shufflehi_epi16(RSP_as_XMM, _MM_SHUFFLE(2, 3, 0, 1));
     RSP_as_XMM = _mm_shufflelo_epi16(RSP_as_XMM, _MM_SHUFFLE(2, 3, 0, 1));
-    _mm_storeu_si128((__m128i*)vd, RSP_as_XMM);
+    _mm_storeu_si128((__m128i *)vd, RSP_as_XMM);
 }

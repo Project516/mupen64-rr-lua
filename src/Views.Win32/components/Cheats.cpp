@@ -36,8 +36,7 @@ static LRESULT CALLBACK dlgproc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM l
             core_cheat script;
 
             if (!g_main_ctx.core_ctx->cht_compile(
-                    "D033AFA1 0020\n8133B1BC 4220\nD033AFA1 0020\n8133B17C 0300\nD033AFA1 0020\n8133B17E 0880",
-                    script))
+                    "D033AFA1 0020\n8133B1BC 4220\nD033AFA1 0020\n8133B17C 0300\nD033AFA1 0020\n8133B17E 0880", script))
             {
                 break;
             }

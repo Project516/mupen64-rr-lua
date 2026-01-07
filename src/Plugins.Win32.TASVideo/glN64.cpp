@@ -19,20 +19,20 @@ LONG windowedExStyle;
 RECT windowedRect;
 HMENU windowedMenu;
 
-static void log_shim(const wchar_t* str)
+static void log_shim(const wchar_t *str)
 {
     wprintf(str);
 }
 
 static core_plugin_extended_funcs ef_shim = {
-.size = sizeof(core_plugin_extended_funcs),
-.log_trace = log_shim,
-.log_info = log_shim,
-.log_warn = log_shim,
-.log_error = log_shim,
+    .size = sizeof(core_plugin_extended_funcs),
+    .log_trace = log_shim,
+    .log_info = log_shim,
+    .log_warn = log_shim,
+    .log_error = log_shim,
 };
 
-core_plugin_extended_funcs* g_ef = &ef_shim;
+core_plugin_extended_funcs *g_ef = &ef_shim;
 
 bool init_rsp_thread()
 {
@@ -43,7 +43,7 @@ bool init_rsp_thread()
         return true;
     }
 
-    for (auto& i : RSP.threadMsg)
+    for (auto &i : RSP.threadMsg)
     {
         i = CreateEvent(NULL, FALSE, FALSE, NULL);
         if (i == nullptr)
@@ -85,7 +85,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpvReserved)
     return TRUE;
 }
 
-EXPORT void CALL CaptureScreen(char* Directory)
+EXPORT void CALL CaptureScreen(char *Directory)
 {
     screenDirectory = Directory;
     if (RSP.thread)
@@ -95,18 +95,18 @@ EXPORT void CALL CaptureScreen(char* Directory)
     }
 }
 
-EXPORT void CALL DllAbout(void* hParent)
+EXPORT void CALL DllAbout(void *hParent)
 {
     const auto msg = PLUGIN_NAME "\nPart of the Mupen64 project family.\n\nhttps://github.com/mupen64/TASVideo";
     MessageBox((HWND)hParent, msg, PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 }
 
-EXPORT void CALL DllConfig(void* hParent)
+EXPORT void CALL DllConfig(void *hParent)
 {
     Config_Show((HWND)hParent);
 }
 
-EXPORT void CALL GetDllInfo(core_plugin_info* PluginInfo)
+EXPORT void CALL GetDllInfo(core_plugin_info *PluginInfo)
 {
     PluginInfo->ver = 0x100;
     PluginInfo->type = plugin_video;
@@ -173,7 +173,7 @@ EXPORT BOOL CALL InitiateGFX(core_gfx_info Gfx_Info)
     REG.VI_Y_SCALE = Gfx_Info.vi_y_scale_reg;
 
     CheckInterrupts = Gfx_Info.check_interrupts;
-    
+
     if (!init_rsp_thread())
     {
         return FALSE;
@@ -182,7 +182,7 @@ EXPORT BOOL CALL InitiateGFX(core_gfx_info Gfx_Info)
     return TRUE;
 }
 
-EXPORT void CALL ReceiveExtendedFuncs(core_plugin_extended_funcs* funcs)
+EXPORT void CALL ReceiveExtendedFuncs(core_plugin_extended_funcs *funcs)
 {
     g_ef = funcs;
 }
@@ -226,15 +226,14 @@ EXPORT void CALL UpdateScreen(void)
 }
 
 // not to confuse with readscreen2 from mupen64plus specs (I think)
-EXPORT void CALL ReadScreen2(void** dest, long* width, long* height)
+EXPORT void CALL ReadScreen2(void **dest, long *width, long *height)
 {
-    extern void* gCapturedPixels;
+    extern void *gCapturedPixels;
     *width = OGL.width;
     *height = OGL.height;
 
     *dest = malloc(OGL.height * OGL.width * 3);
-    if (*dest == 0)
-        return;
+    if (*dest == 0) return;
     gCapturedPixels = *dest;
     if (RSP.thread)
     {
@@ -243,15 +242,15 @@ EXPORT void CALL ReadScreen2(void** dest, long* width, long* height)
     }
 }
 
-void CALL mge_get_video_size(long* width, long* height)
+void CALL mge_get_video_size(long *width, long *height)
 {
     *width = OGL.width;
     *height = OGL.height;
 }
 
-void CALL mge_read_video(void** buffer)
+void CALL mge_read_video(void **buffer)
 {
-    extern void* gCapturedPixels;
+    extern void *gCapturedPixels;
     gCapturedPixels = *buffer;
     if (RSP.thread)
     {

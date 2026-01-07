@@ -14,8 +14,8 @@ void ADDMIXER()
 
     s16 *inp, *outp;
     s32 temp;
-    inp = (s16*)(BufferSpace + InBuffer);
-    outp = (s16*)(BufferSpace + OutBuffer);
+    inp = (s16 *)(BufferSpace + InBuffer);
+    outp = (s16 *)(BufferSpace + OutBuffer);
     for (s16 cntr = 0; cntr < Count; cntr += 2)
     {
         temp = *outp + *inp;
@@ -31,9 +31,9 @@ void HILOGAIN()
     u16 out = t9 >> 16 & 0xffff;
     s16 hi = (s16)(k0 >> 4 & 0xf000);
     u16 lo = k0 >> 20 & 0xf;
-    s16* src;
+    s16 *src;
 
-    src = (s16*)(BufferSpace + out);
+    src = (s16 *)(BufferSpace + out);
     s32 tmp, val;
 
     while (cnt)
@@ -50,16 +50,16 @@ void HILOGAIN()
 void INTERLEAVE()
 {
     u32 inL, inR;
-    u16* outbuff = (u16*)(AudioOutBuffer + BufferSpace);
-    u16* inSrcR;
-    u16* inSrcL;
+    u16 *outbuff = (u16 *)(AudioOutBuffer + BufferSpace);
+    u16 *inSrcR;
+    u16 *inSrcL;
     u16 Left, Right;
 
     inL = t9 & 0xFFFF;
     inR = t9 >> 16 & 0xFFFF;
 
-    inSrcR = (u16*)(BufferSpace + inR);
-    inSrcL = (u16*)(BufferSpace + inL);
+    inSrcR = (u16 *)(BufferSpace + inR);
+    inSrcL = (u16 *)(BufferSpace + inL);
 
     for (int x = 0; x < AudioCount / 4; x++)
     {
@@ -78,14 +78,14 @@ void INTERL2()
     s16 Count = k0 & 0xFFFF;
     u16 Out = t9 & 0xffff;
     u16 In = t9 >> 16;
-    u8* src;
-    u8* dst;
+    u8 *src;
+    u8 *dst;
 
     src = &BufferSpace[0]; //[In];
     dst = &BufferSpace[0]; //[Out];
     while (Count != 0)
     {
-        *(s16*)(dst + BES(Out)) = *(s16*)(src + BES(In));
+        *(s16 *)(dst + BES(Out)) = *(s16 *)(src + BES(In));
         Out += 2;
         In += 4;
         Count--;
@@ -95,27 +95,27 @@ void INTERL2()
 void INTERLEAVE2()
 { // Needs accuracy verification...
     u32 inL, inR;
-    u16* outbuff;
-    u16* inSrcR;
-    u16* inSrcL;
+    u16 *outbuff;
+    u16 *inSrcR;
+    u16 *inSrcL;
     u16 Left, Right;
     u32 count;
     count = k0 >> 12 & 0xFF0;
     if (count == 0)
     {
-        outbuff = (u16*)(AudioOutBuffer + BufferSpace);
+        outbuff = (u16 *)(AudioOutBuffer + BufferSpace);
         count = AudioCount;
     }
     else
     {
-        outbuff = (u16*)((k0 & 0xFFFF) + BufferSpace);
+        outbuff = (u16 *)((k0 & 0xFFFF) + BufferSpace);
     }
 
     inR = t9 & 0xFFFF;
     inL = t9 >> 16 & 0xFFFF;
 
-    inSrcR = (u16*)(BufferSpace + inR);
-    inSrcL = (u16*)(BufferSpace + inL);
+    inSrcR = (u16 *)(BufferSpace + inR);
+    inSrcL = (u16 *)(BufferSpace + inL);
 
     for (u32 x = 0; x < count / 4; x++)
     {
@@ -132,16 +132,16 @@ void INTERLEAVE2()
 void INTERLEAVE3()
 { // Needs accuracy verification...
     // u32 inL, inR;
-    u16* outbuff = (u16*)(BufferSpace + 0x4f0); //(u16 *)(AudioOutBuffer+dmem);
-    u16* inSrcR;
-    u16* inSrcL;
+    u16 *outbuff = (u16 *)(BufferSpace + 0x4f0); //(u16 *)(AudioOutBuffer+dmem);
+    u16 *inSrcR;
+    u16 *inSrcL;
     u16 Left, Right;
 
     // inR = t9 & 0xFFFF;
     // inL = (t9 >> 16) & 0xFFFF;
 
-    inSrcR = (u16*)(BufferSpace + 0xb40);
-    inSrcL = (u16*)(BufferSpace + 0x9d0);
+    inSrcR = (u16 *)(BufferSpace + 0xb40);
+    inSrcL = (u16 *)(BufferSpace + 0x9d0);
 
     for (int x = 0; x < 0x170 / 4; x++)
     {
@@ -172,15 +172,14 @@ void MIXER()
     s32 gain = (s16)(k0 & 0xFFFF);
     s32 temp;
 
-    if (AudioCount == 0)
-        return;
+    if (AudioCount == 0) return;
 
     for (int x = 0; x < AudioCount; x += 2)
     {
-        temp = (*(s16*)(BufferSpace + dmemin + x) * gain) >> 15;
-        temp += *(s16*)(BufferSpace + dmemout + x);
+        temp = (*(s16 *)(BufferSpace + dmemin + x) * gain) >> 15;
+        temp += *(s16 *)(BufferSpace + dmemout + x);
 
-        *(s16*)(BufferSpace + dmemout + x) = pack_signed(temp);
+        *(s16 *)(BufferSpace + dmemout + x) = pack_signed(temp);
     }
 }
 
@@ -195,10 +194,10 @@ void MIXER2()
     for (u32 x = 0; x < count; x += 2)
     { // I think I can do this a lot easier
 
-        temp = (*(s16*)(BufferSpace + dmemin + x) * gain) >> 16;
-        temp += *(s16*)(BufferSpace + dmemout + x);
+        temp = (*(s16 *)(BufferSpace + dmemin + x) * gain) >> 16;
+        temp += *(s16 *)(BufferSpace + dmemout + x);
 
-        *(s16*)(BufferSpace + dmemout + x) = pack_signed(temp);
+        *(s16 *)(BufferSpace + dmemout + x) = pack_signed(temp);
     }
 }
 
@@ -212,9 +211,9 @@ void MIXER3()
 
     for (int x = 0; x < 0x170; x += 2)
     { // I think I can do this a lot easier
-        temp = (*(s16*)(BufferSpace + dmemin + x) * gain) >> 16;
-        temp += *(s16*)(BufferSpace + dmemout + x);
+        temp = (*(s16 *)(BufferSpace + dmemin + x) * gain) >> 16;
+        temp += *(s16 *)(BufferSpace + dmemout + x);
 
-        *(s16*)(BufferSpace + dmemout + x) = pack_signed(temp);
+        *(s16 *)(BufferSpace + dmemout + x) = pack_signed(temp);
     }
 }

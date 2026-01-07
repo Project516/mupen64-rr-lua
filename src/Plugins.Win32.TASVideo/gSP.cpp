@@ -15,24 +15,15 @@
 #include "DepthBuffer.h"
 #include "Resource.h"
 
-#define gSPFlushTriangles()         \
-    if ((OGL.numTriangles > 0) &&   \
-        (RSP.nextCmd != G_TRI1) &&  \
-        (RSP.nextCmd != G_TRI2) &&  \
-        (RSP.nextCmd != G_TRI4) &&  \
-        (RSP.nextCmd != G_QUAD) &&  \
-        (RSP.nextCmd != G_DMA_TRI)) \
+#define gSPFlushTriangles()                                                                                            \
+    if ((OGL.numTriangles > 0) && (RSP.nextCmd != G_TRI1) && (RSP.nextCmd != G_TRI2) && (RSP.nextCmd != G_TRI4) &&     \
+        (RSP.nextCmd != G_QUAD) && (RSP.nextCmd != G_DMA_TRI))                                                         \
     OGL_DrawTriangles()
 
 gSPInfo gSP;
 
-f32 identityMatrix[4][4] =
-{
-{1.0f, 0.0f, 0.0f, 0.0f},
-{0.0f, 1.0f, 0.0f, 0.0f},
-{0.0f, 0.0f, 1.0f, 0.0f},
-{0.0f, 0.0f, 0.0f, 1.0f}};
-
+f32 identityMatrix[4][4] = {
+    {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f, 1.0f}};
 
 void gSPLoadUcodeEx(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 {
@@ -48,7 +39,7 @@ void gSPLoadUcodeEx(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
         return;
     }
 
-    MicrocodeInfo* ucode = GBI_DetectMicrocode(uc_start, uc_dstart, uc_dsize);
+    MicrocodeInfo *ucode = GBI_DetectMicrocode(uc_start, uc_dstart, uc_dsize);
 
     if (ucode->type != NONE)
         GBI_MakeCurrent(ucode);
@@ -71,8 +62,7 @@ void gSPProcessVertex(u32 v)
     f32 intensity;
     f32 r, g, b;
 
-    if (gSP.changed & CHANGED_MATRIX)
-        gSPCombineMatrices();
+    if (gSP.changed & CHANGED_MATRIX) gSPCombineMatrices();
 
     vert_transform(&gSP.vertices[v].x, gSP.matrix.combined);
 
@@ -102,8 +92,7 @@ void gSPProcessVertex(u32 v)
         {
             intensity = dot_product(&gSP.vertices[v].nx, &gSP.lights[i].x);
 
-            if (intensity < 0.0f)
-                intensity = 0.0f;
+            if (intensity < 0.0f) intensity = 0.0f;
 
             r += gSP.lights[i].r * intensity;
             g += gSP.lights[i].g * intensity;
@@ -170,8 +159,7 @@ void gSPMatrix(u32 matrix, u8 param)
     if (address + 64 > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load matrix from invalid address\n");
-        DebugMsg(L"gSPMatrix( 0x%08X, %s | %s | %s );\n",
-                 matrix,
+        DebugMsg(L"gSPMatrix( 0x%08X, %s | %s | %s );\n", matrix,
                  (param & G_MTX_PROJECTION) ? "G_MTX_PROJECTION" : "G_MTX_MODELVIEW",
                  (param & G_MTX_LOAD) ? "G_MTX_LOAD" : "G_MTX_MUL",
                  (param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH");
@@ -194,7 +182,7 @@ void gSPMatrix(u32 matrix, u8 param)
             mat_cpy(gSP.matrix.modelView[gSP.matrix.modelViewi + 1], gSP.matrix.modelView[gSP.matrix.modelViewi]);
             gSP.matrix.modelViewi++;
         }
-        else 
+        else
         {
             DebugMsg(L"// Modelview stack overflow\n");
         }
@@ -207,19 +195,13 @@ void gSPMatrix(u32 matrix, u8 param)
 
     gSP.changed |= CHANGED_MATRIX;
 
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3]);
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3]);
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3]);
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3]);
-    DebugMsg(L"gSPMatrix( 0x%08X, %s | %s | %s );\n",
-             matrix,
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3]);
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3]);
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3]);
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3]);
+    DebugMsg(L"gSPMatrix( 0x%08X, %s | %s | %s );\n", matrix,
              (param & G_MTX_PROJECTION) ? "G_MTX_PROJECTION" : "G_MTX_MODELVIEW",
-             (param & G_MTX_LOAD) ? "G_MTX_LOAD" : "G_MTX_MUL",
-             (param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH");
+             (param & G_MTX_LOAD) ? "G_MTX_LOAD" : "G_MTX_MUL", (param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH");
 }
 
 void gSPDMAMatrix(u32 matrix, u8 index, u8 multiply)
@@ -230,8 +212,7 @@ void gSPDMAMatrix(u32 matrix, u8 index, u8 multiply)
     if (address + 64 > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load matrix from invalid address\n");
-        DebugMsg(L"gSPDMAMatrix( 0x%08X, %i, %s );\n",
-                 matrix, index, multiply ? "TRUE" : "FALSE");
+        DebugMsg(L"gSPDMAMatrix( 0x%08X, %i, %s );\n", matrix, index, multiply ? "TRUE" : "FALSE");
         return;
     }
 
@@ -249,19 +230,13 @@ void gSPDMAMatrix(u32 matrix, u8 index, u8 multiply)
 
     mat_cpy(gSP.matrix.projection, identityMatrix);
 
-
     gSP.changed |= CHANGED_MATRIX;
 
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3]);
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3]);
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3]);
-    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n",
-             mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3]);
-    DebugMsg(L"gSPDMAMatrix( 0x%08X, %i, %s );\n",
-             matrix, index, multiply ? "TRUE" : "FALSE");
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3]);
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3]);
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3]);
+    DebugMsg(L"// %12.6f %12.6f %12.6f %12.6f\n", mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3]);
+    DebugMsg(L"gSPDMAMatrix( 0x%08X, %i, %s );\n", matrix, index, multiply ? "TRUE" : "FALSE");
 }
 
 void gSPViewport(u32 v)
@@ -275,14 +250,14 @@ void gSPViewport(u32 v)
         return;
     }
 
-    gSP.viewport.vscale[0] = _FIXED2FLOAT(*(s16*)&RDRAM[address + 2], 2);
-    gSP.viewport.vscale[1] = _FIXED2FLOAT(*(s16*)&RDRAM[address], 2);
-    gSP.viewport.vscale[2] = _FIXED2FLOAT(*(s16*)&RDRAM[address + 6], 10); // * 0.00097847357f;
-    gSP.viewport.vscale[3] = *(s16*)&RDRAM[address + 4];
-    gSP.viewport.vtrans[0] = _FIXED2FLOAT(*(s16*)&RDRAM[address + 10], 2);
-    gSP.viewport.vtrans[1] = _FIXED2FLOAT(*(s16*)&RDRAM[address + 8], 2);
-    gSP.viewport.vtrans[2] = _FIXED2FLOAT(*(s16*)&RDRAM[address + 14], 10); // * 0.00097847357f;
-    gSP.viewport.vtrans[3] = *(s16*)&RDRAM[address + 12];
+    gSP.viewport.vscale[0] = _FIXED2FLOAT(*(s16 *)&RDRAM[address + 2], 2);
+    gSP.viewport.vscale[1] = _FIXED2FLOAT(*(s16 *)&RDRAM[address], 2);
+    gSP.viewport.vscale[2] = _FIXED2FLOAT(*(s16 *)&RDRAM[address + 6], 10); // * 0.00097847357f;
+    gSP.viewport.vscale[3] = *(s16 *)&RDRAM[address + 4];
+    gSP.viewport.vtrans[0] = _FIXED2FLOAT(*(s16 *)&RDRAM[address + 10], 2);
+    gSP.viewport.vtrans[1] = _FIXED2FLOAT(*(s16 *)&RDRAM[address + 8], 2);
+    gSP.viewport.vtrans[2] = _FIXED2FLOAT(*(s16 *)&RDRAM[address + 14], 10); // * 0.00097847357f;
+    gSP.viewport.vtrans[3] = *(s16 *)&RDRAM[address + 12];
 
     gSP.viewport.x = gSP.viewport.vtrans[0] - gSP.viewport.vscale[0];
     gSP.viewport.y = gSP.viewport.vtrans[1] - gSP.viewport.vscale[1];
@@ -322,12 +297,11 @@ void gSPLight(u32 l, s32 n)
     if ((address + sizeof(Light)) > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load light from invalid address\n");
-        DebugMsg(L"gSPLight( 0x%08X, LIGHT_%i );\n",
-                 l, n);
+        DebugMsg(L"gSPLight( 0x%08X, LIGHT_%i );\n", l, n);
         return;
     }
 
-    auto light = (Light*)&RDRAM[address];
+    auto light = (Light *)&RDRAM[address];
 
     if (n < 8)
     {
@@ -342,12 +316,10 @@ void gSPLight(u32 l, s32 n)
         vec_normalize(&gSP.lights[n].x);
     }
 
-    DebugMsg(L"// x = %2.6f    y = %2.6f    z = %2.6f\n",
-             _FIXED2FLOAT(light->x, 7), _FIXED2FLOAT(light->y, 7), _FIXED2FLOAT(light->z, 7));
-    DebugMsg(L"// r = %3i    g = %3i   b = %3i\n",
-             light->r, light->g, light->b);
-    DebugMsg(L"gSPLight( 0x%08X, LIGHT_%i );\n",
-             l, n);
+    DebugMsg(L"// x = %2.6f    y = %2.6f    z = %2.6f\n", _FIXED2FLOAT(light->x, 7), _FIXED2FLOAT(light->y, 7),
+             _FIXED2FLOAT(light->z, 7));
+    DebugMsg(L"// r = %3i    g = %3i   b = %3i\n", light->r, light->g, light->b);
+    DebugMsg(L"gSPLight( 0x%08X, LIGHT_%i );\n", l, n);
 }
 
 void gSPLookAt(u32 l)
@@ -361,12 +333,11 @@ void gSPVertex(u32 v, u32 n, u32 v0)
     if ((address + sizeof(Vertex) * n) > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load vertices from invalid address\n");
-        DebugMsg(L"gSPVertex( 0x%08X, %i, %i );\n",
-                 v, n, v0);
+        DebugMsg(L"gSPVertex( 0x%08X, %i, %i );\n", v, n, v0);
         return;
     }
 
-    auto vertex = (Vertex*)&RDRAM[address];
+    auto vertex = (Vertex *)&RDRAM[address];
 
     if ((n + v0) < (80))
     {
@@ -394,20 +365,18 @@ void gSPVertex(u32 v, u32 n, u32 v0)
                 gSP.vertices[i].a = vertex->color.a * 0.0039215689f;
             }
 
-            DebugMsg(L"// x = %6i    y = %6i    z = %6i \n",
-                     vertex->x, vertex->y, vertex->z);
-            DebugMsg(L"// s = %5.5f    t = %5.5f    flag = %i \n",
-                     vertex->s, vertex->t, vertex->flag);
+            DebugMsg(L"// x = %6i    y = %6i    z = %6i \n", vertex->x, vertex->y, vertex->z);
+            DebugMsg(L"// s = %5.5f    t = %5.5f    flag = %i \n", vertex->s, vertex->t, vertex->flag);
 
             if (gSP.geometryMode & G_LIGHTING)
             {
-                DebugMsg(L"// nx = %2.6f    ny = %2.6f    nz = %2.6f\n",
-                         _FIXED2FLOAT(vertex->normal.x, 7), _FIXED2FLOAT(vertex->normal.y, 7), _FIXED2FLOAT(vertex->normal.z, 7));
+                DebugMsg(L"// nx = %2.6f    ny = %2.6f    nz = %2.6f\n", _FIXED2FLOAT(vertex->normal.x, 7),
+                         _FIXED2FLOAT(vertex->normal.y, 7), _FIXED2FLOAT(vertex->normal.z, 7));
             }
             else
             {
-                DebugMsg(L"// r = %3u    g = %3u    b = %3u    a = %3u\n",
-                         vertex->color.r, vertex->color.g, vertex->color.b, vertex->color.a);
+                DebugMsg(L"// r = %3u    g = %3u    b = %3u    a = %3u\n", vertex->color.r, vertex->color.g,
+                         vertex->color.b, vertex->color.a);
             }
 
             gSPProcessVertex(i);
@@ -418,8 +387,7 @@ void gSPVertex(u32 v, u32 n, u32 v0)
     else
         DebugMsg(L"// Attempting to load vertices past vertex buffer size\n");
 
-    DebugMsg(L"gSPVertex( 0x%08X, %i, %i );\n",
-             v, n, v0);
+    DebugMsg(L"gSPVertex( 0x%08X, %i, %i );\n", v, n, v0);
 }
 
 void gSPCIVertex(u32 v, u32 n, u32 v0)
@@ -429,12 +397,11 @@ void gSPCIVertex(u32 v, u32 n, u32 v0)
     if ((address + sizeof(PDVertex) * n) > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load vertices from invalid address\n");
-        DebugMsg(L"gSPCIVertex( 0x%08X, %i, %i );\n",
-                 v, n, v0);
+        DebugMsg(L"gSPCIVertex( 0x%08X, %i, %i );\n", v, n, v0);
         return;
     }
 
-    auto vertex = (PDVertex*)&RDRAM[address];
+    auto vertex = (PDVertex *)&RDRAM[address];
 
     if ((n + v0) < (80))
     {
@@ -447,7 +414,7 @@ void gSPCIVertex(u32 v, u32 n, u32 v0)
             gSP.vertices[i].s = _FIXED2FLOAT(vertex->s, 5);
             gSP.vertices[i].t = _FIXED2FLOAT(vertex->t, 5);
 
-            u8* color = &RDRAM[gSP.vertexColorBase + (vertex->ci & 0xff)];
+            u8 *color = &RDRAM[gSP.vertexColorBase + (vertex->ci & 0xff)];
 
             if (gSP.geometryMode & G_LIGHTING)
             {
@@ -472,8 +439,7 @@ void gSPCIVertex(u32 v, u32 n, u32 v0)
     else
         DebugMsg(L"// Attempting to load vertices past vertex buffer size\n");
 
-    DebugMsg(L"gSPCIVertex( 0x%08X, %i, %i );\n",
-             v, n, v0);
+    DebugMsg(L"gSPCIVertex( 0x%08X, %i, %i );\n", v, n, v0);
 }
 
 void gSPDMAVertex(u32 v, u32 n, u32 v0)
@@ -483,8 +449,7 @@ void gSPDMAVertex(u32 v, u32 n, u32 v0)
     if ((address + 10 * n) > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load vertices from invalid address\n");
-        DebugMsg(L"gSPDMAVertex( 0x%08X, %i, %i );\n",
-                 v, n, v0);
+        DebugMsg(L"gSPDMAVertex( 0x%08X, %i, %i );\n", v, n, v0);
         return;
     }
 
@@ -492,23 +457,23 @@ void gSPDMAVertex(u32 v, u32 n, u32 v0)
     {
         for (int i = v0; i < n + v0; i++)
         {
-            gSP.vertices[i].x = *(s16*)&RDRAM[address ^ 2];
-            gSP.vertices[i].y = *(s16*)&RDRAM[(address + 2) ^ 2];
-            gSP.vertices[i].z = *(s16*)&RDRAM[(address + 4) ^ 2];
+            gSP.vertices[i].x = *(s16 *)&RDRAM[address ^ 2];
+            gSP.vertices[i].y = *(s16 *)&RDRAM[(address + 2) ^ 2];
+            gSP.vertices[i].z = *(s16 *)&RDRAM[(address + 4) ^ 2];
 
             if (gSP.geometryMode & G_LIGHTING)
             {
-                gSP.vertices[i].nx = *(s8*)&RDRAM[(address + 6) ^ 3];
-                gSP.vertices[i].ny = *(s8*)&RDRAM[(address + 7) ^ 3];
-                gSP.vertices[i].nz = *(s8*)&RDRAM[(address + 8) ^ 3];
-                gSP.vertices[i].a = *(u8*)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
+                gSP.vertices[i].nx = *(s8 *)&RDRAM[(address + 6) ^ 3];
+                gSP.vertices[i].ny = *(s8 *)&RDRAM[(address + 7) ^ 3];
+                gSP.vertices[i].nz = *(s8 *)&RDRAM[(address + 8) ^ 3];
+                gSP.vertices[i].a = *(u8 *)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
             }
             else
             {
-                gSP.vertices[i].r = *(u8*)&RDRAM[(address + 6) ^ 3] * 0.0039215689f;
-                gSP.vertices[i].g = *(u8*)&RDRAM[(address + 7) ^ 3] * 0.0039215689f;
-                gSP.vertices[i].b = *(u8*)&RDRAM[(address + 8) ^ 3] * 0.0039215689f;
-                gSP.vertices[i].a = *(u8*)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
+                gSP.vertices[i].r = *(u8 *)&RDRAM[(address + 6) ^ 3] * 0.0039215689f;
+                gSP.vertices[i].g = *(u8 *)&RDRAM[(address + 7) ^ 3] * 0.0039215689f;
+                gSP.vertices[i].b = *(u8 *)&RDRAM[(address + 8) ^ 3] * 0.0039215689f;
+                gSP.vertices[i].a = *(u8 *)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
             }
 
             gSPProcessVertex(i);
@@ -519,8 +484,7 @@ void gSPDMAVertex(u32 v, u32 n, u32 v0)
     else
         DebugMsg(L"// Attempting to load vertices past vertex buffer size\n");
 
-    DebugMsg(L"gSPDMAVertex( 0x%08X, %i, %i );\n",
-             v, n, v0);
+    DebugMsg(L"gSPDMAVertex( 0x%08X, %i, %i );\n", v, n, v0);
 }
 
 void gSPDisplayList(u32 dl)
@@ -530,24 +494,21 @@ void gSPDisplayList(u32 dl)
     if ((address + 8) > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load display list from invalid address\n");
-        DebugMsg(L"gSPDisplayList( 0x%08X );\n",
-                 dl);
+        DebugMsg(L"gSPDisplayList( 0x%08X );\n", dl);
         return;
     }
 
     if (RSP.PCi < (GBI.PCStackSize - 1))
     {
         DebugMsg(L"\n");
-        DebugMsg(L"gSPDisplayList( 0x%08X );\n",
-                 dl);
+        DebugMsg(L"gSPDisplayList( 0x%08X );\n", dl);
         RSP.PCi++;
         RSP.PC[RSP.PCi] = address;
     }
     else
     {
         DebugMsg(L"// PC stack overflow\n");
-        DebugMsg(L"gSPDisplayList( 0x%08X );\n",
-                 dl);
+        DebugMsg(L"gSPDisplayList( 0x%08X );\n", dl);
     }
 }
 
@@ -556,8 +517,7 @@ void gSPDMADisplayList(u32 dl, u32 n)
     if ((dl + (n << 3)) > RDRAMSize)
     {
         DebugMsg(L"// Attempting to load display list from invalid address\n");
-        DebugMsg(L"gSPDMADisplayList( 0x%08X, %i );\n",
-                 dl, n);
+        DebugMsg(L"gSPDMADisplayList( 0x%08X, %i );\n", dl, n);
         return;
     }
 
@@ -573,21 +533,20 @@ void gSPDMADisplayList(u32 dl, u32 n)
             break;
         }
 
-        u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
-        u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+        u32 w0 = *(u32 *)&RDRAM[RSP.PC[RSP.PCi]];
+        u32 w1 = *(u32 *)&RDRAM[RSP.PC[RSP.PCi] + 4];
 
         DebugMsg(L"0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR(w0, 24, 8), w0, w1);
 
         RSP.PC[RSP.PCi] += 8;
-        RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8);
+        RSP.nextCmd = _SHIFTR(*(u32 *)&RDRAM[RSP.PC[RSP.PCi]], 24, 8);
 
         GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
     }
 
     RSP.PC[RSP.PCi] = curDL;
 
-    DebugMsg(L"gSPDMADisplayList( 0x%08X, %i );\n",
-             dl, n);
+    DebugMsg(L"gSPDMADisplayList( 0x%08X, %i );\n", dl, n);
 }
 
 void gSPBranchList(u32 dl)
@@ -597,13 +556,11 @@ void gSPBranchList(u32 dl)
     if ((address + 8) > RDRAMSize)
     {
         DebugMsg(L"// Attempting to branch to display list at invalid address\n");
-        DebugMsg(L"gSPBranchList( 0x%08X );\n",
-                 dl);
+        DebugMsg(L"gSPBranchList( 0x%08X );\n", dl);
         return;
     }
 
-    DebugMsg(L"gSPBranchList( 0x%08X );\n",
-             dl);
+    DebugMsg(L"gSPBranchList( 0x%08X );\n", dl);
 
     RSP.PC[RSP.PCi] = address;
 }
@@ -615,16 +572,13 @@ void gSPBranchLessZ(u32 branchdl, u32 vtx, f32 zval)
     if ((address + 8) > RDRAMSize)
     {
         DebugMsg(L"// Specified display list at invalid address\n");
-        DebugMsg(L"gSPBranchLessZ( 0x%08X, %i, %i );\n",
-                 branchdl, vtx, zval);
+        DebugMsg(L"gSPBranchLessZ( 0x%08X, %i, %i );\n", branchdl, vtx, zval);
         return;
     }
 
-    if (gSP.vertices[vtx].z <= zval)
-        RSP.PC[RSP.PCi] = address;
+    if (gSP.vertices[vtx].z <= zval) RSP.PC[RSP.PCi] = address;
 
-    DebugMsg(L"gSPBranchLessZ( 0x%08X, %i, %i );\n",
-             branchdl, vtx, zval);
+    DebugMsg(L"gSPBranchLessZ( 0x%08X, %i, %i );\n", branchdl, vtx, zval);
 }
 
 void gSPSetDMAOffsets(u32 mtxoffset, u32 vtxoffset)
@@ -632,23 +586,21 @@ void gSPSetDMAOffsets(u32 mtxoffset, u32 vtxoffset)
     gSP.DMAOffsets.mtx = mtxoffset;
     gSP.DMAOffsets.vtx = vtxoffset;
 
-    DebugMsg(L"gSPSetDMAOffsets( 0x%08X, 0x%08X );\n",
-             mtxoffset, vtxoffset);
+    DebugMsg(L"gSPSetDMAOffsets( 0x%08X, 0x%08X );\n", mtxoffset, vtxoffset);
 }
 
 void gSPSetVertexColorBase(u32 base)
 {
     gSP.vertexColorBase = RSP_SegmentToPhysical(base);
 
-    DebugMsg(L"gSPSetVertexColorBase( 0x%08X );\n",
-             base);
+    DebugMsg(L"gSPSetVertexColorBase( 0x%08X );\n", base);
 }
 
 void gSPSprite2DBase(u32 base)
 {
 }
 
-void gSPCopyVertex(SPVertex* dest, SPVertex* src)
+void gSPCopyVertex(SPVertex *dest, SPVertex *src)
 {
     dest->x = src->x;
     dest->y = src->y;
@@ -662,7 +614,7 @@ void gSPCopyVertex(SPVertex* dest, SPVertex* src)
     dest->t = src->t;
 }
 
-void gSPInterpolateVertex(SPVertex* dest, f32 percent, SPVertex* first, SPVertex* second)
+void gSPInterpolateVertex(SPVertex *dest, f32 percent, SPVertex *first, SPVertex *second)
 {
     dest->x = first->x + percent * (second->x - first->x);
     dest->y = first->y + percent * (second->y - first->y);
@@ -681,31 +633,17 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2, s32 flag)
     if ((v0 < 80) && (v1 < 80) && (v2 < 80))
     {
         // Don't bother with triangles completely outside clipping frustrum
-        if (((gSP.vertices[v0].xClip < 0.0f) &&
-             (gSP.vertices[v1].xClip < 0.0f) &&
-             (gSP.vertices[v2].xClip < 0.0f)) ||
-            ((gSP.vertices[v0].xClip > 0.0f) &&
-             (gSP.vertices[v1].xClip > 0.0f) &&
-             (gSP.vertices[v2].xClip > 0.0f)) ||
-            ((gSP.vertices[v0].yClip < 0.0f) &&
-             (gSP.vertices[v1].yClip < 0.0f) &&
-             (gSP.vertices[v2].yClip < 0.0f)) ||
-            ((gSP.vertices[v0].yClip > 0.0f) &&
-             (gSP.vertices[v1].yClip > 0.0f) &&
-             (gSP.vertices[v2].yClip > 0.0f)) ||
-            ((gSP.vertices[v0].zClip > 0.1f) &&
-             (gSP.vertices[v1].zClip > 0.1f) &&
-             (gSP.vertices[v2].zClip > 0.1f)) ||
-            ((gSP.vertices[v0].zClip < -0.1f) &&
-             (gSP.vertices[v1].zClip < -0.1f) &&
-             (gSP.vertices[v2].zClip < -0.1f)))
+        if (((gSP.vertices[v0].xClip < 0.0f) && (gSP.vertices[v1].xClip < 0.0f) && (gSP.vertices[v2].xClip < 0.0f)) ||
+            ((gSP.vertices[v0].xClip > 0.0f) && (gSP.vertices[v1].xClip > 0.0f) && (gSP.vertices[v2].xClip > 0.0f)) ||
+            ((gSP.vertices[v0].yClip < 0.0f) && (gSP.vertices[v1].yClip < 0.0f) && (gSP.vertices[v2].yClip < 0.0f)) ||
+            ((gSP.vertices[v0].yClip > 0.0f) && (gSP.vertices[v1].yClip > 0.0f) && (gSP.vertices[v2].yClip > 0.0f)) ||
+            ((gSP.vertices[v0].zClip > 0.1f) && (gSP.vertices[v1].zClip > 0.1f) && (gSP.vertices[v2].zClip > 0.1f)) ||
+            ((gSP.vertices[v0].zClip < -0.1f) && (gSP.vertices[v1].zClip < -0.1f) && (gSP.vertices[v2].zClip < -0.1f)))
             return;
 
         // NoN work-around, clips triangles, and draws the clipped-off parts with clamped z
         if (GBI.current->NoN &&
-            ((gSP.vertices[v0].zClip < 0.0f) ||
-             (gSP.vertices[v1].zClip < 0.0f) ||
-             (gSP.vertices[v2].zClip < 0.0f)))
+            ((gSP.vertices[v0].zClip < 0.0f) || (gSP.vertices[v1].zClip < 0.0f) || (gSP.vertices[v2].zClip < 0.0f)))
         {
             SPVertex nearVertices[4];
             SPVertex clippedVertices[4];
@@ -719,15 +657,17 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2, s32 flag)
             for (s32 i = 0; i < 3; i++)
             {
                 s32 j = i + 1;
-                if (j == 3)
-                    j = 0;
+                if (j == 3) j = 0;
 
                 if (((gSP.vertices[v[i]].zClip < 0.0f) && (gSP.vertices[v[j]].zClip >= 0.0f)) ||
                     ((gSP.vertices[v[i]].zClip >= 0.0f) && (gSP.vertices[v[j]].zClip < 0.0f)))
                 {
-                    f32 percent = (-gSP.vertices[v[i]].w - gSP.vertices[v[i]].z) / ((gSP.vertices[v[j]].z - gSP.vertices[v[i]].z) + (gSP.vertices[v[j]].w - gSP.vertices[v[i]].w));
+                    f32 percent =
+                        (-gSP.vertices[v[i]].w - gSP.vertices[v[i]].z) /
+                        ((gSP.vertices[v[j]].z - gSP.vertices[v[i]].z) + (gSP.vertices[v[j]].w - gSP.vertices[v[i]].w));
 
-                    gSPInterpolateVertex(&clippedVertices[clippedIndex], percent, &gSP.vertices[v[i]], &gSP.vertices[v[j]]);
+                    gSPInterpolateVertex(&clippedVertices[clippedIndex], percent, &gSP.vertices[v[i]],
+                                         &gSP.vertices[v[j]]);
 
                     gSPCopyVertex(&nearVertices[nearIndex], &clippedVertices[clippedIndex]);
                     nearVertices[nearIndex].z = -nearVertices[nearIndex].w;
@@ -752,19 +692,16 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2, s32 flag)
 
             OGL_AddTriangle(clippedVertices, 0, 1, 2);
 
-            if (clippedIndex == 4)
-                OGL_AddTriangle(clippedVertices, 0, 2, 3);
+            if (clippedIndex == 4) OGL_AddTriangle(clippedVertices, 0, 2, 3);
 
             glDisable(GL_POLYGON_OFFSET_FILL);
 
             //			glDepthFunc( GL_LEQUAL );
 
             OGL_AddTriangle(nearVertices, 0, 1, 2);
-            if (nearIndex == 4)
-                OGL_AddTriangle(nearVertices, 0, 2, 3);
+            if (nearIndex == 4) OGL_AddTriangle(nearVertices, 0, 2, 3);
 
-            if (gDP.otherMode.depthMode == ZMODE_DEC)
-                glEnable(GL_POLYGON_OFFSET_FILL);
+            if (gDP.otherMode.depthMode == ZMODE_DEC) glEnable(GL_POLYGON_OFFSET_FILL);
 
             //			if (gDP.otherMode.depthCompare)
             //				glDepthFunc( GL_LEQUAL );
@@ -775,8 +712,7 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2, s32 flag)
     else
         DebugMsg(L"// Vertex index out of range\n");
 
-    if (depthBuffer.current)
-        depthBuffer.current->cleared = FALSE;
+    if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
     gDP.colorImage.changed = TRUE;
     gDP.colorImage.height = max(gDP.colorImage.height, gDP.scissor.lry);
 }
@@ -787,28 +723,22 @@ void gSP1Triangle(s32 v0, s32 v1, s32 v2, s32 flag)
 
     gSPFlushTriangles();
 
-    DebugMsg(L"gSP1Triangle( %i, %i, %i, %i );\n",
-             v0, v1, v2, flag);
+    DebugMsg(L"gSP1Triangle( %i, %i, %i, %i );\n", v0, v1, v2, flag);
 }
 
-void gSP2Triangles(s32 v00, s32 v01, s32 v02, s32 flag0,
-                   s32 v10, s32 v11, s32 v12, s32 flag1)
+void gSP2Triangles(s32 v00, s32 v01, s32 v02, s32 flag0, s32 v10, s32 v11, s32 v12, s32 flag1)
 {
     gSPTriangle(v00, v01, v02, flag0);
     gSPTriangle(v10, v11, v12, flag1);
 
     gSPFlushTriangles();
 
-    DebugMsg(L"gSP2Triangles( %i, %i, %i, %i,\n",
-             v00, v01, v02, flag0);
-    DebugMsg(L"               %i, %i, %i, %i );\n",
-             v10, v11, v12, flag1);
+    DebugMsg(L"gSP2Triangles( %i, %i, %i, %i,\n", v00, v01, v02, flag0);
+    DebugMsg(L"               %i, %i, %i, %i );\n", v10, v11, v12, flag1);
 }
 
-void gSP4Triangles(s32 v00, s32 v01, s32 v02,
-                   s32 v10, s32 v11, s32 v12,
-                   s32 v20, s32 v21, s32 v22,
-                   s32 v30, s32 v31, s32 v32)
+void gSP4Triangles(s32 v00, s32 v01, s32 v02, s32 v10, s32 v11, s32 v12, s32 v20, s32 v21, s32 v22, s32 v30, s32 v31,
+                   s32 v32)
 {
     gSPTriangle(v00, v01, v02, 0);
     gSPTriangle(v10, v11, v12, 0);
@@ -817,14 +747,10 @@ void gSP4Triangles(s32 v00, s32 v01, s32 v02,
 
     gSPFlushTriangles();
 
-    DebugMsg(L"gSP4Triangles( %i, %i, %i,\n",
-             v00, v01, v02);
-    DebugMsg(L"               %i, %i, %i,\n",
-             v10, v11, v12);
-    DebugMsg(L"               %i, %i, %i,\n",
-             v20, v21, v22);
-    DebugMsg(L"               %i, %i, %i );\n",
-             v30, v31, v32);
+    DebugMsg(L"gSP4Triangles( %i, %i, %i,\n", v00, v01, v02);
+    DebugMsg(L"               %i, %i, %i,\n", v10, v11, v12);
+    DebugMsg(L"               %i, %i, %i,\n", v20, v21, v22);
+    DebugMsg(L"               %i, %i, %i );\n", v30, v31, v32);
 }
 
 void gSPDMATriangles(u32 tris, u32 n)
@@ -838,7 +764,7 @@ void gSPDMATriangles(u32 tris, u32 n)
         return;
     }
 
-    auto triangles = (DKRTriangle*)&RDRAM[address];
+    auto triangles = (DKRTriangle *)&RDRAM[address];
 
     for (u32 i = 0; i < n; i++)
     {
@@ -869,8 +795,7 @@ void gSPDMATriangles(u32 tris, u32 n)
 
     gSPFlushTriangles();
 
-    DebugMsg(L"gSPDMATriangles( 0x%08X, %i );\n",
-             tris, n);
+    DebugMsg(L"gSPDMATriangles( 0x%08X, %i );\n", tris, n);
 }
 
 void gSP1Quadrangle(s32 v0, s32 v1, s32 v2, s32 v3)
@@ -880,8 +805,7 @@ void gSP1Quadrangle(s32 v0, s32 v1, s32 v2, s32 v3)
 
     gSPFlushTriangles();
 
-    DebugMsg(L"gSP1Quadrangle( %i, %i, %i, %i );\n",
-             v0, v1, v2, v3);
+    DebugMsg(L"gSP1Quadrangle( %i, %i, %i, %i );\n", v0, v1, v2, v3);
 }
 
 bool gSPCullVertices(u32 v0, u32 vn)
@@ -959,14 +883,12 @@ void gSPCullDisplayList(u32 v0, u32 vn)
             RSP.halt = TRUE;
         }
         DebugMsg(L"// Culling display list\n");
-        DebugMsg(L"gSPCullDisplayList( %i, %i );\n\n",
-                 v0, vn);
+        DebugMsg(L"gSPCullDisplayList( %i, %i );\n\n", v0, vn);
     }
     else
     {
         DebugMsg(L"// Not culling display list\n");
-        DebugMsg(L"gSPCullDisplayList( %i, %i );\n",
-                 v0, vn);
+        DebugMsg(L"gSPCullDisplayList( %i, %i );\n", v0, vn);
     }
 }
 
@@ -982,8 +904,9 @@ void gSPPopMatrixN(u32 param, u32 num)
         DebugMsg(L"// Attempting to pop matrix stack below 0\n");
 
     DebugMsg(L"gSPPopMatrixN( %s, %i );\n",
-             (param == G_MTX_MODELVIEW) ? "G_MTX_MODELVIEW" : (param == G_MTX_PROJECTION) ? "G_MTX_PROJECTION"
-                                                                                          : "G_MTX_INVALID",
+             (param == G_MTX_MODELVIEW)    ? "G_MTX_MODELVIEW"
+             : (param == G_MTX_PROJECTION) ? "G_MTX_PROJECTION"
+                                           : "G_MTX_INVALID",
              num);
 }
 
@@ -998,35 +921,30 @@ void gSPPopMatrix(u32 param)
     else
         DebugMsg(L"// Attempting to pop matrix stack below 0\n");
 
-    DebugMsg(L"gSPPopMatrix( %s );\n",
-             (param == G_MTX_MODELVIEW) ? "G_MTX_MODELVIEW" : (param == G_MTX_PROJECTION) ? "G_MTX_PROJECTION"
-                                                                                          : "G_MTX_INVALID");
+    DebugMsg(L"gSPPopMatrix( %s );\n", (param == G_MTX_MODELVIEW)    ? "G_MTX_MODELVIEW"
+                                       : (param == G_MTX_PROJECTION) ? "G_MTX_PROJECTION"
+                                                                     : "G_MTX_INVALID");
 }
 
 void gSPSegment(s32 seg, s32 base)
 {
     if (seg > 0xF)
     {
-        DebugMsg(L"// Attempting to load address into invalid segment\n",
-                 SegmentText[seg], base);
-        DebugMsg(L"gSPSegment( %s, 0x%08X );\n",
-                 SegmentText[seg], base);
+        DebugMsg(L"// Attempting to load address into invalid segment\n", SegmentText[seg], base);
+        DebugMsg(L"gSPSegment( %s, 0x%08X );\n", SegmentText[seg], base);
         return;
     }
 
     if (base > RDRAMSize - 1)
     {
-        DebugMsg(L"// Attempting to load invalid address into segment array\n",
-                 SegmentText[seg], base);
-        DebugMsg(L"gSPSegment( %s, 0x%08X );\n",
-                 SegmentText[seg], base);
+        DebugMsg(L"// Attempting to load invalid address into segment array\n", SegmentText[seg], base);
+        DebugMsg(L"gSPSegment( %s, 0x%08X );\n", SegmentText[seg], base);
         return;
     }
 
     gSP.segment[seg] = base;
 
-    DebugMsg(L"gSPSegment( %s, 0x%08X );\n",
-             SegmentText[seg], base);
+    DebugMsg(L"gSPSegment( %s, 0x%08X );\n", SegmentText[seg], base);
 }
 
 void gSPClipRatio(u32 r)
@@ -1037,14 +955,12 @@ void gSPInsertMatrix(u32 where, u32 num)
 {
     f32 fraction, integer;
 
-    if (gSP.changed & CHANGED_MATRIX)
-        gSPCombineMatrices();
+    if (gSP.changed & CHANGED_MATRIX) gSPCombineMatrices();
 
     if ((where & 0x3) || (where > 0x3C))
     {
         DebugMsg(L"// Invalid matrix elements\n");
-        DebugMsg(L"gSPInsertMatrix( 0x%02X, %i );\n",
-                 where, num);
+        DebugMsg(L"gSPInsertMatrix( 0x%02X, %i );\n", where, num);
         return;
     }
 
@@ -1064,8 +980,7 @@ void gSPInsertMatrix(u32 where, u32 num)
         newValue = integer + _FIXED2FLOAT(_SHIFTR(num, 16, 16), 16);
 
         // Make sure the sign isn't lost
-        if ((integer == 0.0f) && (fraction != 0.0f))
-            newValue = newValue * (fraction / fabs(fraction));
+        if ((integer == 0.0f) && (fraction != 0.0f)) newValue = newValue * (fraction / fabs(fraction));
 
         gSP.matrix.combined[0][(where - 0x20) >> 1] = newValue;
 
@@ -1073,14 +988,12 @@ void gSPInsertMatrix(u32 where, u32 num)
         newValue = integer + _FIXED2FLOAT(_SHIFTR(num, 0, 16), 16);
 
         // Make sure the sign isn't lost
-        if ((integer == 0.0f) && (fraction != 0.0f))
-            newValue = newValue * (fraction / fabs(fraction));
+        if ((integer == 0.0f) && (fraction != 0.0f)) newValue = newValue * (fraction / fabs(fraction));
 
         gSP.matrix.combined[0][((where - 0x20) >> 1) + 1] = newValue;
     }
 
-    DebugMsg(L"gSPInsertMatrix( %s, %i );\n",
-             MWOMatrixText[where >> 2], num);
+    DebugMsg(L"gSPInsertMatrix( %s, %i );\n", MWOMatrixText[where >> 2], num);
 }
 
 void gSPModifyVertex(u32 vtx, u32 where, u32 val)
@@ -1092,22 +1005,18 @@ void gSPModifyVertex(u32 vtx, u32 where, u32 val)
         gSP.vertices[vtx].g = _SHIFTR(val, 16, 8) * 0.0039215689f;
         gSP.vertices[vtx].b = _SHIFTR(val, 8, 8) * 0.0039215689f;
         gSP.vertices[vtx].a = _SHIFTR(val, 0, 8) * 0.0039215689f;
-        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n",
-                 vtx, MWOPointText[(where - 0x10) >> 2], val);
+        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n", vtx, MWOPointText[(where - 0x10) >> 2], val);
         break;
     case G_MWO_POINT_ST:
         gSP.vertices[vtx].s = _FIXED2FLOAT((s16)_SHIFTR(val, 16, 16), 5);
         gSP.vertices[vtx].t = _FIXED2FLOAT((s16)_SHIFTR(val, 0, 16), 5);
-        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n",
-                 vtx, MWOPointText[(where - 0x10) >> 2], val);
+        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n", vtx, MWOPointText[(where - 0x10) >> 2], val);
         break;
     case G_MWO_POINT_XYSCREEN:
-        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n",
-                 vtx, MWOPointText[(where - 0x10) >> 2], val);
+        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n", vtx, MWOPointText[(where - 0x10) >> 2], val);
         break;
     case G_MWO_POINT_ZSCREEN:
-        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n",
-                 vtx, MWOPointText[(where - 0x10) >> 2], val);
+        DebugMsg(L"gSPModifyVertex( %i, %s, 0x%08X );\n", vtx, MWOPointText[(where - 0x10) >> 2], val);
         break;
     }
 }
@@ -1119,8 +1028,7 @@ void gSPNumLights(s32 n)
     else
         DebugMsg(L"// Setting an invalid number of lights\n");
 
-    DebugMsg(L"gSPNumLights( %i );\n",
-             n);
+    DebugMsg(L"gSPNumLights( %i );\n", n);
 }
 
 void gSPLightColor(u32 lightNum, u32 packedColor)
@@ -1133,8 +1041,7 @@ void gSPLightColor(u32 lightNum, u32 packedColor)
         gSP.lights[lightNum].g = _SHIFTR(packedColor, 16, 8) * 0.0039215689f;
         gSP.lights[lightNum].b = _SHIFTR(packedColor, 8, 8) * 0.0039215689f;
     }
-    DebugMsg(L"gSPLightColor( %i, 0x%08X );\n",
-             lightNum, packedColor);
+    DebugMsg(L"gSPLightColor( %i, 0x%08X );\n", lightNum, packedColor);
 }
 
 void gSPFogFactor(s16 fm, s16 fo)
@@ -1156,10 +1063,8 @@ void gSPTexture(f32 sc, f32 tc, s32 level, s32 tile, s32 on)
     gSP.texture.scales = sc;
     gSP.texture.scalet = tc;
 
-    if (gSP.texture.scales == 0.0f)
-        gSP.texture.scales = 1.0f;
-    if (gSP.texture.scalet == 0.0f)
-        gSP.texture.scalet = 1.0f;
+    if (gSP.texture.scales == 0.0f) gSP.texture.scales = 1.0f;
+    if (gSP.texture.scalet == 0.0f) gSP.texture.scalet = 1.0f;
 
     gSP.texture.level = level;
     gSP.texture.on = on;
@@ -1170,8 +1075,7 @@ void gSPTexture(f32 sc, f32 tc, s32 level, s32 tile, s32 on)
 
     gSP.changed |= CHANGED_TEXTURE;
 
-    DebugMsg(L"gSPTexture( %f, %f, %i, %i, %i );\n",
-             sc, tc, level, tile, on);
+    DebugMsg(L"gSPTexture( %f, %f, %i, %i, %i );\n", sc, tc, level, tile, on);
 }
 
 void gSPEndDisplayList()
@@ -1193,26 +1097,16 @@ void gSPGeometryMode(u32 clear, u32 set)
 
     gSP.changed |= CHANGED_GEOMETRYMODE;
 
-    DebugMsg(L"gSPGeometryMode( %s%s%s%s%s%s%s%s%s%s, %s%s%s%s%s%s%s%s%s%s );\n",
-             clear & G_SHADE ? "G_SHADE | " : "",
-             clear & G_LIGHTING ? "G_LIGHTING | " : "",
-             clear & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
-             clear & G_ZBUFFER ? "G_ZBUFFER | " : "",
-             clear & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
+    DebugMsg(L"gSPGeometryMode( %s%s%s%s%s%s%s%s%s%s, %s%s%s%s%s%s%s%s%s%s );\n", clear & G_SHADE ? "G_SHADE | " : "",
+             clear & G_LIGHTING ? "G_LIGHTING | " : "", clear & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
+             clear & G_ZBUFFER ? "G_ZBUFFER | " : "", clear & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
              clear & G_TEXTURE_GEN_LINEAR ? "G_TEXTURE_GEN_LINEAR | " : "",
-             clear & G_CULL_FRONT ? "G_CULL_FRONT | " : "",
-             clear & G_CULL_BACK ? "G_CULL_BACK | " : "",
-             clear & G_FOG ? "G_FOG | " : "",
-             clear & G_CLIPPING ? "G_CLIPPING" : "",
-             set & G_SHADE ? "G_SHADE | " : "",
-             set & G_LIGHTING ? "G_LIGHTING | " : "",
-             set & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
-             set & G_ZBUFFER ? "G_ZBUFFER | " : "",
-             set & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
-             set & G_TEXTURE_GEN_LINEAR ? "G_TEXTURE_GEN_LINEAR | " : "",
-             set & G_CULL_FRONT ? "G_CULL_FRONT | " : "",
-             set & G_CULL_BACK ? "G_CULL_BACK | " : "",
-             set & G_FOG ? "G_FOG | " : "",
+             clear & G_CULL_FRONT ? "G_CULL_FRONT | " : "", clear & G_CULL_BACK ? "G_CULL_BACK | " : "",
+             clear & G_FOG ? "G_FOG | " : "", clear & G_CLIPPING ? "G_CLIPPING" : "", set & G_SHADE ? "G_SHADE | " : "",
+             set & G_LIGHTING ? "G_LIGHTING | " : "", set & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
+             set & G_ZBUFFER ? "G_ZBUFFER | " : "", set & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
+             set & G_TEXTURE_GEN_LINEAR ? "G_TEXTURE_GEN_LINEAR | " : "", set & G_CULL_FRONT ? "G_CULL_FRONT | " : "",
+             set & G_CULL_BACK ? "G_CULL_BACK | " : "", set & G_FOG ? "G_FOG | " : "",
              set & G_CLIPPING ? "G_CLIPPING" : "");
 }
 
@@ -1221,16 +1115,11 @@ void gSPSetGeometryMode(u32 mode)
     gSP.geometryMode |= mode;
 
     gSP.changed |= CHANGED_GEOMETRYMODE;
-    DebugMsg(L"gSPSetGeometryMode( %s%s%s%s%s%s%s%s%s%s );\n",
-             mode & G_SHADE ? "G_SHADE | " : "",
-             mode & G_LIGHTING ? "G_LIGHTING | " : "",
-             mode & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
-             mode & G_ZBUFFER ? "G_ZBUFFER | " : "",
-             mode & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
-             mode & G_TEXTURE_GEN_LINEAR ? "G_TEXTURE_GEN_LINEAR | " : "",
-             mode & G_CULL_FRONT ? "G_CULL_FRONT | " : "",
-             mode & G_CULL_BACK ? "G_CULL_BACK | " : "",
-             mode & G_FOG ? "G_FOG | " : "",
+    DebugMsg(L"gSPSetGeometryMode( %s%s%s%s%s%s%s%s%s%s );\n", mode & G_SHADE ? "G_SHADE | " : "",
+             mode & G_LIGHTING ? "G_LIGHTING | " : "", mode & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
+             mode & G_ZBUFFER ? "G_ZBUFFER | " : "", mode & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
+             mode & G_TEXTURE_GEN_LINEAR ? "G_TEXTURE_GEN_LINEAR | " : "", mode & G_CULL_FRONT ? "G_CULL_FRONT | " : "",
+             mode & G_CULL_BACK ? "G_CULL_BACK | " : "", mode & G_FOG ? "G_FOG | " : "",
              mode & G_CLIPPING ? "G_CLIPPING" : "");
 }
 
@@ -1240,16 +1129,11 @@ void gSPClearGeometryMode(u32 mode)
 
     gSP.changed |= CHANGED_GEOMETRYMODE;
 
-    DebugMsg(L"gSPClearGeometryMode( %s%s%s%s%s%s%s%s%s%s );\n",
-             mode & G_SHADE ? "G_SHADE | " : "",
-             mode & G_LIGHTING ? "G_LIGHTING | " : "",
-             mode & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
-             mode & G_ZBUFFER ? "G_ZBUFFER | " : "",
-             mode & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
-             mode & G_TEXTURE_GEN_LINEAR ? "G_TEXTURE_GEN_LINEAR | " : "",
-             mode & G_CULL_FRONT ? "G_CULL_FRONT | " : "",
-             mode & G_CULL_BACK ? "G_CULL_BACK | " : "",
-             mode & G_FOG ? "G_FOG | " : "",
+    DebugMsg(L"gSPClearGeometryMode( %s%s%s%s%s%s%s%s%s%s );\n", mode & G_SHADE ? "G_SHADE | " : "",
+             mode & G_LIGHTING ? "G_LIGHTING | " : "", mode & G_SHADING_SMOOTH ? "G_SHADING_SMOOTH | " : "",
+             mode & G_ZBUFFER ? "G_ZBUFFER | " : "", mode & G_TEXTURE_GEN ? "G_TEXTURE_GEN | " : "",
+             mode & G_TEXTURE_GEN_LINEAR ? "G_TEXTURE_GEN_LINEAR | " : "", mode & G_CULL_FRONT ? "G_CULL_FRONT | " : "",
+             mode & G_CULL_BACK ? "G_CULL_BACK | " : "", mode & G_FOG ? "G_FOG | " : "",
              mode & G_CLIPPING ? "G_CLIPPING" : "");
 }
 
@@ -1269,7 +1153,7 @@ void gSPLineW3D(s32 v0, s32 v1, s32 wd, s32 flag)
 void gSPBgRect1Cyc(u32 bg)
 {
     u32 address = RSP_SegmentToPhysical(bg);
-    auto objScaleBg = (uObjScaleBg*)&RDRAM[address];
+    auto objScaleBg = (uObjScaleBg *)&RDRAM[address];
 
     gSP.bgImage.address = RSP_SegmentToPhysical(objScaleBg->imagePtr);
     gSP.bgImage.width = objScaleBg->imageW >> 2;
@@ -1326,20 +1210,22 @@ void gSPBgRect1Cyc(u32 bg)
         else
             loadHeight = 512 / line;
 
-        gDPSetTile( objScaleBg->imageFmt, objScaleBg->imageSiz, line, 0, 7, objScaleBg->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
-        gDPSetTile( objScaleBg->imageFmt, objScaleBg->imageSiz, line, 0, 0, objScaleBg->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
-        gDPSetTileSize( 0, 0, 0, frameS1 * 4, frameT1 * 4 );
-        gDPSetTextureImage( objScaleBg->imageFmt, objScaleBg->imageSiz, imageW, objScaleBg->imagePtr );
+        gDPSetTile( objScaleBg->imageFmt, objScaleBg->imageSiz, line, 0, 7, objScaleBg->imagePal, G_TX_CLAMP,
+    G_TX_CLAMP, 0, 0, 0, 0 ); gDPSetTile( objScaleBg->imageFmt, objScaleBg->imageSiz, line, 0, 0, objScaleBg->imagePal,
+    G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 ); gDPSetTileSize( 0, 0, 0, frameS1 * 4, frameT1 * 4 ); gDPSetTextureImage(
+    objScaleBg->imageFmt, objScaleBg->imageSiz, imageW, objScaleBg->imagePtr );
 
         gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
         for (u32 i = 0; i < frameT1 / loadHeight; i++)
         {
             //if (objScaleBg->imageLoad == G_BGLT_LOADTILE)
-                gDPLoadTile( 7, frameS0 * 4, (frameT0 + loadHeight * i) * 4, frameS1 * 4, (frameT1 + loadHeight * (i + 1) * 4 );
+                gDPLoadTile( 7, frameS0 * 4, (frameT0 + loadHeight * i) * 4, frameS1 * 4, (frameT1 + loadHeight * (i +
+    1) * 4 );
             //else
             //{
-    //			gDPSetTextureImage( objScaleBg->imageFmt, objScaleBg->imageSiz, imageW, objScaleBg->imagePtr + (i + imageY) * (imageW << objScaleBg->imageSiz >> 1) + (imageX << objScaleBg->imageSiz >> 1) );
+    //			gDPSetTextureImage( objScaleBg->imageFmt, objScaleBg->imageSiz, imageW, objScaleBg->imagePtr + (i +
+    imageY) * (imageW << objScaleBg->imageSiz >> 1) + (imageX << objScaleBg->imageSiz >> 1) );
     //			gDPLoadBlock( 7, 0, 0, (loadHeight * frameW << objScaleBg->imageSiz >> 1) - 1, 0 );
     // 		}
 
@@ -1351,7 +1237,7 @@ void gSPBgRect1Cyc(u32 bg)
 void gSPBgRectCopy(u32 bg)
 {
     u32 address = RSP_SegmentToPhysical(bg);
-    auto objBg = (uObjBg*)&RDRAM[address];
+    auto objBg = (uObjBg *)&RDRAM[address];
 
     gSP.bgImage.address = RSP_SegmentToPhysical(objBg->imagePtr);
     gSP.bgImage.width = objBg->imageW >> 2;
@@ -1377,7 +1263,7 @@ void gSPBgRectCopy(u32 bg)
 void gSPObjRectangle(u32 sp)
 {
     u32 address = RSP_SegmentToPhysical(sp);
-    auto objSprite = (uObjSprite*)&RDRAM[address];
+    auto objSprite = (uObjSprite *)&RDRAM[address];
 
     f32 scaleW = _FIXED2FLOAT(objSprite->scaleW, 10);
     f32 scaleH = _FIXED2FLOAT(objSprite->scaleH, 10);
@@ -1386,13 +1272,14 @@ void gSPObjRectangle(u32 sp)
     u32 imageW = objSprite->imageW >> 2;
     u32 imageH = objSprite->imageH >> 2;
 
-    gDPTextureRectangle(objX, objY, objX + imageW / scaleW - 1, objY + imageH / scaleH - 1, 0, 0.0f, 0.0f, scaleW * (gDP.otherMode.cycleType == G_CYC_COPY ? 4.0f : 1.0f), scaleH);
+    gDPTextureRectangle(objX, objY, objX + imageW / scaleW - 1, objY + imageH / scaleH - 1, 0, 0.0f, 0.0f,
+                        scaleW * (gDP.otherMode.cycleType == G_CYC_COPY ? 4.0f : 1.0f), scaleH);
 }
 
 void gSPObjLoadTxtr(u32 tx)
 {
     u32 address = RSP_SegmentToPhysical(tx);
-    auto objTxtr = (uObjTxtr*)&RDRAM[address];
+    auto objTxtr = (uObjTxtr *)&RDRAM[address];
 
     if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag)
     {
@@ -1406,7 +1293,8 @@ void gSPObjLoadTxtr(u32 tx)
         case G_OBJLT_TXTRTILE:
             gDPSetTextureImage(0, 1, (objTxtr->tile.twidth + 1) << 1, objTxtr->tile.image);
             gDPSetTile(0, 1, (objTxtr->tile.twidth + 1) >> 2, objTxtr->tile.tmem, 7, 0, 0, 0, 0, 0, 0, 0);
-            gDPLoadTile(7, 0, 0, (((objTxtr->tile.twidth + 1) << 1) - 1) << 2, (((objTxtr->tile.theight + 1) >> 2) - 1) << 2);
+            gDPLoadTile(7, 0, 0, (((objTxtr->tile.twidth + 1) << 1) - 1) << 2,
+                        (((objTxtr->tile.theight + 1) >> 2) - 1) << 2);
             break;
         case G_OBJLT_TLUT:
             gDPSetTextureImage(0, 2, 1, objTxtr->tlut.image);
@@ -1414,14 +1302,15 @@ void gSPObjLoadTxtr(u32 tx)
             gDPLoadTLUT(7, 0, 0, objTxtr->tlut.pnum << 2, 0);
             break;
         }
-        gSP.status[objTxtr->block.sid >> 2] = (gSP.status[objTxtr->block.sid >> 2] & ~objTxtr->block.mask) | (objTxtr->block.flag & objTxtr->block.mask);
+        gSP.status[objTxtr->block.sid >> 2] =
+            (gSP.status[objTxtr->block.sid >> 2] & ~objTxtr->block.mask) | (objTxtr->block.flag & objTxtr->block.mask);
     }
 }
 
 void gSPObjSprite(u32 sp)
 {
     u32 address = RSP_SegmentToPhysical(sp);
-    auto objSprite = (uObjSprite*)&RDRAM[address];
+    auto objSprite = (uObjSprite *)&RDRAM[address];
 
     f32 scaleW = _FIXED2FLOAT(objSprite->scaleW, 10);
     f32 scaleH = _FIXED2FLOAT(objSprite->scaleH, 10);
@@ -1463,7 +1352,8 @@ void gSPObjSprite(u32 sp)
     gSP.vertices[3].s = 0;
     gSP.vertices[3].t = imageH - 1;
 
-    gDPSetTile(objSprite->imageFmt, objSprite->imageSiz, objSprite->imageStride, objSprite->imageAdrs, 0, objSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
+    gDPSetTile(objSprite->imageFmt, objSprite->imageSiz, objSprite->imageStride, objSprite->imageAdrs, 0,
+               objSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
     gDPSetTileSize(0, 0, 0, (imageW - 1) << 2, (imageH - 1) << 2);
     gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
 
@@ -1475,8 +1365,7 @@ void gSPObjSprite(u32 sp)
     OGL_DrawTriangles();
     glLoadIdentity();
 
-    if (depthBuffer.current)
-        depthBuffer.current->cleared = FALSE;
+    if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
     gDP.colorImage.changed = TRUE;
     gDP.colorImage.height = max(gDP.colorImage.height, gDP.scissor.lry);
 }
@@ -1496,7 +1385,7 @@ void gSPObjLoadTxRectR(u32 txsp)
 void gSPObjMatrix(u32 mtx)
 {
     u32 address = RSP_SegmentToPhysical(mtx);
-    auto objMtx = (uObjMtx*)&RDRAM[address];
+    auto objMtx = (uObjMtx *)&RDRAM[address];
 
     gSP.objMatrix.A = _FIXED2FLOAT(objMtx->A, 16);
     gSP.objMatrix.B = _FIXED2FLOAT(objMtx->B, 16);

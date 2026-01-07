@@ -28,10 +28,8 @@ void VI_UpdateSize()
     VI.width = (hEnd - hStart) * xScale;
     VI.height = (vEnd - vStart) * yScale * 1.0126582f;
 
-    if (VI.width == 0.0f)
-        VI.width = 320.0f;
-    if (VI.height == 0.0f)
-        VI.height = 240.0f;
+    if (VI.width == 0.0f) VI.width = 320.0f;
+    if (VI.height == 0.0f) VI.height = 240.0f;
 }
 
 void VI_UpdateScreen()
@@ -43,6 +41,6 @@ void VI_UpdateScreen()
         SwapBuffers(OGL.hDC);
         gSP.changed &= ~CHANGED_COLORBUFFER;
     }
-    
+
     glFinish();
 }

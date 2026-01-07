@@ -13,7 +13,7 @@
 
 GLInfo OGL{};
 
-void* gCapturedPixels; // pointer to buffer to fill
+void *gCapturedPixels; // pointer to buffer to fill
 
 void OGL_ReadPixels()
 {
@@ -22,8 +22,7 @@ void OGL_ReadPixels()
     // glReadBuffer(GL_FRONT);
 
     glReadBuffer(GL_BACK);
-    glReadPixels(0, OGL.heightOffset, OGL.width, OGL.height,
-                 GL_BGR, GL_UNSIGNED_BYTE, gCapturedPixels);
+    glReadPixels(0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR, GL_UNSIGNED_BYTE, gCapturedPixels);
     glReadBuffer(oldMode); // restore old read buffer
 }
 
@@ -111,14 +110,10 @@ void OGL_InitStates()
     {
         for (int j = 0; j < 8; j++)
             for (int k = 0; k < 128; k++)
-                OGL.stipplePattern[i][j][k] = ((i > (rand() >> 10)) << 7) |
-                ((i > (rand() >> 10)) << 6) |
-                ((i > (rand() >> 10)) << 5) |
-                ((i > (rand() >> 10)) << 4) |
-                ((i > (rand() >> 10)) << 3) |
-                ((i > (rand() >> 10)) << 2) |
-                ((i > (rand() >> 10)) << 1) |
-                ((i > (rand() >> 10)) << 0);
+                OGL.stipplePattern[i][j][k] = ((i > (rand() >> 10)) << 7) | ((i > (rand() >> 10)) << 6) |
+                                              ((i > (rand() >> 10)) << 5) | ((i > (rand() >> 10)) << 4) |
+                                              ((i > (rand() >> 10)) << 3) | ((i > (rand() >> 10)) << 2) |
+                                              ((i > (rand() >> 10)) << 1) | ((i > (rand() >> 10)) << 0);
     }
 
     SwapBuffers(wglGetCurrentDC());
@@ -133,7 +128,7 @@ void OGL_UpdateScale()
 void OGL_ResizeWindow()
 {
     RECT windowRect, statusRect, toolRect;
-    
+
     OGL.width = OGL.windowedWidth;
     OGL.height = OGL.windowedHeight;
 
@@ -156,7 +151,8 @@ void OGL_ResizeWindow()
     AdjustWindowRect(&windowRect, GetWindowLong(hWnd, GWL_STYLE), GetMenu(hWnd) != NULL);
 
     SetWindowPos(hWnd, NULL, 0, 0, windowRect.right - windowRect.left + 1,
-                 windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
+                 windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1,
+                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
 }
 
 bool OGL_InitContext()
@@ -164,24 +160,34 @@ bool OGL_InitContext()
     int pixelFormat;
 
     PIXELFORMATDESCRIPTOR pfd = {
-    sizeof(PIXELFORMATDESCRIPTOR), // size of this pfd
-    1, // version number
-    PFD_DRAW_TO_WINDOW | // support window
-    PFD_SUPPORT_OPENGL | // support OpenGL
-    PFD_DOUBLEBUFFER, // double buffered
-    PFD_TYPE_RGBA, // RGBA type
-    32, // color depth
-    0, 0, 0, 0, 0, 0, // color bits ignored
-    0, // no alpha buffer
-    0, // shift bit ignored
-    0, // no accumulation buffer
-    0, 0, 0, 0, // accum bits ignored
-    32, // z-buffer
-    0, // no stencil buffer
-    0, // no auxiliary buffer
-    PFD_MAIN_PLANE, // main layer
-    0, // reserved
-    0, 0, 0 // layer masks ignored
+        sizeof(PIXELFORMATDESCRIPTOR), // size of this pfd
+        1,                             // version number
+        PFD_DRAW_TO_WINDOW |           // support window
+            PFD_SUPPORT_OPENGL |       // support OpenGL
+            PFD_DOUBLEBUFFER,          // double buffered
+        PFD_TYPE_RGBA,                 // RGBA type
+        32,                            // color depth
+        0,
+        0,
+        0,
+        0,
+        0,
+        0, // color bits ignored
+        0, // no alpha buffer
+        0, // shift bit ignored
+        0, // no accumulation buffer
+        0,
+        0,
+        0,
+        0,              // accum bits ignored
+        32,             // z-buffer
+        0,              // no stencil buffer
+        0,              // no auxiliary buffer
+        PFD_MAIN_PLANE, // main layer
+        0,              // reserved
+        0,
+        0,
+        0 // layer masks ignored
     };
 
     if ((OGL.hDC = GetDC(hWnd)) == NULL)
@@ -299,7 +305,8 @@ void OGL_UpdateCullFace()
 
 void OGL_UpdateViewport()
 {
-    glViewport(gSP.viewport.x * OGL.scaleX, (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + OGL.heightOffset,
+    glViewport(gSP.viewport.x * OGL.scaleX,
+               (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + OGL.heightOffset,
                gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY);
     glDepthRange(0.0f, 1.0f); // gSP.viewport.nearz, gSP.viewport.farz );
 }
@@ -434,15 +441,12 @@ void OGL_UpdateStates()
         Combiner_EndTextureUpdate();
     }
 
-    if ((gDP.changed & CHANGED_FOGCOLOR) && OGL.fog)
-        glFogfv(GL_FOG_COLOR, &gDP.fogColor.r);
+    if ((gDP.changed & CHANGED_FOGCOLOR) && OGL.fog) glFogfv(GL_FOG_COLOR, &gDP.fogColor.r);
 
     if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
     {
-        if ((gDP.otherMode.forceBlender) &&
-            (gDP.otherMode.cycleType != G_CYC_COPY) &&
-            (gDP.otherMode.cycleType != G_CYC_FILL) &&
-            !(gDP.otherMode.alphaCvgSel))
+        if ((gDP.otherMode.forceBlender) && (gDP.otherMode.cycleType != G_CYC_COPY) &&
+            (gDP.otherMode.cycleType != G_CYC_FILL) && !(gDP.otherMode.alphaCvgSel))
         {
             glEnable(GL_BLEND);
 
@@ -487,25 +491,26 @@ void OGL_UpdateStates()
     gSP.changed &= CHANGED_TEXTURE | CHANGED_MATRIX;
 }
 
-void OGL_AddTriangle(SPVertex* vertices, int v0, int v1, int v2)
+void OGL_AddTriangle(SPVertex *vertices, int v0, int v1, int v2)
 {
     int v[] = {v0, v1, v2};
 
-    if (gSP.changed || gDP.changed)
-        OGL_UpdateStates();
+    if (gSP.changed || gDP.changed) OGL_UpdateStates();
 
     //	Playing around with lod fraction junk...
-    //	float ds = max( max( fabs( vertices[v0].s - vertices[v1].s ), fabs( vertices[v0].s - vertices[v2].s ) ), fabs( vertices[v1].s - vertices[v2].s ) ) * cache.current[0]->shiftScaleS * gSP.texture.scales;
-    //	float dx = max( max( fabs( vertices[v0].x / vertices[v0].w - vertices[v1].x / vertices[v1].w ), fabs( vertices[v0].x / vertices[v0].w - vertices[v2].x / vertices[v2].w ) ), fabs( vertices[v1].x / vertices[v1].w - vertices[v2].x / vertices[v2].w ) ) * gSP.viewport.vscale[0];
-    //	float lod = ds / dx;
-    //	float lod_fraction = min( 1.0f, max( 0.0f, lod - 1.0f ) / max( 1.0f, gSP.texture.level ) );
-
+    //	float ds = max( max( fabs( vertices[v0].s - vertices[v1].s ), fabs( vertices[v0].s - vertices[v2].s ) ), fabs(
+    //vertices[v1].s - vertices[v2].s ) ) * cache.current[0]->shiftScaleS * gSP.texture.scales; 	float dx = max( max(
+    //fabs( vertices[v0].x / vertices[v0].w - vertices[v1].x / vertices[v1].w ), fabs( vertices[v0].x / vertices[v0].w -
+    //vertices[v2].x / vertices[v2].w ) ), fabs( vertices[v1].x / vertices[v1].w - vertices[v2].x / vertices[v2].w ) ) *
+    //gSP.viewport.vscale[0]; 	float lod = ds / dx; 	float lod_fraction = min( 1.0f, max( 0.0f, lod - 1.0f ) / max( 1.0f,
+    //gSP.texture.level ) );
 
     for (int i = 0; i < 3; i++)
     {
         OGL.vertices[OGL.numVertices].x = vertices[v[i]].x;
         OGL.vertices[OGL.numVertices].y = vertices[v[i]].y;
-        OGL.vertices[OGL.numVertices].z = gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z * vertices[v[i]].w : vertices[v[i]].z;
+        OGL.vertices[OGL.numVertices].z =
+            gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z * vertices[v[i]].w : vertices[v[i]].z;
         OGL.vertices[OGL.numVertices].w = vertices[v[i]].w;
 
         OGL.vertices[OGL.numVertices].color.r = vertices[v[i]].r;
@@ -529,30 +534,56 @@ void OGL_AddTriangle(SPVertex* vertices, int v0, int v1, int v2)
             if (vertices[v[i]].z < -vertices[v[i]].w)
                 OGL.vertices[OGL.numVertices].fog = max(0.0f, -(float)gSP.fog.multiplier + (float)gSP.fog.offset);
             else
-                OGL.vertices[OGL.numVertices].fog = max(0.0f, vertices[v[i]].z / vertices[v[i]].w * (float)gSP.fog.multiplier + (float)gSP.fog.offset);
+                OGL.vertices[OGL.numVertices].fog =
+                    max(0.0f, vertices[v[i]].z / vertices[v[i]].w * (float)gSP.fog.multiplier + (float)gSP.fog.offset);
         }
 
         if (combiner.usesT0)
         {
             if (cache.current[0]->frameBufferTexture)
             {
-                /*				OGL.vertices[OGL.numVertices].s0 = (cache.current[0]->offsetS + (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales - gSP.textureTile[0]->fuls)) * cache.current[0]->scaleS;
-                                OGL.vertices[OGL.numVertices].t0 = (cache.current[0]->offsetT - (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[0]->fult)) * cache.current[0]->scaleT;*/
+                /*				OGL.vertices[OGL.numVertices].s0 = (cache.current[0]->offsetS + (vertices[v[i]].s *
+                   cache.current[0]->shiftScaleS * gSP.texture.scales - gSP.textureTile[0]->fuls)) *
+                   cache.current[0]->scaleS; OGL.vertices[OGL.numVertices].t0 = (cache.current[0]->offsetT -
+                   (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[0]->fult)) *
+                   cache.current[0]->scaleT;*/
 
                 if (gSP.textureTile[0]->masks)
-                    OGL.vertices[OGL.numVertices].s0 = (cache.current[0]->offsetS + (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales - fmod(gSP.textureTile[0]->fuls, 1 << gSP.textureTile[0]->masks))) * cache.current[0]->scaleS;
+                    OGL.vertices[OGL.numVertices].s0 =
+                        (cache.current[0]->offsetS +
+                         (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales -
+                          fmod(gSP.textureTile[0]->fuls, 1 << gSP.textureTile[0]->masks))) *
+                        cache.current[0]->scaleS;
                 else
-                    OGL.vertices[OGL.numVertices].s0 = (cache.current[0]->offsetS + (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales - gSP.textureTile[0]->fuls)) * cache.current[0]->scaleS;
+                    OGL.vertices[OGL.numVertices].s0 =
+                        (cache.current[0]->offsetS +
+                         (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales -
+                          gSP.textureTile[0]->fuls)) *
+                        cache.current[0]->scaleS;
 
                 if (gSP.textureTile[0]->maskt)
-                    OGL.vertices[OGL.numVertices].t0 = (cache.current[0]->offsetT - (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet - fmod(gSP.textureTile[0]->fult, 1 << gSP.textureTile[0]->maskt))) * cache.current[0]->scaleT;
+                    OGL.vertices[OGL.numVertices].t0 =
+                        (cache.current[0]->offsetT -
+                         (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet -
+                          fmod(gSP.textureTile[0]->fult, 1 << gSP.textureTile[0]->maskt))) *
+                        cache.current[0]->scaleT;
                 else
-                    OGL.vertices[OGL.numVertices].t0 = (cache.current[0]->offsetT - (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[0]->fult)) * cache.current[0]->scaleT;
+                    OGL.vertices[OGL.numVertices].t0 =
+                        (cache.current[0]->offsetT -
+                         (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet -
+                          gSP.textureTile[0]->fult)) *
+                        cache.current[0]->scaleT;
             }
             else
             {
-                OGL.vertices[OGL.numVertices].s0 = (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales - gSP.textureTile[0]->fuls + cache.current[0]->offsetS) * cache.current[0]->scaleS;
-                OGL.vertices[OGL.numVertices].t0 = (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[0]->fult + cache.current[0]->offsetT) * cache.current[0]->scaleT;
+                OGL.vertices[OGL.numVertices].s0 =
+                    (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales - gSP.textureTile[0]->fuls +
+                     cache.current[0]->offsetS) *
+                    cache.current[0]->scaleS;
+                OGL.vertices[OGL.numVertices].t0 =
+                    (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[0]->fult +
+                     cache.current[0]->offsetT) *
+                    cache.current[0]->scaleT;
             }
         }
 
@@ -560,21 +591,34 @@ void OGL_AddTriangle(SPVertex* vertices, int v0, int v1, int v2)
         {
             if (cache.current[0]->frameBufferTexture)
             {
-                OGL.vertices[OGL.numVertices].s1 = (cache.current[1]->offsetS + (vertices[v[i]].s * cache.current[1]->shiftScaleS * gSP.texture.scales - gSP.textureTile[1]->fuls)) * cache.current[1]->scaleS;
-                OGL.vertices[OGL.numVertices].t1 = (cache.current[1]->offsetT - (vertices[v[i]].t * cache.current[1]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[1]->fult)) * cache.current[1]->scaleT;
+                OGL.vertices[OGL.numVertices].s1 =
+                    (cache.current[1]->offsetS +
+                     (vertices[v[i]].s * cache.current[1]->shiftScaleS * gSP.texture.scales -
+                      gSP.textureTile[1]->fuls)) *
+                    cache.current[1]->scaleS;
+                OGL.vertices[OGL.numVertices].t1 =
+                    (cache.current[1]->offsetT -
+                     (vertices[v[i]].t * cache.current[1]->shiftScaleT * gSP.texture.scalet -
+                      gSP.textureTile[1]->fult)) *
+                    cache.current[1]->scaleT;
             }
             else
             {
-                OGL.vertices[OGL.numVertices].s1 = (vertices[v[i]].s * cache.current[1]->shiftScaleS * gSP.texture.scales - gSP.textureTile[1]->fuls + cache.current[1]->offsetS) * cache.current[1]->scaleS;
-                OGL.vertices[OGL.numVertices].t1 = (vertices[v[i]].t * cache.current[1]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[1]->fult + cache.current[1]->offsetT) * cache.current[1]->scaleT;
+                OGL.vertices[OGL.numVertices].s1 =
+                    (vertices[v[i]].s * cache.current[1]->shiftScaleS * gSP.texture.scales - gSP.textureTile[1]->fuls +
+                     cache.current[1]->offsetS) *
+                    cache.current[1]->scaleS;
+                OGL.vertices[OGL.numVertices].t1 =
+                    (vertices[v[i]].t * cache.current[1]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[1]->fult +
+                     cache.current[1]->offsetT) *
+                    cache.current[1]->scaleT;
             }
         }
         OGL.numVertices++;
     }
     OGL.numTriangles++;
 
-    if (OGL.numVertices >= 255)
-        OGL_DrawTriangles();
+    if (OGL.numVertices >= 255) OGL_DrawTriangles();
 }
 
 void OGL_DrawTriangles()
@@ -589,14 +633,13 @@ void OGL_DrawTriangles()
     OGL.numTriangles = OGL.numVertices = 0;
 }
 
-void OGL_DrawLine(SPVertex* vertices, int v0, int v1, float width)
+void OGL_DrawLine(SPVertex *vertices, int v0, int v1, float width)
 {
     int v[] = {v0, v1};
 
     GLcolor color;
 
-    if (gSP.changed || gDP.changed)
-        OGL_UpdateStates();
+    if (gSP.changed || gDP.changed) OGL_UpdateStates();
 
     glLineWidth(width * OGL.scaleX);
 
@@ -625,7 +668,7 @@ void OGL_DrawLine(SPVertex* vertices, int v0, int v1, float width)
     glEnd();
 }
 
-void OGL_DrawRect(int ulx, int uly, int lrx, int lry, float* color)
+void OGL_DrawRect(int ulx, int uly, int lrx, int lry, float *color)
 {
     OGL_UpdateStates();
 
@@ -652,16 +695,35 @@ void OGL_DrawRect(int ulx, int uly, int lrx, int lry, float* color)
     glLoadIdentity();
     OGL_UpdateCullFace();
     OGL_UpdateViewport();
-    if (!OGL.ignoreScissor)
-        glEnable(GL_SCISSOR_TEST);
+    if (!OGL.ignoreScissor) glEnable(GL_SCISSOR_TEST);
 }
 
-void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip)
+void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt,
+                          bool flip)
 {
-    GLVertex rect[2] =
-    {
-    {ulx, uly, gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f, {/*gDP.blendColor.r, gDP.blendColor.g, gDP.blendColor.b, gDP.blendColor.a */ 1.0f, 1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, uls, ult, uls, ult, 0.0f},
-    {lrx, lry, gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f, {/*gDP.blendColor.r, gDP.blendColor.g, gDP.blendColor.b, gDP.blendColor.a*/ 1.0f, 1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}, lrs, lrt, lrs, lrt, 0.0f},
+    GLVertex rect[2] = {
+        {ulx,
+         uly,
+         gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : gSP.viewport.nearz,
+         1.0f,
+         {/*gDP.blendColor.r, gDP.blendColor.g, gDP.blendColor.b, gDP.blendColor.a */ 1.0f, 1.0f, 1.0f, 0.0f},
+         {1.0f, 1.0f, 1.0f, 1.0f},
+         uls,
+         ult,
+         uls,
+         ult,
+         0.0f},
+        {lrx,
+         lry,
+         gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : gSP.viewport.nearz,
+         1.0f,
+         {/*gDP.blendColor.r, gDP.blendColor.g, gDP.blendColor.b, gDP.blendColor.a*/ 1.0f, 1.0f, 1.0f, 0.0f},
+         {1.0f, 1.0f, 1.0f, 1.0f},
+         lrs,
+         lrt,
+         lrs,
+         lrt,
+         0.0f},
     };
 
     OGL_UpdateStates();
@@ -679,13 +741,15 @@ void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls,
         rect[1].s0 = (rect[1].s0 + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
         rect[1].t0 = (rect[1].t0 + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
 
-        if ((cache.current[0]->maskS) && (fmod(rect[0].s0, cache.current[0]->width) == 0.0f) && !(cache.current[0]->mirrorS))
+        if ((cache.current[0]->maskS) && (fmod(rect[0].s0, cache.current[0]->width) == 0.0f) &&
+            !(cache.current[0]->mirrorS))
         {
             rect[1].s0 -= rect[0].s0;
             rect[0].s0 = 0.0f;
         }
 
-        if ((cache.current[0]->maskT) && (fmod(rect[0].t0, cache.current[0]->height) == 0.0f) && !(cache.current[0]->mirrorT))
+        if ((cache.current[0]->maskT) && (fmod(rect[0].t0, cache.current[0]->height) == 0.0f) &&
+            !(cache.current[0]->mirrorT))
         {
             rect[1].t0 -= rect[0].t0;
             rect[0].t0 = 0.0f;
@@ -699,8 +763,7 @@ void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls,
             rect[1].t0 = cache.current[0]->offsetT - rect[1].t0;
         }
 
-        if (OGL.ARB_multitexture)
-            glActiveTextureARB(GL_TEXTURE0_ARB);
+        if (OGL.ARB_multitexture) glActiveTextureARB(GL_TEXTURE0_ARB);
 
         if ((rect[0].s0 >= 0.0f) && (rect[1].s0 <= cache.current[0]->width))
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -727,13 +790,15 @@ void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls,
         rect[1].s1 = (rect[1].s1 + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
         rect[1].t1 = (rect[1].t1 + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
 
-        if ((cache.current[1]->maskS) && (fmod(rect[0].s1, cache.current[1]->width) == 0.0f) && !(cache.current[1]->mirrorS))
+        if ((cache.current[1]->maskS) && (fmod(rect[0].s1, cache.current[1]->width) == 0.0f) &&
+            !(cache.current[1]->mirrorS))
         {
             rect[1].s1 -= rect[0].s1;
             rect[0].s1 = 0.0f;
         }
 
-        if ((cache.current[1]->maskT) && (fmod(rect[0].t1, cache.current[1]->height) == 0.0f) && !(cache.current[1]->mirrorT))
+        if ((cache.current[1]->maskT) && (fmod(rect[0].t1, cache.current[1]->height) == 0.0f) &&
+            !(cache.current[1]->mirrorT))
         {
             rect[1].t1 -= rect[0].t1;
             rect[0].t1 = 0.0f;
@@ -763,8 +828,7 @@ void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls,
 
     if ((gDP.otherMode.cycleType == G_CYC_COPY) && !OGL.forceBilinear)
     {
-        if (OGL.ARB_multitexture)
-            glActiveTextureARB(GL_TEXTURE0_ARB);
+        if (OGL.ARB_multitexture) glActiveTextureARB(GL_TEXTURE0_ARB);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -836,7 +900,7 @@ void OGL_ClearDepthBuffer()
     OGL_UpdateDepthUpdate();
 }
 
-void OGL_ClearColorBuffer(float* color)
+void OGL_ClearColorBuffer(float *color)
 {
     glClearColor(color[0], color[1], color[2], color[3]);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -867,7 +931,7 @@ void OGL_SaveScreenshot()
     fileHeader.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + infoHeader.biSizeImage;
     fileHeader.bfReserved1 = fileHeader.bfReserved2 = 0;
     fileHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-    
+
     CreateDirectory(screenDirectory.c_str(), NULL);
 
     const auto filename = std::format(L"{}screen{}.bmp", screenDirectory.wstring(), time(nullptr));
