@@ -61,7 +61,7 @@
 			Feel free to contribute!
 		</p>
 
-		<a class="link" href="https://github.com/mupen64">© 2025 Mupen64 Organization</a>
+		<a class="link" href="https://github.com/mupen64">© 2026 Mupen64 Organization</a>
 		<p>Licensed under GNU GPL v2 License</p>
 	</div>
 </footer>

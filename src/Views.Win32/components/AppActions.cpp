@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2025, Mupen64 maintainers, contributors, and original authors (Hacktarux, ShadowPrince, linker).
+ * Copyright (c) 2026, Mupen64 maintainers, contributors, and original authors (Hacktarux, ShadowPrince, linker).
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -743,7 +743,7 @@ static void show_about_dialog()
     const auto msg = L"Mupen64 - Advanced N64 TASing emulator."
                      L"\r\n"
                      L"\r\n"
-                     L"Copyright ©️ 2025"
+                     L"Copyright ©️ 2026"
                      L"\r\n"
                      L"Mupen64 maintainers, contributors, and original authors (Hacktarux, ShadowPrince, linker).";
     const auto result = DialogService::show_multiple_choice_dialog(VIEW_DLG_ABOUT, {L"Website", L"OK"}, msg, L"About",
