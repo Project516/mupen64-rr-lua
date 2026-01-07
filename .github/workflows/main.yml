@@ -18,7 +18,7 @@ jobs:
           extensions: "h,cpp"
           clangFormatVersion: 18.1.8
           style: file
-  build:
+  build-debug:
     runs-on: windows-latest
 
     strategy:
@@ -55,9 +55,52 @@ jobs:
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: ctest --test-dir build
 
-      - name: "Upload x86-sse2 build"
+      - name: "Upload build"
         uses: actions/upload-artifact@v4
         with:
-          name: mupen
+          name: mupen-debug
+          path: build/out
+          retention-days: 14
+  build-release:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        arch: [x86]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Set VERSION_SUFFIX
+        shell: powershell
+        run: |
+          $branch = git rev-parse --abbrev-ref HEAD
+          $commit = git rev-parse --short HEAD
+          $VERSION_SUFFIX = "-$branch-$commit"
+          echo "VERSION_SUFFIX=$VERSION_SUFFIX" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
+
+      - name: Display VERSION_SUFFIX
+        shell: powershell
+        run: echo "VERSION_SUFFIX is $env:VERSION_SUFFIX"
+
+      - name: CMake Setup
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: cmake --preset vcpkg-win64-x86-release
+
+      - name: CMake Build
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: cmake --build build
+
+      - name: CMake Test
+        working-directory: ${{env.GITHUB_WORKSPACE}}
+        run: ctest --test-dir build
+
+      - name: "Upload build"
+        uses: actions/upload-artifact@v4
+        with:
+          name: mupen-release
           path: build/out
           retention-days: 14
