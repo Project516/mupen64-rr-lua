@@ -20,6 +20,7 @@ from dataclasses import dataclass
 # TODO:
 # - use a proper templating engine instead of string accumulation
 
+OUT_DIR = "src/Website/static/docs/lua/"
 
 class StringAccumulator:
     def __init__(self):
@@ -451,7 +452,7 @@ def add_footer(html: StringAccumulator):
 
 
 def write_output(data: str):
-    with open("docs/lua/static/index.html", "w", encoding="utf-8") as file:
+    with open(f"{OUT_DIR}index.html", "w", encoding="utf-8") as file:
         file.write(
             minify_html.minify(
                 data,
@@ -462,15 +463,8 @@ def write_output(data: str):
             )
         )
 
-    with open("docs/lua/static/index-no-min.html", "w", encoding="utf-8") as file:
+    with open(f"{OUT_DIR}index-no-min.html", "w", encoding="utf-8") as file:
         file.write(data)
-
-
-def ensure_working_dir():
-    cwd = os.getcwd()
-    if cwd.endswith("script"):
-        os.chdir("../../../")
-
 
 def main():
     # Config
@@ -479,8 +473,6 @@ def main():
     docs_filepath = "docs/lua/export/doc.json"
     skipped_functions: list[LuaFunc] = []
     included_aliases: list[str] = []
-
-    ensure_working_dir()
 
     cpp_functions = read_funcs_from_cpp_file(cpp_filepath)
     lua_functions = read_funcs_from_json_file(
