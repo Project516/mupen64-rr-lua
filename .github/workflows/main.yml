@@ -74,18 +74,6 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
 
-      - name: Set VERSION_SUFFIX
-        shell: powershell
-        run: |
-          $branch = git rev-parse --abbrev-ref HEAD
-          $commit = git rev-parse --short HEAD
-          $VERSION_SUFFIX = "-$branch-$commit"
-          echo "VERSION_SUFFIX=$VERSION_SUFFIX" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
-
-      - name: Display VERSION_SUFFIX
-        shell: powershell
-        run: echo "VERSION_SUFFIX is $env:VERSION_SUFFIX"
-
       - name: CMake Setup
         working-directory: ${{env.GITHUB_WORKSPACE}}
         run: cmake --preset vcpkg-win64-x86-release
