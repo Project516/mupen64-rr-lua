@@ -45,6 +45,10 @@ export const load: PageServerLoad = async ({ params }) => {
                     '<tr',
                     '<tr class="odd:bg-surface-1-light dark:odd:bg-surface-3 even:bg-surface-2-light dark:even:bg-surface-2 transition-colors"'
                 );
+                html = html.replaceAll(
+                    '<ol',
+                    '<ol class="ol"'
+                );
 
                 return html
             }
