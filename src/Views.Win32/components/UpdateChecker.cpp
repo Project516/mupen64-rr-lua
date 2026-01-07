@@ -14,7 +14,7 @@
 
 namespace UpdateChecker
 {
-const std::wstring REPO_LATEST_RELEASE_URL = L"/repos/mkdasher/mupen64-rr-lua-/releases/latest";
+const std::wstring REPO_LATEST_RELEASE_URL = L"/repos/mupen64/mupen64-rr-lua/releases/latest";
 
 /**
  * Gets information about the latest release using the Github REST API.

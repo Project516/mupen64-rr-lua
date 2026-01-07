@@ -109,7 +109,7 @@ If you only have the stacktrace from `mupen.log`:
 
 # Code Style
 
-Code formatting must abide by the [.clang-format](https://github.com/mkdasher/mupen64-rr-lua-/blob/master/.clang-format) file provided in the repository root.
+Code formatting must abide by the [.clang-format](https://github.com/mupen64/mupen64-rr-lua/blob/master/.clang-format) file provided in the repository root.
 Failure to comply will fail the check-format workflow.
 
 # Plugin Guidelines
