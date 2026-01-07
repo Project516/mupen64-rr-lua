@@ -185,7 +185,7 @@ const struct
     u32 autoFormat, lineShift, maxTexels;
 } imageFormat[4][5] = {
     //		Get16					glType16						glInternalFormat16	Get32					glType32
-    //glInternalFormat32	autoFormat
+    // glInternalFormat32	autoFormat
     {
         // 4-bit
         {GetCI4RGBA_RGBA5551, GL_UNSIGNED_SHORT_5_5_5_1_EXT, GL_RGB5_A1, GetCI4RGBA_RGBA8888, GL_UNSIGNED_BYTE,
@@ -875,7 +875,7 @@ void TextureCache_Update(u32 t)
         u16 texRectHeight = gDP.texRect.height - gSP.textureTile[t]->ult;
 
         //		if ((tileWidth == (maskWidth + 1)) && (gDP.loadType == LOADTYPE_TILE) && (gDP.loadTile->lrs -
-        //gDP.loadTile->uls + 1 == tileWidth)) 			gSP.textureTile[t]->masks = 0;
+        // gDP.loadTile->uls + 1 == tileWidth)) 			gSP.textureTile[t]->masks = 0;
 
         if (gSP.textureTile[t]->masks && ((maskWidth * maskHeight) <= maxTexels))
             width = maskWidth;
@@ -893,7 +893,7 @@ void TextureCache_Update(u32 t)
             width = lineWidth;
 
         //		if ((tileHeight == (maskHeight + 1)) && (gDP.loadType == LOADTYPE_TILE) && (gDP.loadTile->lrt -
-        //gDP.loadTile->ult + 1 == tileHeight)) 			gSP.textureTile[t]->maskt = 0;
+        // gDP.loadTile->ult + 1 == tileHeight)) 			gSP.textureTile[t]->maskt = 0;
 
         if (gSP.textureTile[t]->maskt && ((maskWidth * maskHeight) <= maxTexels))
             height = maskHeight;

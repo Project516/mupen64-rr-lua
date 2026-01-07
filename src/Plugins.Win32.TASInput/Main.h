@@ -17,4 +17,4 @@ namespace Main
 {
 void init_sdl();
 void pump_sdl_events();
-}
+} // namespace Main
