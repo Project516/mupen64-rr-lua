@@ -296,14 +296,7 @@ end:
         set_status(std::format(L"Recording... ({})", combos[active_combo_index].samples.size()));
     }
 
-    if (new_config.async_visual_updates)
-    {
-        PostMessage(hwnd, WM_UPDATE_VISUALS, 0, keys->value);
-    }
-    else
-    {
-        SendMessage(hwnd, WM_UPDATE_VISUALS, 0, keys->value);
-    }
+    PostMessage(hwnd, WM_UPDATE_VISUALS, 0, keys->value);
 }
 
 core_buttons Status::get_processed_input(core_buttons input)
@@ -1208,7 +1201,6 @@ bool Status::show_context_menu(int x, int y)
     ADD_ITEM(hmenu, float_from_parent, L"Float from parent");
     ADD_ITEM(hmenu, titlebar, L"Titlebar");
     ADD_ITEM(hmenu, client_drag, L"Client drag");
-    ADD_ITEM(hmenu, async_visual_updates, L"Async Visual Updates");
 
     int offset = TrackPopupMenuEx(hmenu, TPM_RETURNCMD | TPM_NONOTIFY, x, y, hwnd, 0);
 

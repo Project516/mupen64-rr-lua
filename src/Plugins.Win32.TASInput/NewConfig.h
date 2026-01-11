@@ -84,7 +84,6 @@ typedef struct s_config
     // Increments joystick position by the value of the magnitude slider when moving via keyboard or gamepad
     int32_t relative_mode = false;
     int32_t approach_mode = false;
-    int32_t async_visual_updates = true;
     t_controller_config controller_config[4]{};
 } t_config;
 
