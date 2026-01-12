@@ -949,9 +949,9 @@ void AppActions::add()
                        gs_button_active);
     add_action(FRAME_ADVANCE, Hotkey::t_hotkey(VK_OEM_5), frame_advance, enable_when_emu_launched);
     add_action(MULTI_FRAME_ADVANCE, Hotkey::t_hotkey(VK_OEM_5, true), multi_frame_advance, enable_when_emu_launched);
-    add_action(MULTI_FRAME_ADVANCE_DECREMENT, Hotkey::t_hotkey('E', true), multi_frame_advance_increment,
+    add_action(MULTI_FRAME_ADVANCE_DECREMENT, Hotkey::t_hotkey('E', true), multi_frame_advance_decrement,
                enable_when_emu_launched);
-    add_action(MULTI_FRAME_ADVANCE_INCREMENT, Hotkey::t_hotkey('Q', true), multi_frame_advance_decrement,
+    add_action(MULTI_FRAME_ADVANCE_INCREMENT, Hotkey::t_hotkey('Q', true), multi_frame_advance_increment,
                enable_when_emu_launched);
     add_action(MULTI_FRAME_ADVANCE_RESET, Hotkey::t_hotkey('E', true, true), multi_frame_advance_reset,
                enable_when_emu_launched);
