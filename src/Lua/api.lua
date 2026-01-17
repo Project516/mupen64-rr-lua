@@ -1542,9 +1542,21 @@ function hotkey.prompt(caption) end
 ---A fully-qualified action path in the format `"Category[] > Name"`.
 ---An action path is a subset of the action filter that contains no wildcards and is used to uniquely identify an action.
 
----@class ActionParams
----@field path ActionPath The action's path.
----@field on_press fun()? The callback to be invoked when the action is pressed. Can be null.
+---@alias ActionArgumentMap { [string]: string }
+---Represents a collection of action parameter keys to their values.
+
+---@class ActionParam
+---@field key string The key of the parameter.
+---@field name string The display name of the parameter.
+---@field validator fun(value: string): string? A validator function that takes in a parameter value and optionally returns an error message if the validation failed.
+---@field get_initial_value fun(): string? A function that returns the initial value of the parameter. Can be null.
+---@field get_hints fun(value: string): string[]? A function that returns hints for the parameter based on the current input. Can be null.
+---Represents an action parameter.
+
+---@class ActionAddParams
+---@field path ActionPath The action's path. If the path's final segment is prefixed with `#`, it won't be visible in the menu.
+---@field params ActionParam[]? The action parameters.
+---@field on_press fun(params: ActionArgumentMap)? The callback to be invoked when the action is pressed. If this action has parameters, they will be supplied as an argument map.
 ---@field on_release fun()? The callback to be invoked when the action is released. Can be null.
 ---@field get_display_name (fun(): string)? The function used to determine the function's display name. If null, the display name will be derived from the path.
 ---@field get_enabled (fun(): boolean)? The function used to determine whether the action is enabled. If null, the action will be considered enabled.
@@ -1553,7 +1565,7 @@ function hotkey.prompt(caption) end
 ---Adds an action to the action registry.
 ---If an action with the same path already exists, the operation will fail.
 ---If adding the action causes another action to gain a child (e.g. there's an action `A > B`, and we're adding `A > B > C > D`), the operation will fail. To add the action, delete the original action (`A > B`) first.
----@param params ActionParams The action parameters.
+---@param params ActionAddParams The action parameters.
 ---@return boolean # Whether the operation succeeded.
 function action.add(params) end
 
@@ -1617,7 +1629,9 @@ function action.get_actions_matching_filter(filter) end
 ---@param path ActionPath A path.
 ---@param up boolean? If true, the action is considered to be released, otherwise it is considered to be pressed down.
 ---@param release_on_repress boolean? If true, if the action is already pressed down and `up` is false, the action will first be released before being pressed down again. If false, the action will only be pressed down. Defaults to true.
-function action.invoke(path, up, release_on_repress) end
+---@param params ActionArgumentMap? The action parameters.
+---@return boolean # Whether the operation succeeded.
+function action.invoke(path, up, release_on_repress, params) end
 
 ---Locks or unlocks action invocations from hotkeys.
 ---@param lock boolean Whether to lock or unlock action invocations from hotkeys.

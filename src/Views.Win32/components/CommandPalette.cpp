@@ -9,6 +9,7 @@
 #include <components/CommandPalette.h>
 #include <components/ConfigDialog.h>
 #include <components/AppActions.h>
+#include <components/ParameterPalette.h>
 #include <Messenger.h>
 
 struct t_listbox_item
@@ -299,6 +300,16 @@ static bool try_invoke(int32_t i)
     if (std::holds_alternative<t_listbox_item::t_action_data>(item->data))
     {
         const auto &action = std::get<t_listbox_item::t_action_data>(item->data);
+        const auto params = ActionManager::get_params(action.path);
+
+        // If the action has parameters, we enter the parameter supplying flow.
+        if (!params.empty())
+        {
+            SendMessage(g_ctx.hwnd, WM_CLOSE, 0, 0);
+            ParameterPalette::show(action.path);
+            return true;
+        }
+
         SendMessage(g_ctx.hwnd, WM_CLOSE, 0, 0);
         ActionManager::invoke(action.path);
         return true;

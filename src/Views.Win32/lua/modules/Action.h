@@ -12,7 +12,7 @@
 
 namespace LuaCore::Action
 {
-static ActionManager::t_action_params check_action_params(lua_State *L, int index)
+static std::pair<ActionManager::t_action_param, std::function<void()>> check_action_param(lua_State *L, int index)
 {
     if (lua_gettop(L) < 1 || !lua_istable(L, index))
     {
@@ -20,10 +20,188 @@ static ActionManager::t_action_params check_action_params(lua_State *L, int inde
         std::unreachable();
     }
 
-    ActionManager::t_action_params params{};
+    ActionManager::t_action_param param{};
+
+    lua_getfield(L, index, "key");
+    param.key = luaL_checkwstring(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "name");
+    param.name = luaL_checkwstring(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, index, "validator");
+    auto validator = lua_optcallback(L, -1);
+    lua_pop(L, 1);
+
+    if (validator)
+    {
+        param.validator = [=](std::wstring_view value) -> std::optional<std::wstring> {
+            if (!LuaManager::get_environment_for_state(L))
+            {
+                return std::nullopt;
+            }
+
+            lua_pushcallback(L, validator, false);
+            lua_pushwstring(L, std::wstring(value));
+            lua_pcall(L, 1, 1, 0);
+
+            if (lua_isstring(L, -1))
+            {
+                const auto error_msg = luaL_checkwstring(L, -1);
+                lua_pop(L, 1);
+                return error_msg;
+            }
+            else
+            {
+                lua_pop(L, 1);
+                return std::nullopt;
+            }
+        };
+    }
+
+    lua_getfield(L, index, "get_initial_value");
+    auto get_initial_value = lua_optcallback(L, -1);
+    lua_pop(L, 1);
+
+    if (get_initial_value)
+    {
+        param.get_initial_value = [=]() -> std::wstring {
+            if (!LuaManager::get_environment_for_state(L))
+            {
+                return L"";
+            }
+
+            lua_pushcallback(L, get_initial_value, false);
+            lua_pcall(L, 0, 1, 0);
+
+            const auto initial_value = luaL_checkwstring(L, -1);
+            lua_pop(L, 1);
+            return initial_value;
+        };
+    }
+
+    lua_getfield(L, index, "get_hints");
+    auto get_hints = lua_optcallback(L, -1);
+    lua_pop(L, 1);
+
+    if (get_hints)
+    {
+        param.get_hints = [=](const std::wstring_view input) -> std::vector<std::wstring> {
+            if (!LuaManager::get_environment_for_state(L))
+            {
+                return {};
+            }
+
+            lua_pushcallback(L, get_hints, false);
+            lua_pushwstring(L, std::wstring(input));
+            lua_pcall(L, 1, 1, 0);
+
+            std::vector<std::wstring> hints;
+            if (lua_istable(L, -1))
+            {
+                const int hints_table_index = lua_gettop(L);
+                const int hints_count = luaL_len(L, hints_table_index);
+                for (int i = 1; i <= hints_count; ++i)
+                {
+                    lua_geti(L, hints_table_index, i);
+                    const auto hint = luaL_checkwstring(L, -1);
+                    hints.push_back(hint);
+                    lua_pop(L, 1);
+                }
+            }
+            lua_pop(L, 1);
+            return hints;
+        };
+    }
+
+    return {param, [=]() {
+                lua_freecallback(L, validator);
+                lua_freecallback(L, get_initial_value);
+                lua_freecallback(L, get_hints);
+            }};
+}
+
+static void push_action_params(lua_State *L, const ActionManager::action_argument_map &params)
+{
+    lua_newtable(L);
+    for (const auto &[key, value] : params)
+    {
+        lua_pushwstring(L, key);
+        lua_pushwstring(L, value);
+        lua_settable(L, -3); 
+    }
+}
+
+static ActionManager::action_argument_map check_action_param_list(lua_State *L, int index)
+{
+    ActionManager::action_argument_map params;
+
+    if (!lua_istable(L, index))
+    {
+        luaL_error(L, "Expected a table at argument %d", index);
+    }
+
+    if (index < 0) index = lua_gettop(L) + index + 1;
+
+    lua_pushnil(L);
+    while (lua_next(L, index) != 0)
+    {
+
+        if (!lua_isstring(L, -2) || !lua_isstring(L, -1))
+        {
+            luaL_error(L, "Action parameter table must contain string-to-string entries");
+        }
+
+        const auto key = IOUtils::to_wide_string(lua_tostring(L, -2));
+        const auto value = IOUtils::to_wide_string(lua_tostring(L, -1));
+
+        params.emplace(key, value);
+
+        lua_pop(L, 1);
+    }
+
+    return params;
+}
+
+static ActionManager::t_action_add_params check_action_add_params(lua_State *L, int index)
+{
+    if (lua_gettop(L) < 1 || !lua_istable(L, index))
+    {
+        luaL_error(L, "Expected a table at argument 1");
+        std::unreachable();
+    }
+
+    ActionManager::t_action_add_params params{};
 
     lua_getfield(L, 1, "path");
     params.path = luaL_checkwstring(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, 1, "params");
+    std::vector<std::function<void()>> param_free_funcs;
+    if (!lua_isnil(L, -1))
+    {
+        if (!lua_istable(L, -1))
+        {
+            luaL_error(L, "Expected 'params' field to be a table");
+            std::unreachable();
+        }
+
+        const int params_table_index = lua_gettop(L);
+        const int params_count = luaL_len(L, params_table_index);
+        for (int i = 1; i <= params_count; ++i)
+        {
+            lua_geti(L, params_table_index, i);
+            int element_idx = lua_gettop(L);
+
+            auto [param, free_func] = check_action_param(L, element_idx);
+            params.params.push_back(param);
+            param_free_funcs.push_back(free_func);
+            lua_pop(L, 1);
+        }
+    }
+
     lua_pop(L, 1);
 
     lua_getfield(L, 1, "on_press");
@@ -31,14 +209,15 @@ static ActionManager::t_action_params check_action_params(lua_State *L, int inde
     auto on_press = lua_optcallback(L, -1);
     if (on_press)
     {
-        params.on_press = [=] {
+        params.on_press = [=](const ActionManager::action_argument_map &params) {
             if (!LuaManager::get_environment_for_state(L))
             {
                 return;
             }
 
             lua_pushcallback(L, on_press, false);
-            lua_pcall(L, 0, 0, 0);
+            push_action_params(L, params);
+            lua_pcall(L, 1, 0, 0);
         };
     }
 
@@ -144,6 +323,11 @@ static ActionManager::t_action_params check_action_params(lua_State *L, int inde
         lua_freecallback(L, get_enabled);
         lua_freecallback(L, get_active);
         lua_freecallback(L, get_display_name);
+
+        for (const auto &free_func : param_free_funcs)
+        {
+            free_func();
+        }
     };
 
     return params;
@@ -153,7 +337,7 @@ static int add(lua_State *L)
 {
     auto lua = LuaManager::get_environment_for_state(L);
 
-    const auto params = check_action_params(L, 1);
+    const auto params = check_action_add_params(L, 1);
 
     const auto result = ActionManager::add(params);
 
@@ -294,8 +478,9 @@ static int invoke(lua_State *L)
     const auto path = luaL_checkwstring(L, 1);
     const auto up = (bool)luaL_opt(L, lua_toboolean, 2, false);
     const auto release_on_repress = (bool)luaL_opt(L, lua_toboolean, 3, true);
+    const auto params = lua_isnoneornil(L, 4) ? ActionManager::action_argument_map{} : check_action_param_list(L, 4);
 
-    ActionManager::invoke(path, up, release_on_repress);
+    ActionManager::invoke(path, up, release_on_repress, params);
 
     return 0;
 }

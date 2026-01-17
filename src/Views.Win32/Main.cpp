@@ -18,6 +18,7 @@
 #include <components/Benchmark.h>
 #include <components/CLI.h>
 #include <components/CommandPalette.h>
+#include <components/ParameterPalette.h>
 #include <components/Compare.h>
 #include <components/ConfigDialog.h>
 #include <components/CoreDbg.h>
@@ -845,6 +846,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
         GetWindowRect(g_main_ctx.hwnd, &rect);
         g_config.window_x = rect.left;
         g_config.window_y = rect.top;
+        
+        Messenger::broadcast(Messenger::Message::MainWindowMoved, nullptr);
+        
         break;
     }
     case WM_SIZE: {
@@ -1210,6 +1214,10 @@ static bool is_dialog_message(MSG *msg)
         return true;
     }
     if (IsWindow(CommandPalette::hwnd()) && IsDialogMessage(CommandPalette::hwnd(), msg))
+    {
+        return true;
+    }
+    if (IsWindow(ParameterPalette::hwnd()) && IsDialogMessage(ParameterPalette::hwnd(), msg))
     {
         return true;
     }

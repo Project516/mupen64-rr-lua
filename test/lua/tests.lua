@@ -409,6 +409,15 @@ lust.describe('mupen64', function()
                 })
                 lust.expect(result).to.equal(true)
             end)
+            lust.it('errors_when_params_malformed', function()
+                local func = function()
+                    action.add({
+                        path = "Test > Something",
+                        params = "not_a_table",
+                    })
+                end
+                lust.expect(func).to.fail()
+            end)
             lust.it('fails_if_action_already_exists', function()
                 action.add({
                     path = "Test > Something",
@@ -966,6 +975,71 @@ lust.describe('mupen64', function()
                 action.invoke("Test > Something", false, false)
                 lust.expect(down).to.equal(2)
                 lust.expect(up).to.equal(0)
+            end)
+            lust.it('doesnt_call_onpress_when_parameter_count_mismatched', function()
+                local called = false
+                action.add({
+                    path = "Test > Something",
+                    params = {
+                        {
+                            key = "param1",
+                            name = "Parameter 1",
+                            validator = function() end
+                        },
+                    },
+                    on_press = function()
+                        called = true
+                    end
+                })
+
+                action.invoke("Test > Something", nil, nil, {})
+
+                lust.expect(called).to.equal(false)
+            end)
+            lust.it('doesnt_call_onpress_when_validation_fails', function()
+                local called = false
+                action.add({
+                    path = "Test > Something",
+                    params = {
+                        {
+                            key = "param1",
+                            name = "Parameter 1",
+                            validator = function() return "error" end
+                        },
+                    },
+                    on_press = function()
+                        called = true
+                    end
+                })
+
+                action.invoke("Test > Something", nil, nil, { param1 = "aaa" })
+
+                lust.expect(called).to.equal(false)
+            end)
+            lust.it('calls_onpress_with_correct_params', function()
+                local received_params
+                action.add({
+                    path = "Test > Something",
+                    params = {
+                        {
+                            key = "param1",
+                            name = "Parameter 1",
+                            validator = function() end
+                        },
+                        {
+                            key = "param2",
+                            name = "Parameter 2",
+                            validator = function() end
+                        },
+                    },
+                    on_press = function(params)
+                        received_params = params
+                    end
+                })
+
+                action.invoke("Test > Something", nil, nil, { param1 = "aaa", param2 = "" })
+
+                lust.expect(received_params).to.equal({ param1 = "aaa", param2 = "" })
             end)
         end)
 
