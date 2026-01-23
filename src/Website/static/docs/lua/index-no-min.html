@@ -648,6 +648,10 @@
                     <button class="funcListItem" onclick="highlightFunc('actionGet_activatability')">ACTION.GET_ACTIVATABILITY</button>
                 </a>
                 
+                <a href="#actionGet_params">
+                    <button class="funcListItem" onclick="highlightFunc('actionGet_params')">ACTION.GET_PARAMS</button>
+                </a>
+                
                 <a href="#actionGet_actions_matching_filter">
                     <button class="funcListItem" onclick="highlightFunc('actionGet_actions_matching_filter')">ACTION.GET_ACTIONS_MATCHING_FILTER</button>
                 </a>
@@ -1747,7 +1751,7 @@ playback mode.
 If the provided buffer is smaller than the current input buffer, the VCR engine will seek to the last frame
 and otherwise perform the warp modification as normal.
 An empty input buffer will cause the operation to fail.</p>
-<p>@<em>param</em> <code>inputs</code> — The new input buffer to use for the warp modification.</p>
+<p>@<em>param</em> <code>inputs</code> — The new input buffer to use for the warp modification. Note that the X/Y joystick values are mismatched: X is Y and Y is X. This behavior is kept for backwards compatibility.</p>
 <p>@<em>return</em> — The operation result.</p>
 <div class="codehilite"><pre><span></span><code><span class="kr">function</span><span class="w"> </span><span class="nc">movie</span><span class="p">.</span><span class="nf">begin_warp_modify</span><span class="p">(</span><span class="nv">inputs</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nc">right</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">left</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">down</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">up</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">start</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">Z</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">B</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">A</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">Cright</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">Cleft</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">Cdown</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">Cup</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">R</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">L</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nc">Y</span><span class="p">:</span><span class="w"> </span><span class="nc">integer</span><span class="p">,</span><span class="w"> </span><span class="nc">X</span><span class="p">:</span><span class="w"> </span><span class="nc">integer</span><span class="w"> </span><span class="p">}[])</span>
 <span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">Result</span>
@@ -1839,7 +1843,7 @@ If an action with the same path already exists, the operation will fail.
 If adding the action causes another action to gain a child (e.g. there's an action <code>A &gt; B</code>, and we're adding <code>A &gt; B &gt; C &gt; D</code>), the operation will fail. To add the action, delete the original action (<code>A &gt; B</code>) first.</p>
 <p>@<em>param</em> <code>params</code> — The action parameters.</p>
 <p>@<em>return</em> — Whether the operation succeeded.</p>
-<div class="codehilite"><pre><span></span><code><span class="kr">function</span><span class="w"> </span><span class="nc">action</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nv">params</span><span class="p">:</span><span class="w"> </span><span class="nc">ActionParams</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><code><span class="kr">function</span><span class="w"> </span><span class="nc">action</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nv">params</span><span class="p">:</span><span class="w"> </span><span class="nc">ActionAddParams</span><span class="p">)</span>
 <span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">boolean</span>
 </code></pre></div></div><div name="actionRemove"><hr />
 <h1><a id="actionRemove">action.remove</a></h1>
@@ -1909,6 +1913,13 @@ If adding the action causes another action to gain a child (e.g. there's an acti
 <p>@<em>return</em> — The action's activatability.</p>
 <div class="codehilite"><pre><span></span><code><span class="kr">function</span><span class="w"> </span><span class="nc">action</span><span class="p">.</span><span class="nf">get_activatability</span><span class="p">(</span><span class="nv">path</span><span class="p">:</span><span class="w"> </span><span class="nc">string</span><span class="p">)</span>
 <span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">boolean</span>
+</code></pre></div></div><div name="actionGet_params"><hr />
+<h1><a id="actionGet_params">action.get_params</a></h1>
+<p>Gets the parameters associated with an action.</p>
+<p>@<em>param</em> <code>path</code> — A path.</p>
+<p>@<em>return</em> — The action's parameters.</p>
+<div class="codehilite"><pre><span></span><code><span class="kr">function</span><span class="w"> </span><span class="nc">action</span><span class="p">.</span><span class="nf">get_params</span><span class="p">(</span><span class="nv">path</span><span class="p">:</span><span class="w"> </span><span class="nc">string</span><span class="p">)</span>
+<span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">ActionParam</span><span class="p">[]</span>
 </code></pre></div></div><div name="actionGet_actions_matching_filter"><hr />
 <h1><a id="actionGet_actions_matching_filter">action.get_actions_matching_filter</a></h1>
 <p>Gets all action paths that match the specified filter.</p>
@@ -1922,7 +1933,10 @@ If adding the action causes another action to gain a child (e.g. there's an acti
 <p>@<em>param</em> <code>path</code> — A path.</p>
 <p>@<em>param</em> <code>up</code> — If true, the action is considered to be released, otherwise it is considered to be pressed down.</p>
 <p>@<em>param</em> <code>release_on_repress</code> — If true, if the action is already pressed down and <code>up</code> is false, the action will first be released before being pressed down again. If false, the action will only be pressed down. Defaults to true.</p>
-<div class="codehilite"><pre><span></span><code><span class="kr">function</span><span class="w"> </span><span class="nc">action</span><span class="p">.</span><span class="nf">invoke</span><span class="p">(</span><span class="nv">path</span><span class="p">:</span><span class="w"> </span><span class="nc">string</span><span class="p">,</span><span class="w"> </span><span class="nv">up</span><span class="err">?</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nv">release_on_repress</span><span class="err">?</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">)</span>
+<p>@<em>param</em> <code>params</code> — The action parameters.</p>
+<p>@<em>return</em> — Whether the operation succeeded.</p>
+<div class="codehilite"><pre><span></span><code><span class="kr">function</span><span class="w"> </span><span class="nc">action</span><span class="p">.</span><span class="nf">invoke</span><span class="p">(</span><span class="nv">path</span><span class="p">:</span><span class="w"> </span><span class="nc">string</span><span class="p">,</span><span class="w"> </span><span class="nv">up</span><span class="err">?</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nv">release_on_repress</span><span class="err">?</span><span class="p">:</span><span class="w"> </span><span class="nc">boolean</span><span class="p">,</span><span class="w"> </span><span class="nv">params</span><span class="err">?</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nc">string</span><span class="p">]:</span><span class="w"> </span><span class="nc">string</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">boolean</span>
 </code></pre></div></div><div name="actionLock_hotkeys"><hr />
 <h1><a id="actionLock_hotkeys">action.lock_hotkeys</a></h1>
 <p>Locks or unlocks action invocations from hotkeys.</p>
