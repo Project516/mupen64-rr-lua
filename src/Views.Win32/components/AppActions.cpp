@@ -1169,7 +1169,7 @@ void AppActions::add()
     add_action(SEEK_TO_DIRECT, seek_direct,
                std::vector<ActionManager::t_action_param>{
                    {.key = L"frame", .name = L"Frame", .validator = Validators::seek_str},
-               });
+               }, enable_when_emu_launched_and_vcr_active);
     add_action(SEEK_TO, Hotkey::t_hotkey('G', true), show_seek_dialog, enable_when_emu_launched_and_vcr_active);
     add_action(USAGE_STATISTICS, Hotkey::t_hotkey::make_empty(), show_statistics);
     add_action(CORE_INFORMATION, Hotkey::t_hotkey::make_empty(), show_ram_start);
