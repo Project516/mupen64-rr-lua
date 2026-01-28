@@ -266,6 +266,8 @@ static INT_PTR CALLBACK dlgproc(const HWND hwnd, const UINT msg, const WPARAM wp
 
 void ParameterPalette::show(const ActionManager::action_path &action_path)
 {
+    if (g_ctx.hwnd) DestroyWindow(g_ctx.hwnd);
+
     g_ctx = {};
     g_ctx.action_path = action_path;
     g_ctx.ref_params = ActionManager::get_params(action_path);
