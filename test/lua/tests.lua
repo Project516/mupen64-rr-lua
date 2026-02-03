@@ -15,6 +15,8 @@ local testlib_path = path_root .. "build\\test\\Lua.Testlib\\"
 local testlib_dll_path = testlib_path .. "luatestlib.dll"
 package.cpath = testlib_path .. "?.dll;" .. package.cpath
 
+retest.print_raw = emu.console
+
 retest.describe('mupen64', function()
     retest.describe('printx', function()
         retest.it('forwarded_to_print', function()
