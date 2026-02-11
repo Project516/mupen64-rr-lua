@@ -5,7 +5,7 @@
 ---
 
 local retest = {
-    _VERSION = 'v1.0.0',
+    _VERSION = 'v0.0.1',
     _URL = 'https://github.com/Aurumaker72/retest',
     _DESCRIPTION = 'Retained-mode Lua testing library based on the lust library',
     _LICENSE = 'GPL-3',
@@ -14,8 +14,6 @@ local retest = {
 ---@alias LifecycleHookDelegate fun()
 
 ---@alias TestDelegate fun()
-
----@alias PrintRawDelegate fun(str: string)
 
 ---@class TestResult
 ---@field success boolean
@@ -30,12 +28,20 @@ local retest = {
 ---@field test TestDelegate?
 ---@field result TestResult?
 
----@type PrintRawDelegate
----The function used for printing raw output containing newlines.
-retest.print_raw = print
+---@class CoverageInfo
+---@field name string The name of the tracked table.
+---@field calls { [string]: number } A map of function names to call counts.
+---@field covered_count number The amount of functions that were called at least once.
+
+---@class CoverageTrackedTable
+---@field __coverage CoverageInfo The coverage information for the given table.
+
+---@class CoverageModule
+---@field [1] string The name of the module.
+---@field [2] any The module.
 
 ---@type TestNode
-retest.node = { name = "root", children = {} }
+retest.node = { name = 'root', children = {} }
 
 ---@type TestNode[]
 retest.failures = {}
@@ -45,6 +51,24 @@ retest.assertionless = {}
 
 retest.assertions = 0
 retest.tests = 0
+
+---@type CoverageTrackedTable[]
+retest.coverage_tracked_tables = {}
+
+---@type { [string]: boolean }
+---Mirrors the keys of coverage_tracked_tables for faster lookup in the debug hook.
+retest.coverage_tracked_functions = {}
+
+retest.covered_functions = 0
+retest.total_coverage_tracked_functions = 0
+
+local function dictlen(t)
+    local count = 0
+    for _, _ in pairs(t) do
+        count = count + 1
+    end
+    return count
+end
 
 local function get_root()
     local node = retest.node
@@ -112,6 +136,20 @@ end
 
 ---Runs all defined tests and suites, reporting results to the console.
 function retest.run()
+    retest.failures = {}
+    retest.assertionless = {}
+    retest.assertions = 0
+    retest.tests = 0
+    for _, tbl in pairs(retest.coverage_tracked_tables) do
+        local coverage_info = tbl.__coverage
+        coverage_info.covered_count = 0
+        for k, _ in pairs(coverage_info.calls) do
+            coverage_info.calls[k] = 0
+        end
+    end
+    retest.covered_functions = 0
+    retest.total_coverage_tracked_functions = 0
+
     local root = get_root()
 
     local function collect_hooks(node, field)
@@ -132,7 +170,7 @@ function retest.run()
         if node.test then
             local success, err
 
-            local befores = collect_hooks(node, "before")
+            local befores = collect_hooks(node, 'before')
             for _, fn in ipairs(befores) do
                 fn()
             end
@@ -177,10 +215,23 @@ function retest.run()
 
     run_node(root)
 
-    retest.report()
+    -- Compute coverage info
+    for _, tbl in pairs(retest.coverage_tracked_tables) do
+        local coverage_info = tbl.__coverage
+
+        for _, count in pairs(coverage_info.calls) do
+            retest.total_coverage_tracked_functions = retest.total_coverage_tracked_functions + 1
+
+            if count > 0 then
+                retest.covered_functions = retest.covered_functions + 1
+                coverage_info.covered_count = coverage_info.covered_count + 1
+            end
+        end
+    end
 end
 
----Reports the results of the tests to the console.
+---Generates a report of the test results.
+---@return string # The report.
 function retest.report()
     local root = get_root()
     local lines = {}
@@ -193,20 +244,20 @@ function retest.report()
     ---@param prefix string
     ---@param is_last boolean
     local function report_node(node, prefix, is_last)
-        prefix = prefix or ""
-        local connector = is_last and "└─ " or "├─ "
+        prefix = prefix or ''
+        local connector = is_last and '└─ ' or '├─ '
 
         if node ~= root then
             if node.test then
                 if not node.result then
-                    emit(prefix .. connector .. "⚠️ " .. node.name .. " - NO ASSERTIONS")
+                    emit(prefix .. connector .. '⚠️ ' .. node.name .. ' - NO ASSERTIONS')
                 else
                     if node.result.success then
-                        emit(prefix .. connector .. "✅ " .. node.name)
+                        emit(prefix .. connector .. '✅ ' .. node.name)
                     else
-                        emit(prefix .. connector .. "❎ " .. node.name)
+                        emit(prefix .. connector .. '❎ ' .. node.name)
                         if node.result.message then
-                            emit(prefix .. (is_last and "   " or "│  ") .. "  " .. tostring(node.result.message))
+                            emit(prefix .. (is_last and '   ' or '│  ') .. '  ' .. tostring(node.result.message))
                         end
                     end
                 end
@@ -221,19 +272,51 @@ function retest.report()
             local child_is_last = i == count
             local child_prefix =
                 prefix
-                .. (node == root and "" or (is_last and "   " or "│  "))
+                .. (node == root and '' or (is_last and '   ' or '│  '))
 
             report_node(child, child_prefix, child_is_last)
         end
     end
 
-    report_node(root, "", true)
+    emit('═══════ Tests ═══════')
+    report_node(root, '', true)
 
-    retest.print_raw(table.concat(lines, "\r\n"))
+    if #retest.coverage_tracked_tables > 0 then
+        emit('═══════ Coverage ═══════')
+
+
+        for _, tbl in pairs(retest.coverage_tracked_tables) do
+            local coverage_info = tbl.__coverage
+
+            local full_coverage = coverage_info.covered_count == dictlen(coverage_info.calls)
+
+            if full_coverage then
+                emit(string.format('✅ %s - 100%% covered', tostring(coverage_info.name)))
+            else
+                local coverage_percentage = coverage_info.covered_count / dictlen(coverage_info.calls)
+                emit(string.format('❎ %s - %.2f%% covered', tostring(coverage_info.name), coverage_percentage * 100))
+            end
+
+            for func_name, count in pairs(coverage_info.calls) do
+                if count == 0 then
+                    emit(string.format('    ❎ %s', func_name))
+                end
+            end
+        end
+    end
 
     local successes = retest.tests - #retest.failures - #retest.assertionless
-    print(string.format("%d PASSED, %d FAILED, %d WITHOUT ASSERTIONS, %d tests", successes, #retest.failures,
+
+    emit(string.format('%d PASSED, %d FAILED, %d WITHOUT ASSERTIONS, %d tests', successes, #retest.failures,
         #retest.assertionless, retest.tests))
+
+    if #retest.coverage_tracked_tables > 0 then
+        local coverage_percentage = retest.covered_functions / retest.total_coverage_tracked_functions
+        emit(string.format('COVERAGE: %.2f%% (%d/%d functions)', coverage_percentage * 100,
+            retest.covered_functions, retest.total_coverage_tracked_functions))
+    end
+
+    return table.concat(lines, '\r\n')
 end
 
 -- Assertions
@@ -314,21 +397,21 @@ local paths = {
             return v == x,
                 'expected ' .. tostring(v) .. ' and ' .. tostring(x) .. ' to be the same',
                 'expected ' .. tostring(v) .. ' and ' .. tostring(x) .. ' to not be the same'
-        end
+        end,
     },
     exist = {
         test = function(v)
             return v ~= nil,
                 'expected ' .. tostring(v) .. ' to exist',
                 'expected ' .. tostring(v) .. ' to not exist'
-        end
+        end,
     },
     truthy = {
         test = function(v)
             return v,
                 'expected ' .. tostring(v) .. ' to be truthy',
                 'expected ' .. tostring(v) .. ' to not be truthy'
-        end
+        end,
     },
     equal = {
         test = function(v, x, eps)
@@ -343,7 +426,7 @@ local paths = {
             return equal,
                 'expected ' .. tostring(v) .. ' and ' .. tostring(x) .. ' to be equal' .. comparison,
                 'expected ' .. tostring(v) .. ' and ' .. tostring(x) .. ' to not be equal'
-        end
+        end,
     },
     have = {
         test = function(v, x)
@@ -354,7 +437,7 @@ local paths = {
             return has(v, x),
                 'expected ' .. tostring(v) .. ' to contain ' .. tostring(x),
                 'expected ' .. tostring(v) .. ' to not contain ' .. tostring(x)
-        end
+        end,
     },
     fail = {
         'with',
@@ -362,7 +445,7 @@ local paths = {
             return not pcall(v),
                 'expected ' .. tostring(v) .. ' to fail',
                 'expected ' .. tostring(v) .. ' to not fail'
-        end
+        end,
     },
     with = {
         test = function(v, pattern)
@@ -370,7 +453,7 @@ local paths = {
             return not ok and message:match(pattern),
                 'expected ' .. tostring(v) .. ' to fail with error matching "' .. pattern .. '"',
                 'expected ' .. tostring(v) .. ' to not fail with error matching "' .. pattern .. '"'
-        end
+        end,
     },
     match = {
         test = function(v, p)
@@ -379,8 +462,8 @@ local paths = {
             return result ~= nil,
                 'expected ' .. v .. ' to match pattern [[' .. p .. ']]',
                 'expected ' .. v .. ' to not match pattern [[' .. p .. ']]'
-        end
-    }
+        end,
+    },
 }
 
 function retest.expect(v)
@@ -411,7 +494,7 @@ function retest.expect(v)
                     error(err or 'unknown failure', 2)
                 end
             end
-        end
+        end,
     })
 
     return assertion
@@ -439,6 +522,43 @@ function retest.spy(target, name, run)
     if run then run() end
 
     return spy
+end
+
+---Attaches coverage tracking to the given modules.
+---This operation can't be undone.
+---@param modules CoverageModule[] The modules to attach coverage tracking to.
+function retest.attach_coverage(modules)
+    if #retest.coverage_tracked_tables == 0 then
+        debug.sethook(function()
+            local info = debug.getinfo(2, 'f')
+            local entry = retest.coverage_tracked_functions[info.func]
+            if not entry then
+                return
+            end
+            entry.coverage_info.calls[entry.key] = entry.coverage_info.calls[entry.key] + 1
+        end, 'c')
+    end
+
+    for _, mod in ipairs(modules) do
+        local name, obj = mod[1], mod[2]
+
+        ---@type CoverageInfo
+        local coverage_info = {
+            name = name,
+            calls = {},
+            covered_count = 0,
+        }
+
+        for k, v in pairs(obj) do
+            if type(v) == 'function' then
+                coverage_info.calls[k] = 0
+                retest.coverage_tracked_functions[v] = { coverage_info = coverage_info, key = k }
+            end
+        end
+
+        obj.__coverage = coverage_info
+        retest.coverage_tracked_tables[#retest.coverage_tracked_tables + 1] = obj
+    end
 end
 
 return retest

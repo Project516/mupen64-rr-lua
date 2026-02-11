@@ -15,7 +15,23 @@ local testlib_path = path_root .. "build\\test\\Lua.Testlib\\"
 local testlib_dll_path = testlib_path .. "luatestlib.dll"
 package.cpath = testlib_path .. "?.dll;" .. package.cpath
 
-retest.print_raw = emu.console
+retest.attach_coverage(
+    {
+        { "emu",       emu },
+        { "memory",    memory },
+        { "wgui",      wgui },
+        { "d2d",       d2d },
+        { "input",     input },
+        { "joypad",    joypad },
+        { "movie",     movie },
+        { "savestate", savestate },
+        { "iohelper",  iohelper },
+        { "avi",       avi },
+        { "hotkey",    hotkey },
+        { "action",    action },
+        { "clipboard", clipboard },
+    }
+)
 
 retest.describe('mupen64', function()
     retest.describe('printx', function()
@@ -1288,3 +1304,6 @@ retest.describe('mupen64', function()
 end)
 
 retest.run()
+
+local report = retest.report()
+emu.console(report)
