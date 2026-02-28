@@ -880,14 +880,6 @@ std::vector<t_options_group> get_static_option_groups()
         GENPROPS(int32_t, core.float_exception_emulation),
     });
     core_group.items.emplace_back(t_options_item{
-        .type = t_options_item::Type::Number,
-        .group_id = core_group.id,
-        .name = L"Fast-Forward Skip Frequency",
-        .tooltip = L"Skip rendering every nth frame when in fast-forward mode.\n0 - Render nothing\n1 - Render every "
-                   L"frame\nn - Render every nth frame",
-        GENPROPS(int32_t, core.frame_skip_frequency),
-    });
-    core_group.items.emplace_back(t_options_item{
         .type = t_options_item::Type::Bool,
         .group_id = core_group.id,
         .name = L"Emulate SD Card",

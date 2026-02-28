@@ -63,6 +63,7 @@ uint32_t next_interrupt, CIC_Chip;
 precomp_instr *PC;
 char invalid_code[0x100000];
 std::atomic<bool> screen_invalidated = true;
+std::atomic<bool> screen_invalidated_frame = true;
 precomp_block *blocks[0x100000], *actual;
 int32_t rounding_mode = MUP_ROUND_NEAREST;
 int32_t trunc_mode = MUP_ROUND_TRUNC, round_mode = MUP_ROUND_NEAREST, ceil_mode = MUP_ROUND_CEIL,
@@ -91,6 +92,40 @@ FILE *g_mpak_file;
 void vr_invalidate_visuals()
 {
     screen_invalidated = true;
+    screen_invalidated_frame = true;
+}
+
+bool vr_is_frame_skipped()
+{
+    std::unique_lock lock(vcr_mtx);
+
+    if (frame_advance_outstanding > 1)
+    {
+        return true;
+    }
+
+    if (!g_core->cfg->render_throttling)
+    {
+        return false;
+    }
+
+    if (vcr.seek_to_frame.has_value())
+    {
+        return true;
+    }
+
+    if (!g_vr_fast_forward)
+    {
+        return false;
+    }
+
+    if (screen_invalidated_frame)
+    {
+        screen_invalidated_frame = false;
+        return false;
+    }
+
+    return true;
 }
 
 std::filesystem::path get_sram_path()
