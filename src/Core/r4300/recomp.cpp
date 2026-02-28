@@ -26,7 +26,7 @@ precomp_block *dst_block;     // the current block that we are recompiling
 uint32_t src;                 // the current recompiled instruction
 int32_t fast_memory;
 
-uint32_t *return_address; // that's where the dynarec will restart when
+uintptr_t *return_address; // that's where the dynarec will restart when
 // going back from a C function
 
 static int32_t *SRC;      // currently recompiled instruction in the input stream
@@ -2772,7 +2772,7 @@ void init_block(int32_t *source, precomp_block *block)
 
     if (!block->block)
     {
-        block->block = (precomp_instr *)malloc(((length + 1) + (length >> 2)) * sizeof(precomp_instr));
+        block->block = (precomp_instr *)malloc_exec(((length + 1) + (length >> 2)) * sizeof(precomp_instr));
         already_exist = 0;
     }
 #ifdef MUPEN64RR_ENABLE_DYNAREC
