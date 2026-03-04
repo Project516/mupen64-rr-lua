@@ -62,7 +62,8 @@ feat(ConfigDialog): add plugin config API
 ```
 
 > [!NOTE]
-> If a PR contains references to a commit that isn't part of any release yet, place `changelog: skip` in the PR description's footer.
+> For PRs that touch an unreleased feature and thus shouldn't be visible in the changelog, put
+> `changelog: skip` in the PR description's footer.
 
 # Code Style
 
@@ -97,7 +98,7 @@ Before merging a pull request into main or pushing out a release, verify that:
 1. Generate a changelog using [git-cliff](https://git-cliff.org/)
 
     ```
-    git-cliff -o CHANGELOG.md
+    git-cliff -o CHANGELOG.md --unreleased
     ```
 
 2. Write a summary of the release in the `# Summary` section of the changelog.

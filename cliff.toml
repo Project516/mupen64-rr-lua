@@ -29,6 +29,7 @@ commit_parsers = [
   { message = "^security", group = "🛡️ Security" },
   { message = "^fix", group = "🐞 Bugfixes" },
   { message = "^doc", group = "📚 Documentation" },
+  { footer = "^changelog:\\s*skip\\s*$", skip = true }
 ]
 filter_commits = true
 topo_order = false
