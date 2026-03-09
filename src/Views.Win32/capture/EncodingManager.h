@@ -65,9 +65,10 @@ void start_capture(std::filesystem::path path, t_config::EncoderType encoder_typ
 void stop_capture(const std::function<void(bool)> &callback = nullptr);
 
 /**
- * \brief Notifies the encoding manager of a new VI
+ * \brief Appends the current video frame to the capture.
+ * \param duplicate_last Whether the appended frame should be a duplicate of the last appended frame. This is used for lag frames.
  */
-void at_vi();
+void append_video(bool duplicate_last = false);
 
 /**
  * \brief Notifies the encoding manager of the audio changing
