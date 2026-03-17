@@ -153,6 +153,31 @@ static void destroy_loadscreen(t_lua_rendering_context *ctx)
     ctx->loadscreen_dc = nullptr;
 }
 
+static void CALLBACK invalidate_callback(UINT, UINT, DWORD_PTR user, DWORD_PTR, DWORD_PTR)
+{
+    const auto hwnd = (HWND)user;
+    if (IsWindow(hwnd)) RedrawWindow(hwnd, nullptr, nullptr, RDW_INVALIDATE);
+}
+
+static void stop_invalidation_timers(t_lua_rendering_context *ctx)
+{
+    timeKillEvent(ctx->d2d_timer);
+    timeKillEvent(ctx->gdi_timer);
+}
+
+static void restart_invalidation_timers(t_lua_rendering_context *ctx)
+{
+    stop_invalidation_timers(ctx);
+
+    const auto fps = ctx->target_fps.value_or(1000.0f);
+    const auto ms = (UINT)std::round(1000.0f / fps);
+
+    ctx->d2d_timer = timeSetEvent(ms, 1, invalidate_callback, (DWORD_PTR)ctx->d2d_overlay_hwnd,
+                                  TIME_PERIODIC | TIME_KILL_SYNCHRONOUS);
+    ctx->gdi_timer = timeSetEvent(ms, 1, invalidate_callback, (DWORD_PTR)ctx->gdi_overlay_hwnd,
+                                  TIME_PERIODIC | TIME_KILL_SYNCHRONOUS);
+}
+
 t_lua_rendering_context LuaRenderer::default_rendering_context()
 {
     t_lua_rendering_context ctx{};
@@ -162,17 +187,6 @@ t_lua_rendering_context LuaRenderer::default_rendering_context()
     ctx.col = ctx.bkcol = 0;
     ctx.bkmode = TRANSPARENT;
     return ctx;
-}
-
-void LuaRenderer::invalidate_visuals()
-{
-    assert(is_on_gui_thread());
-
-    for (const auto &lua : g_lua_environments)
-    {
-        RedrawWindow(lua->rctx.d2d_overlay_hwnd, nullptr, nullptr, RDW_INVALIDATE);
-        RedrawWindow(lua->rctx.gdi_overlay_hwnd, nullptr, nullptr, RDW_INVALIDATE);
-    }
 }
 
 void LuaRenderer::repaint_visuals()
@@ -253,6 +267,7 @@ void LuaRenderer::create_renderer(t_lua_rendering_context *ctx, t_lua_environmen
     }
 
     create_loadscreen(ctx);
+    restart_invalidation_timers(ctx);
 }
 
 void LuaRenderer::pre_destroy_renderer(t_lua_rendering_context *ctx)
@@ -261,6 +276,7 @@ void LuaRenderer::pre_destroy_renderer(t_lua_rendering_context *ctx)
     ctx->ignore_create_renderer = true;
     SetProp(ctx->gdi_overlay_hwnd, CTX_PROP, nullptr);
     SetProp(ctx->d2d_overlay_hwnd, CTX_PROP, nullptr);
+    stop_invalidation_timers(ctx);
 }
 
 void LuaRenderer::destroy_renderer(t_lua_rendering_context *ctx)
@@ -360,6 +376,18 @@ void LuaRenderer::loadscreen_reset(t_lua_rendering_context *ctx)
 {
     destroy_loadscreen(ctx);
     create_loadscreen(ctx);
+}
+
+void LuaRenderer::set_target_fps(t_lua_rendering_context *rctx, std::optional<float> fps)
+{
+    if (rctx->target_fps == fps) return;
+    if (fps.has_value())
+    {
+        if (!std::isfinite(fps.value()) || fps.value() <= 0.0f) return;
+    }
+
+    rctx->target_fps = fps;
+    restart_invalidation_timers(rctx);
 }
 
 HBRUSH LuaRenderer::alpha_mask_brush()
