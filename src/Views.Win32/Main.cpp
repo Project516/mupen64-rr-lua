@@ -1085,13 +1085,20 @@ int CALLBACK WinMain(const HINSTANCE hInstance, HINSTANCE, LPSTR, const int nSho
     open_console();
 #endif
 
+    g_main_ctx.app_path = get_app_full_path();
+
+    CreateDirectory((g_main_ctx.app_path / L"save").c_str(), NULL);
+    CreateDirectory((g_main_ctx.app_path / L"screenshots").c_str(), NULL);
+    CreateDirectory((g_main_ctx.app_path / L"plugin").c_str(), NULL);
+    CreateDirectory((g_main_ctx.app_path / L"backups").c_str(), NULL);
+    CreateDirectory((g_main_ctx.app_path / L"logs").c_str(), NULL);
+
     Loggers::init();
 
     g_view_logger->info("WinMain");
     g_view_logger->info(get_mupen_name());
 
     g_main_ctx.hinst = hInstance;
-    g_main_ctx.app_path = get_app_full_path();
     set_cwd();
 
     Config::init();
@@ -1104,11 +1111,6 @@ int CALLBACK WinMain(const HINSTANCE hInstance, HINSTANCE, LPSTR, const int nSho
         CoreUtils::show_error_dialog_for_result(core_result);
         return 1;
     }
-
-    CreateDirectory((g_main_ctx.app_path / L"save").c_str(), NULL);
-    CreateDirectory((g_main_ctx.app_path / L"screenshots").c_str(), NULL);
-    CreateDirectory((g_main_ctx.app_path / L"plugin").c_str(), NULL);
-    CreateDirectory((g_main_ctx.app_path / L"backups").c_str(), NULL);
 
     Gdiplus::GdiplusStartupInput startup_input;
     GdiplusStartup(&gdi_plus_token, &startup_input, NULL);
