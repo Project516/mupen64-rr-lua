@@ -1,0 +1,63 @@
+[
+  {
+    "label": "Delete cache and reconfigure",
+    "allow_concurrent_runs": false,
+    "reveal": "no_focus",
+    "use_new_terminal": false,
+    "command": "./vsdev.cmd",
+    "args": [
+      "cmake",
+      "--fresh",
+      "--preset",
+      "vcpkg-win64-x86"
+    ]
+  },
+  {
+    "label": "Switch to debug",
+    "allow_concurrent_runs": false,
+    "reveal": "no_focus",
+    "use_new_terminal": false,
+    "command": "./vsdev.cmd",
+    "args": [
+      "cmake",
+      "--preset",
+      "vcpkg-win64-x86"
+    ]
+  },
+  {
+    "label": "Switch to release",
+    "allow_concurrent_runs": false,
+    "reveal": "no_focus",
+    "use_new_terminal": false,
+    "command": "./vsdev.cmd",
+    "args": [
+      "cmake",
+      "--preset",
+      "vcpkg-win64-x86-release"
+    ]
+  },
+  {
+    "label": "Build",
+    "allow_concurrent_runs": false,
+    "reveal": "no_focus",
+    "use_new_terminal": false,
+    "command": "./vsdev.cmd",
+    "args": [
+      "cmake",
+      "--build",
+      "build"
+    ]
+  },
+  {
+    "label": "Test",
+    "allow_concurrent_runs": false,
+    "reveal": "no_focus",
+    "use_new_terminal": false,
+    "command": "./vsdev.cmd",
+    "args": [
+      "ctest",
+      "--test-dir",
+      "build"
+    ]
+  }
+]
